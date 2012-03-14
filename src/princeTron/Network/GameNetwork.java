@@ -1,4 +1,6 @@
-import java.awt.Point;
+package princeTron.Network;
+
+import android.graphics.Point;
 
 public abstract class GameNetwork
 {
