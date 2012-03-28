@@ -19,18 +19,20 @@ import java.net.URISyntaxException;
 
 import java.awt.Point;
 
-import org.json.*;
+import /*princeTron.Network.json.*/org.json.*;
 
-import org.java_websocket.*;
-import org.java_websocket.drafts.*;
-import org.java_websocket.handshake.ServerHandshake;
+import /*princeTron.Network.WebSocket.build.classes.*/org.java_websocket.*;
+import /*princeTron.Network.WebSocket.build.classes.*/org.java_websocket.drafts.*;
+import /*princeTron.Network.WebSocket.build.classes.*/org.java_websocket.handshake.*;
 
 import princeTron.Engine.*;
 
-public class NetworkIP extends GameNetwork
+public class NetworkIP extends princeTron.Engine.GameNetwork
 {
-    private WebSocketClient client;
 
+    private GameEngine game;
+    private WebSocketClient client;
+   
     public NetworkIP()
     {
 	try 
@@ -45,16 +47,32 @@ public class NetworkIP extends GameNetwork
 			    try
 				{
 				    JSONObject j = new JSONObject(message);
-				    if (j.has("start"))
+				    if (j.has("enterArena"))
 					{
-					    System.out.println("Start Game");
+					    JSONObject ea= j.getJSONObject("enterArena");
+					    int waitTime = ea.getInt("waitTime");
+					    //game.startGame(waitTime);
+					    System.out.println("Start Game in " + waitTime);
 					}
-				    else if (j.has("turn"))
+				    else if (j.has("opponentTurn"))
 					{
+					    JSONObject ot = j.getJSONObject("opponentTurn");
+
+					    int xPos = ot.getInt("xPos");
+					    int yPos = ot.getInt("yPos");
+					    int timestamp = ot.getInt("timestamp");
+					    boolean isLeft = ot.getBoolean("isLeft");
+
+					    //game.opponentTurn(0, new Point(xPos,yPos), timestamp, isLeft);
 					    System.out.println("Turn Occured");
 					}
-				    else if (j.has("game_over"))
+				    else if (j.has("endGame"))
 					{
+					    boolean win = false;
+					    JSONObject eg = j.getJSONObject("endGame");
+					    if (eg.getString("result").equals("win"))
+						win = true;
+					    //game.gameOver(win);
 					    System.out.println("Game Over");
 					}
 				}
@@ -88,12 +106,15 @@ public class NetworkIP extends GameNetwork
 	    }
     }    
 
-    void startGame(int wait_time)
+    // pass GameEngine to GameNetwork so network can call back to GameEngine         
+    public void setGameEngine(princeTron.Engine.GameEngine engine)
     {
+	GameEngine game = engine;
+
 	try 
 	    {
 		JSONObject j = new JSONObject();
-		j.append("Start", Integer.toString(wait_time));
+		j.append("connect", true);
 		client.send(j.toString());     
 	    }
 	catch ( InterruptedException ex) 
@@ -107,14 +128,19 @@ public class NetworkIP extends GameNetwork
 
     }
 
-    void turn(Point position, int time, boolean isLeft)
+    // informs the Network that the user has turned                                   
+    public void userTurn(java.awt.Point position, int time, boolean isLeft)  
     {
         try
             {
 		JSONObject j = new JSONObject();
-		j.append("Turn", Integer.toString(time));
-		j.append("Left", Boolean.toString(isLeft));
-		j.append("Position", position.toString());
+		JSONObject turn = new JSONObject();
+		turn.append("xPos", position.getX());
+		turn.append("yPos", position.getY());
+		turn.append("timestamp", time);
+		turn.append("isLeft", isLeft);
+		j.append("turn", turn);
+
                 client.send(j.toString());
             }
         catch ( InterruptedException ex )
@@ -127,13 +153,17 @@ public class NetworkIP extends GameNetwork
             }
     }
 
-    void collision(Point position)
+    // informs the Network that the user has crashed
+    public void userCrash(java.awt.Point location, int time) 
     {
         try
             {
 		JSONObject j = new JSONObject();
-		j.append("Collision", position.toString());
-                client.send(j.toString());
+		JSONObject collision = new JSONObject();
+		collision.append("timestamp", time);
+		j.append("collision", collision);
+
+		client.send(j.toString());
             }
         catch ( InterruptedException ex )
             {
@@ -144,12 +174,15 @@ public class NetworkIP extends GameNetwork
                 System.out.println("JSON Error");
             }
     }
+    
 
     public static void main(String[] args)
     {
 	NetworkIP n = new NetworkIP();
-	n.startGame(5);
-	n.turn(new Point(0,0), 17, true);
-	n.collision(new Point(0,0));
+	//	n.startGame(5);
+	//n.turn(new Point(0,0), 17, true);
+	//n.collision(new Point(0,0));
     }
+
+    
 }

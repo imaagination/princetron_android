@@ -2,8 +2,9 @@ package princeTron.Engine;
 
 import java.util.ArrayList;
 import android.graphics.Point;
+//import java.awt.Point;
 
-public class GameEngine extends princeTron.Network.GameNetwork {
+public class GameEngine extends princeTron.Network.NetworkGame {
 	// array of players' turns. Indexed by player id
 	private ArrayList<Point>[] playerTurns;
 	
