@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, PrinceTronActivity!</string>
+    <string name="app_name">PrinceTron</string>
+    <string name="mode_ready">PrinceTron\nPress Up To Play</string>
+    <string name="mode_lose_prefix">Game Over\nScore: </string>
+    <string name="mode_lose_suffix">\nPress Up To Play</string>
+    <string name="snake_layout_text_text"></string>
+
+</resources>

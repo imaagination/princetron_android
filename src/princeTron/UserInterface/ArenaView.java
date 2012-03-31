@@ -1,29 +1,24 @@
 package princeTron.UserInterface;
 
-import java.util.ArrayList;
+import princeTron.Engine.Coordinate;
+import princeTron.Engine.Player;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.util.Log;
 
 /**
- * ArenaView: implementation of a simple game of Snake
- * 
- * 
+ * ArenaView: implementation of a simple game of Tron
  */
 public class ArenaView extends TileView {
-
-	private static final String TAG = "ArenaView";
 
 	/**
 	 * Current mode of application: READY to run, RUNNING, or you have already
@@ -35,13 +30,10 @@ public class ArenaView extends TileView {
 	public static final int RUNNING = 2;
 	public static final int LOSE = 3;
 
-	/**
-	 * Current direction the snake is headed.
-	 */
-	private int mDirection1 = EAST;
-	private int mNextDirection1 = EAST;
-	private int mDirection2 = WEST;
-	private int mNextDirection2 = WEST;
+	public int playerID = 0;			//stores which player the user controls
+	private int numPlayers = 1;  		//number of players
+	private Player[] players;			//array of players to be drawn
+
 
 	private static final int NORTH = 1;
 	private static final int SOUTH = 2;
@@ -56,11 +48,9 @@ public class ArenaView extends TileView {
 	private static final int GREEN_STAR = 3;
 
 	/**
-	 * mScore: used to track the number of apples captured mMoveDelay: number of
-	 * milliseconds between snake movements. This will decrease as apples are
-	 * captured.
+	 * mMoveDelay: number of milliseconds between player movements.
+	 * This essentially controls game speed
 	 */
-	private long mScore = 0;
 	private static final long mMoveDelay = 100;
 
 	/**
@@ -74,17 +64,10 @@ public class ArenaView extends TileView {
 	 */
 	private TextView mStatusText;
 
-	/**
-	 * mSnakeTrail1: a list of Coordinates that make up the snake's body
-	 * mAppleList: the secret location of the juicy apples the snake craves.
-	 */
-	private ArrayList<Coordinate> mSnakeTrail1 = new ArrayList<Coordinate>();
-	private ArrayList<Coordinate> mSnakeTrail2 = new ArrayList<Coordinate>();
 
 	private Context mContext;
-	private int width, height;
+	private int width;
 	private WindowManager wm;
-	private Display display;
 
 	/**
 	 * Create a simple handler that we can use to cause animation to happen.  We
@@ -110,7 +93,6 @@ public class ArenaView extends TileView {
 
 	/**
 	 * Constructs a ArenaView based on inflation from XML
-	 * 
 	 * @param context
 	 * @param attrs
 	 */
@@ -118,17 +100,12 @@ public class ArenaView extends TileView {
 		super(context, attrs);
 		initArenaView();
 		this.mContext = context;
-
 		wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-		display = wm.getDefaultDisplay();
-		width = display.getWidth();  // deprecated
-		height = display.getHeight();  // deprecated
-
+		width = wm.getDefaultDisplay().getWidth(); // deprecated  
 		this.setOnTouchListener(new OnTouchListener(){
 			public boolean onTouch(View v, MotionEvent event){
-				Toast toast;
 				float x;       
-				CharSequence text;
+
 
 				switch (event.getAction())
 				{
@@ -136,58 +113,40 @@ public class ArenaView extends TileView {
 				{
 					x = event.getX();    
 
-					if(x > width/2.0)
-						text = "Right button pressed!"; //call rightPressed Method
-					else
-						text = "Left button pressed!"; //call leftPressed Method
-
+					int direction = players[playerID].getCurDirection();
 
 					if (x >= width/2.0) { //right side of screen (favored bc has = sign)
-						if ((mDirection1 == SOUTH) || (mDirection1 == NORTH)) 
-							mNextDirection1 = EAST;
+						if ((direction == SOUTH) || (direction == NORTH)) 
+							players[playerID].setNextDirection(EAST);
+						else if (direction == WEST)
+							players[playerID].setNextDirection(NORTH);
 						else
-							mNextDirection1 = NORTH;
-						
+							players[playerID].setNextDirection(SOUTH);
+
 						return (true);
 					}
 
 					if (x < width/2.0) { //left side of screen
-						if ((mDirection1 == SOUTH) || (mDirection1 == NORTH)) 
-							mNextDirection1 = WEST;
+						if ((direction == SOUTH) || (direction == NORTH)) 
+							players[playerID].setNextDirection(WEST);
+						else if(direction == WEST)
+							players[playerID].setNextDirection(SOUTH);
 						else
-							mNextDirection1 = SOUTH;
+							players[playerID].setNextDirection(NORTH);
+
 						return (true);
 					}					
-
-					//					toast = Toast.makeText(mContext, text, Toast.LENGTH_SHORT);  
-					//					toast.show();
-
 					break;
 				}
-
-
-
-
-
-
-
-
-
-
 				}
 				return true;
 			}
 		});
 	}
 
-	public ArenaView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		initArenaView();
-	}
 
 	private void initArenaView() {
 		setFocusable(true);
-
 		Resources r = this.getContext().getResources();
 
 		resetTiles(4);
@@ -199,28 +158,69 @@ public class ArenaView extends TileView {
 
 
 	private void initNewGame() {
-		mSnakeTrail1.clear();
-		mSnakeTrail2.clear();
+		//clear all player lists
 
-		// For now we're just going to load up a short default eastbound snake
-
-
-		mSnakeTrail1.add(new Coordinate(2, 20));
-		mSnakeTrail2.add(new Coordinate(2, 15));
-		mNextDirection1 = EAST;
+		for(int i = 0; i < numPlayers; i++){
+			if(players != null)
+				players[i].playerTrail.clear();
+		}
 
 
-		mScore = 0;
+
+		players = new Player[numPlayers];
+		Player player;
+
+
+		//should initialize based on screen height and width
+		if(numPlayers == 1){
+			player = new Player(new Coordinate(2, 20), EAST);
+			players[0] = player;
+		}
+
+		else if(numPlayers == 2){
+			player = new Player(new Coordinate(2, 20), EAST);
+			players[0] = player;
+
+			player = new Player(new Coordinate(40, 20), WEST);
+			players[1] = player;
+		}
+
+		else if(numPlayers == 3){
+			player = new Player(new Coordinate(2, 20), EAST);
+			players[0] = player;
+
+			player = new Player(new Coordinate(40, 20), WEST);
+			players[1] = player;
+
+			player = new Player(new Coordinate(19, 2), SOUTH);
+			players[2] = player;
+		}
+
+		else if(numPlayers == 4){
+			player = new Player(new Coordinate(2, 20), EAST);
+			players[0] = player;
+
+			player = new Player(new Coordinate(40, 20), WEST);
+			players[1] = player;
+
+			player = new Player(new Coordinate(19, 2), SOUTH);
+			players[2] = player;
+
+			player = new Player(new Coordinate(10, 40), NORTH);
+			players[3] = player;
+		}
+
+
+
 	}
 
 
 
 
 
-	/*
+	/**
 	 * handles key events in the game. Update the direction the player is traveling
-	 * based on the DPAD. Ignore events that would cause the snake to immediately
-	 * turn back on itself.
+	 * based on the DPAD and screen touch
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent msg) {
@@ -231,36 +231,45 @@ public class ArenaView extends TileView {
 				 * At the beginning of the game, or the end of a previous one,
 				 * we should start a new game.
 				 */
+
+				Log.w("onKeyDown", "initializing new game up");
 				initNewGame();
+				Log.w("onKeyDown", "game initialized");
 				setMode(RUNNING);
+				Log.w("onKeyDown", "running mode set");
 				update();
+				Log.w("onKeyDown", "updated");
 				return (true);
 			}
 
-
-			if (mDirection1 != SOUTH) {
-				mNextDirection1 = NORTH;
+			if (players[playerID].getCurDirection() != SOUTH) {
+				players[playerID].setNextDirection(NORTH);
 			}
 			return (true);
 		}
 
 		if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-			if (mDirection1 != NORTH) {
-				mNextDirection1 = SOUTH;
+			Log.w("onKeyDown", "down pressed");
+
+			if (players[playerID].getCurDirection() != NORTH) {
+				players[playerID].setNextDirection(SOUTH);
 			}
 			return (true);
 		}
 
 		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-			if (mDirection1 != EAST) {
-				mNextDirection1 = WEST;
+			Log.w("KeyEvent", "left pressed");
+
+			if (players[playerID].getCurDirection() != EAST) {
+				players[playerID].setNextDirection(WEST);
 			}
 			return (true);
 		}
 
 		if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-			if (mDirection1 != WEST) {
-				mNextDirection1 = EAST;
+			Log.w("onKeyDown", "right pressed");
+			if (players[playerID].getCurDirection() !=WEST) {
+				players[playerID].setNextDirection(EAST);
 			}
 			return (true);
 		}
@@ -300,8 +309,7 @@ public class ArenaView extends TileView {
 			str = res.getText(R.string.mode_ready);
 		}
 		if (newMode == LOSE) {
-			str = res.getString(R.string.mode_lose_prefix) + mScore
-					+ res.getString(R.string.mode_lose_suffix);
+			str = "Game Over";
 		}
 
 		mStatusText.setText(str);
@@ -318,6 +326,8 @@ public class ArenaView extends TileView {
 	public void update() {
 		if (mMode == RUNNING) {
 			long now = System.currentTimeMillis();
+
+			Log.w("update", "now");
 
 			if (now - mLastMove > mMoveDelay) {
 				clearTiles();
@@ -346,19 +356,19 @@ public class ArenaView extends TileView {
 
 
 	/**
-	 * Figure out which way the snake is going, see if he's run into anything (the
-	 * walls, himself). If he's not going to die, we then add to the
-	 * front and to increase the trail. 
+	 * Figure out which way the player is going, see if he's run into anything 
+	 * If he's not going to die, we then add to the front and to increase the trail. 
 	 */
 	private void updateSnake() {
 
 		// grab the snake by the head
-		Coordinate head = mSnakeTrail1.get(0);
+		Coordinate head = players[playerID].playerTrail.get(0);
 		Coordinate newHead = new Coordinate(1, 1);
 
-		mDirection1 = mNextDirection1;
+		players[playerID].setCurDirection(players[playerID].getNextDirection());
 
-		switch (mDirection1) {
+
+		switch (players[playerID].getCurDirection()) {
 		case EAST: {
 			newHead = new Coordinate(head.x + 1, head.y);
 			break;
@@ -386,25 +396,25 @@ public class ArenaView extends TileView {
 
 		}
 
-		// Look for collisions with itself
-		int snakelength1 = mSnakeTrail1.size();
+		// Look for self collisions
+		int snakelength1 = players[playerID].getSize();
 		for (int snakeindex = 0; snakeindex < snakelength1; snakeindex++) {
-			Coordinate c = mSnakeTrail1.get(snakeindex);
+			Coordinate c = players[playerID].playerTrail.get(snakeindex);
+			Log.w("updateSnake coordinate: ", "" + c.toString());
 			if (c.equals(newHead)) {
 				setMode(LOSE);
 				return;
 			}
-
-
-
 		}
 
+		// Look for collisions with other players!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+		
 		// push a new head onto the ArrayList
-		mSnakeTrail1.add(0, newHead);
-
+		players[playerID].playerTrail.add(0, newHead);
 
 		int index = 0;
-		for (Coordinate c : mSnakeTrail1) {
+		for (Coordinate c : players[playerID].playerTrail) {
 			if (index == 0) {
 				setTile(YELLOW_STAR, c.x, c.y);
 			} else {
@@ -414,30 +424,4 @@ public class ArenaView extends TileView {
 		}
 
 	}
-
-	/**
-	 * Simple class containing two integer values and a comparison function.
-	 * There's probably something I should use instead, but this was quick and
-	 * easy to build.
-	 * 
-	 */
-	private class Coordinate {
-		public int x;
-		public int y;
-
-		public Coordinate(int newX, int newY) {
-			x = newX;
-			y = newY;
-		}
-
-		public boolean equals(Coordinate other) {
-			return (x == other.x && y == other.y);
-		}
-
-		@Override
-		public String toString() {
-			return "Coordinate: [" + x + "," + y + "]";
-		}
-	}
-
 }

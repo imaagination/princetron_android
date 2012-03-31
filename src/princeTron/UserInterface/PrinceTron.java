@@ -17,14 +17,14 @@
 package princeTron.UserInterface;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 /**
  * Tron: a simple game that everyone can enjoy.
- * 
- * This is an implementation of the game Tron
- * 
  */
 public class PrinceTron extends Activity {
 
@@ -33,18 +33,59 @@ public class PrinceTron extends Activity {
 	/**
 	 * Called when Activity is first created. Turns off the title bar, sets up
 	 * the content views, and fires up the ArenaView.
-	 * 
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.arena_layout);
 
-		mArenaView = (ArenaView) findViewById(R.id.arena);
-		mArenaView.setTextView((TextView) findViewById(R.id.text));
 
-		mArenaView.setMode(ArenaView.READY);
+		setContentView(R.layout.homescreen);
+
+		// initialize the home screen buttons
+		Button newgamebutton = (Button) findViewById(R.id.newgamebutton);
+		Button statsbutton = (Button) findViewById(R.id.statsbutton);
+		Button recordsbutton = (Button) findViewById(R.id.recordsbutton);
+		Button profilebutton = (Button) findViewById(R.id.profilebutton);
+
+		// set up listeners for the home screen buttons
+		newgamebutton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {		
+				Intent myIntent = new Intent(view.getContext(),
+						Arena.class);
+				startActivityForResult(myIntent, 0);				
+			}
+		});
+
+		statsbutton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				Intent myIntent = new Intent(view.getContext(),
+						Stats.class);
+				startActivityForResult(myIntent, 0);		
+			}
+		});
+
+		recordsbutton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {		
+				Intent myIntent = new Intent(view.getContext(),
+						Records.class);
+				startActivityForResult(myIntent, 0);		
+			}
+		});
+
+		profilebutton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				Intent myIntent = new Intent(view.getContext(),
+						Profile.class);
+				startActivityForResult(myIntent, 0);		
+			}
+		});
+
+
+
+
+
+
 
 	}
 
