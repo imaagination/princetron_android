@@ -52,7 +52,7 @@ public class PrinceTron extends Activity {
 		newgamebutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {		
 				Intent myIntent = new Intent(view.getContext(),
-						Arena.class);
+						WaitingRoom.class);
 				startActivityForResult(myIntent, 0);				
 			}
 		});
