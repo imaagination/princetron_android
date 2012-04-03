@@ -7,5 +7,6 @@
     <string name="mode_lose_prefix">Game Over\nScore: </string>
     <string name="mode_lose_suffix">\nPress Up To Play</string>
     <string name="snake_layout_text_text"></string>
+    <string name="waiting_string">Waiting for other players. Please be patient...</string>
 
 </resources>
