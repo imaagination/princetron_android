@@ -1,6 +1,5 @@
 package princeTron.UserInterface;
 
-import princeTron.Engine.Coordinate;
 import princeTron.Engine.Player;
 
 import android.content.Context;
@@ -102,7 +101,8 @@ public class ArenaView extends TileView {
 		initArenaView();
 		this.mContext = context;
 		wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-		width = wm.getDefaultDisplay().getWidth(); // deprecated  
+		width = wm.getDefaultDisplay().getWidth(); // deprecated
+		// THIS HAS BEEN MOVED
 		this.setOnTouchListener(new OnTouchListener(){
 			public boolean onTouch(View v, MotionEvent event){
 				float x;       
@@ -114,26 +114,26 @@ public class ArenaView extends TileView {
 				{
 					x = event.getX();    
 
-					int direction = players[playerID].getCurDirection();
+					int direction = players[playerID].getDirection();
 
 					if (x >= width/2.0) { //right side of screen (favored bc has = sign)
 						if ((direction == SOUTH) || (direction == NORTH)) 
-							players[playerID].setNextDirection(EAST);
+							players[playerID].setDirection(EAST);
 						else if (direction == WEST)
-							players[playerID].setNextDirection(NORTH);
+							players[playerID].setDirection(NORTH);
 						else
-							players[playerID].setNextDirection(SOUTH);
+							players[playerID].setDirection(SOUTH);
 
 						return (true);
 					}
 
 					if (x < width/2.0) { //left side of screen
 						if ((direction == SOUTH) || (direction == NORTH)) 
-							players[playerID].setNextDirection(WEST);
+							players[playerID].setDirection(WEST);
 						else if(direction == WEST)
-							players[playerID].setNextDirection(SOUTH);
+							players[playerID].setDirection(SOUTH);
 						else
-							players[playerID].setNextDirection(NORTH);
+							players[playerID].setDirection(NORTH);
 
 						return (true);
 					}					
@@ -157,7 +157,7 @@ public class ArenaView extends TileView {
 
 	}
 
-
+	// THIS HAS BEEN MOVED
 	private void initNewGame() {
 		//clear all player lists
 
@@ -243,8 +243,8 @@ public class ArenaView extends TileView {
 				return (true);
 			}
 
-			if (players[playerID].getCurDirection() != SOUTH) {
-				players[playerID].setNextDirection(NORTH);
+			if (players[playerID].getDirection() != SOUTH) {
+				players[playerID].setDirection(NORTH);
 			}
 			return (true);
 		}
@@ -252,8 +252,8 @@ public class ArenaView extends TileView {
 		if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
 			Log.w("onKeyDown", "down pressed");
 
-			if (players[playerID].getCurDirection() != NORTH) {
-				players[playerID].setNextDirection(SOUTH);
+			if (players[playerID].getDirection() != NORTH) {
+				players[playerID].setDirection(SOUTH);
 			}
 			return (true);
 		}
@@ -261,16 +261,16 @@ public class ArenaView extends TileView {
 		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
 			Log.w("KeyEvent", "left pressed");
 
-			if (players[playerID].getCurDirection() != EAST) {
-				players[playerID].setNextDirection(WEST);
+			if (players[playerID].getDirection() != EAST) {
+				players[playerID].setDirection(WEST);
 			}
 			return (true);
 		}
 
 		if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
 			Log.w("onKeyDown", "right pressed");
-			if (players[playerID].getCurDirection() !=WEST) {
-				players[playerID].setNextDirection(EAST);
+			if (players[playerID].getDirection() !=WEST) {
+				players[playerID].setDirection(EAST);
 			}
 			return (true);
 		}
@@ -294,6 +294,7 @@ public class ArenaView extends TileView {
 	 * 
 	 * @param newMode
 	 */
+	// THIS STUFF MIGHT GET CHANGED
 	public void setMode(int newMode) {
 		int oldMode = mMode;
 		mMode = newMode;
@@ -324,6 +325,8 @@ public class ArenaView extends TileView {
 	 * Handles the basic update loop, checking to see if we are in the running
 	 * state, determining if a move should be made, updating the snake's location.
 	 */
+	// THIS WILL BE CHANGED SLIGHTLY - updateWalls() and/or updateSnake() will 
+	// be function calls into the GameEngine
 	public void update() {
 		if (mMode == RUNNING) {
 			long now = System.currentTimeMillis();
@@ -344,6 +347,7 @@ public class ArenaView extends TileView {
 	/**
 	 * Draws some walls.
 	 */
+	// THIS WILL BE MOVED
 	private void updateWalls() {
 		for (int x = 0; x < mXTileCount; x++) {
 			setTile(GREEN_STAR, x, 0);
@@ -360,16 +364,17 @@ public class ArenaView extends TileView {
 	 * Figure out which way the player is going, see if he's run into anything 
 	 * If he's not going to die, we then add to the front and to increase the trail. 
 	 */
+	// THIS WILL BE MOVED MOSTLY - SEE BELOW
 	private void updateSnake() {
 
 		// grab the snake by the head
 		Point head = players[playerID].playerTrail.get(0);
 		Point newHead = new Point(1, 1);
 
-		players[playerID].setCurDirection(players[playerID].getNextDirection());
+		players[playerID].setDirection(players[playerID].getDirection());
 
 
-		switch (players[playerID].getCurDirection()) {
+		switch (players[playerID].getDirection()) {
 		case EAST: {
 			newHead = new Point(head.x + 1, head.y);
 			break;

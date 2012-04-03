@@ -3,15 +3,15 @@ package princeTron.Engine;
 import java.util.ArrayList;
 import android.graphics.Point;
 
-public class GameEngine extends princeTron.Network.GameNetwork {
+public class GameEngine extends princeTron.Network.NetworkGame {
 	// array of players' turns. Indexed by player id
 	private ArrayList<Player> players;
 	public int X_SCALE = 100;
 	public int Y_SCALE = 100;
-	int NORTH = 1;
+	int NORTH = 0;
+	int EAST = 1;
 	int SOUTH = 2;
-	int EAST = 3;
-	int WEST = 4;
+	int WEST = 3;
 	
 	public GameEngine() {
 		players = new ArrayList<Player>();
@@ -20,52 +20,55 @@ public class GameEngine extends princeTron.Network.GameNetwork {
 	// called by the UI when the player turns. argument is true if 
 	// left turn, false otherwise
 	public void turn(boolean isLeft) {
-		
+		Player player = players.get(0);
+		int direction = 0;
+		if (isLeft) direction = -1;
+		else direction = 1;
+		player.setDirection((player.getDirection() + direction)%4);
 	}
 	
 	public ArrayList<Player> getTrails() {
-		
-		return null;
+		return players;
 	}
 	
 	@Override
 	public void startGame(int countdown, int numPlayers) {
 		//should initialize based on screen height and width
 				if(numPlayers == 1){
-					Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), EAST);
+					Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
 					players.add(player);
 				}
 
 				else if(numPlayers == 2){
-					Player player = new Player(new Point(2, 20), EAST);
+					Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
 					players.add(player);
 
-					player = new Player(new Point(40, 20), WEST);
+					player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
 					players.add(player);
 				}
 
 				else if(numPlayers == 3){
-					Player player = new Player(new Point(2, 20), EAST);
+					Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
 					players.add(player);
 
-					player = new Player(new Point(40, 20), WEST);
+					player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
 					players.add(player);
 
-					player = new Player(new Point(19, 2), SOUTH);
+					player = new Player(new Point((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), SOUTH);
 					players.add(player);
 				}
 
 				else if(numPlayers == 4){
-					Player player = new Player(new Point(2, 20), EAST);
+					Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
 					players.add(player);
 
-					player = new Player(new Point(40, 20), WEST);
+					player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
 					players.add(player);
 
-					player = new Player(new Point(19, 2), SOUTH);
+					player = new Player(new Point((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), WEST);
 					players.add(player);
 
-					player = new Player(new Point(10, 40), NORTH);
+					player = new Player(new Point((int) (0.9*X_SCALE), (int) (0.5*Y_SCALE)), NORTH);
 					players.add(player);
 				}
 	}

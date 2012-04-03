@@ -1,6 +1,6 @@
 package princeTron.Network;
 
-/* Network Manager class to implement GameToNetwork. Recieves and sends messages
+/* Network Manager class to implement GameToNetwork. Receives and sends messages
    to and from the server. Passes along received messages to GameManager via 
    a NetworkToGame class, and can be told to send messages by being Called
    from the Game Manager 
@@ -113,7 +113,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
     // pass GameEngine to GameNetwork so network can call back to GameEngine
     public void setGameEngine(princeTron.Engine.GameEngine engine)
     {
-	GameEngine game = engine;
+	 game = engine;
 
 	try 
 	    {
