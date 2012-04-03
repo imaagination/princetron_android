@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.util.Log;
+import android.graphics.Point;
 
 /**
  * ArenaView: implementation of a simple game of Tron
@@ -173,40 +174,40 @@ public class ArenaView extends TileView {
 
 		//should initialize based on screen height and width
 		if(numPlayers == 1){
-			player = new Player(new Coordinate(2, 20), EAST);
+			player = new Player(new Point(2, 20), EAST);
 			players[0] = player;
 		}
 
 		else if(numPlayers == 2){
-			player = new Player(new Coordinate(2, 20), EAST);
+			player = new Player(new Point(2, 20), EAST);
 			players[0] = player;
 
-			player = new Player(new Coordinate(40, 20), WEST);
+			player = new Player(new Point(40, 20), WEST);
 			players[1] = player;
 		}
 
 		else if(numPlayers == 3){
-			player = new Player(new Coordinate(2, 20), EAST);
+			player = new Player(new Point(2, 20), EAST);
 			players[0] = player;
 
-			player = new Player(new Coordinate(40, 20), WEST);
+			player = new Player(new Point(40, 20), WEST);
 			players[1] = player;
 
-			player = new Player(new Coordinate(19, 2), SOUTH);
+			player = new Player(new Point(19, 2), SOUTH);
 			players[2] = player;
 		}
 
 		else if(numPlayers == 4){
-			player = new Player(new Coordinate(2, 20), EAST);
+			player = new Player(new Point(2, 20), EAST);
 			players[0] = player;
 
-			player = new Player(new Coordinate(40, 20), WEST);
+			player = new Player(new Point(40, 20), WEST);
 			players[1] = player;
 
-			player = new Player(new Coordinate(19, 2), SOUTH);
+			player = new Player(new Point(19, 2), SOUTH);
 			players[2] = player;
 
-			player = new Player(new Coordinate(10, 40), NORTH);
+			player = new Player(new Point(10, 40), NORTH);
 			players[3] = player;
 		}
 
@@ -362,27 +363,27 @@ public class ArenaView extends TileView {
 	private void updateSnake() {
 
 		// grab the snake by the head
-		Coordinate head = players[playerID].playerTrail.get(0);
-		Coordinate newHead = new Coordinate(1, 1);
+		Point head = players[playerID].playerTrail.get(0);
+		Point newHead = new Point(1, 1);
 
 		players[playerID].setCurDirection(players[playerID].getNextDirection());
 
 
 		switch (players[playerID].getCurDirection()) {
 		case EAST: {
-			newHead = new Coordinate(head.x + 1, head.y);
+			newHead = new Point(head.x + 1, head.y);
 			break;
 		}
 		case WEST: {
-			newHead = new Coordinate(head.x - 1, head.y);
+			newHead = new Point(head.x - 1, head.y);
 			break;
 		}
 		case NORTH: {
-			newHead = new Coordinate(head.x, head.y - 1);
+			newHead = new Point(head.x, head.y - 1);
 			break;
 		}
 		case SOUTH: {
-			newHead = new Coordinate(head.x, head.y + 1);
+			newHead = new Point(head.x, head.y + 1);
 			break;
 		}
 		}
@@ -399,7 +400,7 @@ public class ArenaView extends TileView {
 		// Look for self collisions
 		int snakelength1 = players[playerID].getSize();
 		for (int snakeindex = 0; snakeindex < snakelength1; snakeindex++) {
-			Coordinate c = players[playerID].playerTrail.get(snakeindex);
+			Point c = players[playerID].playerTrail.get(snakeindex);
 			Log.w("updateSnake coordinate: ", "" + c.toString());
 			if (c.equals(newHead)) {
 				setMode(LOSE);
@@ -412,9 +413,16 @@ public class ArenaView extends TileView {
 		
 		// push a new head onto the ArrayList
 		players[playerID].playerTrail.add(0, newHead);
+		// -----INTERFACE-----
 
 		int index = 0;
-		for (Coordinate c : players[playerID].playerTrail) {
+		// playerTrails = GameEngine.getTrails();
+		// for (Player player : playerTrails) {
+		//		for (Point p : player.playerTrail) {
+		//			setTile(...);
+		//		}
+		// }
+		for (Point c : players[playerID].playerTrail) {
 			if (index == 0) {
 				setTile(YELLOW_STAR, c.x, c.y);
 			} else {

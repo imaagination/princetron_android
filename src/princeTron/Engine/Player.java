@@ -1,17 +1,18 @@
 package princeTron.Engine;
 
 import java.util.ArrayList;
+import android.graphics.Point;
 
 import android.util.Log;
 
 public class Player {
 
 	//a list of Coordinates that define a players trail
-	public ArrayList<Coordinate> playerTrail = new ArrayList<Coordinate>();
+	public ArrayList<Point> playerTrail = new ArrayList<Point>();
 	public int curDirection;
 	public int nextDirection;
 
-	public Player(Coordinate coord, int direction){
+	public Player(Point coord, int direction){
 		playerTrail.add(coord);
 		this.curDirection = direction;
 		this.nextDirection = direction;
