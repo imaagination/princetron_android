@@ -1,7 +1,6 @@
 package princeTron.Network;
 
-import java.awt.Point;
-//import android.graphics.Point;
+import android.graphics.Point;
 
 public abstract class NetworkGame
 {

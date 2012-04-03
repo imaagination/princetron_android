@@ -1,3 +1,5 @@
+package princeTron.Network;
+
 /* Network Manager class to implement GameToNetwork. Recieves and sends messages
    to and from the server. Passes along received messages to GameManager via 
    a NetworkToGame class, and can be told to send messages by being Called
@@ -17,13 +19,15 @@ export CLASSPATH=/Users/andykaier/Documents/cos333/princetron_android/src/prince
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.awt.Point;
+import org.java_websocket.*;
+import org.java_websocket.drafts.*;
+import org.java_websocket.handshake.*;
 
-import /*princeTron.Network.json.*/org.json.*;
+import json.org.json.*;
 
-import /*princeTron.Network.WebSocket.build.classes.*/org.java_websocket.*;
-import /*princeTron.Network.WebSocket.build.classes.*/org.java_websocket.drafts.*;
-import /*princeTron.Network.WebSocket.build.classes.*/org.java_websocket.handshake.*;
+import android.graphics.Point;
+
+
 
 import princeTron.Engine.*;
 
@@ -106,7 +110,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	    }
     }    
 
-    // pass GameEngine to GameNetwork so network can call back to GameEngine         
+    // pass GameEngine to GameNetwork so network can call back to GameEngine
     public void setGameEngine(princeTron.Engine.GameEngine engine)
     {
 	GameEngine game = engine;
@@ -129,14 +133,14 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
     }
 
     // informs the Network that the user has turned                                   
-    public void userTurn(java.awt.Point position, int time, boolean isLeft)  
+    public void userTurn(android.graphics.Point position, int time, boolean isLeft)  
     {
         try
             {
 		JSONObject j = new JSONObject();
 		JSONObject turn = new JSONObject();
-		turn.append("xPos", position.getX());
-		turn.append("yPos", position.getY());
+		turn.append("xPos", position.x);
+		turn.append("yPos", position.y);
 		turn.append("timestamp", time);
 		turn.append("isLeft", isLeft);
 		j.append("turn", turn);
@@ -154,7 +158,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
     }
 
     // informs the Network that the user has crashed
-    public void userCrash(java.awt.Point location, int time) 
+    public void userCrash(Point location, int time) 
     {
         try
             {
