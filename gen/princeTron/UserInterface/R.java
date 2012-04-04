@@ -20,12 +20,12 @@ containing a value of this type.
     }
     public static final class drawable {
         public static final int greenstar=0x7f020000;
-        public static final int header=0x7f020001;
-        public static final int ic_launcher=0x7f020002;
-        public static final int orange=0x7f020003;
-        public static final int outline=0x7f020004;
-        public static final int redstar=0x7f020005;
-        public static final int troncycle=0x7f020006;
+        public static final int ic_launcher=0x7f020001;
+        public static final int orange=0x7f020002;
+        public static final int outline=0x7f020003;
+        public static final int redstar=0x7f020004;
+        public static final int troncycle=0x7f020005;
+        public static final int waitingroompic=0x7f020006;
         public static final int yellowstar=0x7f020007;
     }
     public static final class id {

@@ -17,6 +17,7 @@
 package princeTron.UserInterface;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -27,10 +28,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Tron: a simple game that everyone can enjoy.
+ * WaitingRoom: a player is at this stage while
+ * waiting for other players to join
  */
 public class WaitingRoom extends Activity {
-
 
 	/**
 	 * Called when Activity is first created. Turns off the title bar, sets up
@@ -43,20 +44,22 @@ public class WaitingRoom extends Activity {
 
 		Resources resource = this.getResources();
 		ImageView imView = new ImageView(this);
-		Drawable draw = resource.getDrawable(R.drawable.header);
+		Drawable draw = resource.getDrawable(R.drawable.waitingroompic);
 		imView.setImageDrawable(draw);
-
+		
 
 		setContentView(imView);
 
 
 
-
-
-
-
 	}
 
+	public void goToArena(){
+		
+		Intent myIntent = new Intent(this,
+				ArenaView.class);
+		startActivityForResult(myIntent, 0);
+	}
 
 
 
