@@ -74,9 +74,9 @@ public class ArenaView extends TileView {
 	 * set ourselves as a target and we can use the sleep()
 	 * function to cause an update/invalidate to occur at a later date.
 	 */
-	private RefreshHandler mRedrawHandler = new RefreshHandler();
+	//private RefreshHandler mRedrawHandler = new RefreshHandler();
 
-	class RefreshHandler extends Handler {
+	/*class RefreshHandler extends Handler {
 
 		@Override
 		public void handleMessage(Message msg) {
@@ -88,7 +88,7 @@ public class ArenaView extends TileView {
 			this.removeMessages(0);
 			sendMessageDelayed(obtainMessage(0), delayMillis);
 		}
-	};
+	};*/
 
 
 	/**
@@ -146,7 +146,7 @@ public class ArenaView extends TileView {
 	}
 
 
-	private void initArenaView() {
+	public void initArenaView() {
 		setFocusable(true);
 		Resources r = this.getContext().getResources();
 
@@ -158,7 +158,7 @@ public class ArenaView extends TileView {
 	}
 
 	// THIS HAS BEEN MOVED
-	private void initNewGame() {
+	/*private void initNewGame() {
 		//clear all player lists
 
 		for(int i = 0; i < numPlayers; i++){
@@ -213,7 +213,7 @@ public class ArenaView extends TileView {
 
 
 
-	}
+	}*/
 
 
 
@@ -234,11 +234,11 @@ public class ArenaView extends TileView {
 				 */
 
 				Log.w("onKeyDown", "initializing new game up");
-				initNewGame();
+				//initNewGame();
 				Log.w("onKeyDown", "game initialized");
 				setMode(RUNNING);
 				Log.w("onKeyDown", "running mode set");
-				update();
+				//update();
 				Log.w("onKeyDown", "updated");
 				return (true);
 			}
@@ -301,7 +301,7 @@ public class ArenaView extends TileView {
 
 		if (newMode == RUNNING & oldMode != RUNNING) {
 			mStatusText.setVisibility(View.INVISIBLE);
-			update();
+			//update();
 			return;
 		}
 
@@ -327,21 +327,11 @@ public class ArenaView extends TileView {
 	 */
 	// THIS WILL BE CHANGED SLIGHTLY - updateWalls() and/or updateSnake() will 
 	// be function calls into the GameEngine
-	public void update() {
-		if (mMode == RUNNING) {
-			long now = System.currentTimeMillis();
-
-			Log.w("update", "now");
-
-			if (now - mLastMove > mMoveDelay) {
-				clearTiles();
-				updateWalls();
-				updateSnake();
-				mLastMove = now;
-			}
-			mRedrawHandler.sleep(mMoveDelay);
-		}
-
+	// Actually, this is all departing to the GameEngine
+	public void update(Iterable<Player> players) {
+		clearTiles();
+		updateWalls();
+		updateSnake(players);
 	}
 
 	/**
@@ -365,10 +355,10 @@ public class ArenaView extends TileView {
 	 * If he's not going to die, we then add to the front and to increase the trail. 
 	 */
 	// THIS WILL BE MOVED MOSTLY - SEE BELOW
-	private void updateSnake() {
+	private void updateSnake(Iterable<Player> players) {
 
 		// grab the snake by the head
-		Point head = players[playerID].playerTrail.get(0);
+		/*Point head = players[playerID].playerTrail.get(0);
 		Point newHead = new Point(1, 1);
 
 		players[playerID].setDirection(players[playerID].getDirection());
@@ -426,7 +416,13 @@ public class ArenaView extends TileView {
 		//		for (Point p : player.playerTrail) {
 		//			setTile(...);
 		//		}
-		// }
+		// }*/
+		for (Player player : players) {
+			for (Point p : player.getPoints()) {
+				setTile(player.getId(), p.x, p.y);
+			}
+		}
+		/*int index = 0;
 		for (Point c : players[playerID].playerTrail) {
 			if (index == 0) {
 				setTile(YELLOW_STAR, c.x, c.y);
@@ -434,7 +430,7 @@ public class ArenaView extends TileView {
 				setTile(RED_STAR, c.x, c.y);
 			}
 			index++;
-		}
+		}*/
 
 	}
 }
