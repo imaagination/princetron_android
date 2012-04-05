@@ -9,10 +9,22 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import princeTron.Engine.*;
 import android.util.Log;
+import android.os.Handler;
+import android.os.Message;
 
 public class Arena extends Activity{
 
 	private GameEngineThread engine;
+	// for the callback to start the game
+	private StartHandler handler;
+	
+	class StartHandler extends Handler {
+		
+		@Override
+		public void handleMessage(Message msg) {
+			Arena.this.goToArena();
+		}
+	}
 
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
@@ -24,19 +36,10 @@ public class Arena extends Activity{
 		imView.setImageDrawable(draw);
 		setContentView(imView);
 		Log.i("Arena", "about to instantiate GameEngine");
-		engine = new GameEngineThread();
+		engine = new GameEngineThread(handler);
 		Log.i("Arena", "engine instantiated");
 		setContentView(R.layout.arena_layout);
 		engine.start();
-		int i = 0;
-		while (!engine.isReady()) {
-			i++;
-			if (i%10000000 == 0) {
-				Log.i("Arena", "still spinning");
-			}
-		}
-		Log.i("Arena 29", "going to arena");
-		goToArena();
 	}
 
 	public void goToArena(){

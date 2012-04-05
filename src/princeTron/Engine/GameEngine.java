@@ -7,6 +7,8 @@ import java.util.HashSet;
 import princeTron.UserInterface.ArenaView;
 import android.graphics.Point;
 
+import android.os.Handler;
+
 import android.util.Log;
 
 public class GameEngine extends princeTron.Network.NetworkGame {
@@ -17,7 +19,10 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// number of tics since game started
 	private int numTics = 0;
 	private boolean isReady = false;
-	HashMap<Integer, HashSet<Integer>> visited = new HashMap<Integer, HashSet<Integer>>();
+	// for collision detection
+	private HashMap<Integer, HashSet<Integer>> visited = new HashMap<Integer, HashSet<Integer>>();
+	
+	private Handler handler;
 
 	public static final int X_SCALE = 100;
 	public static final int Y_SCALE = 100;
@@ -27,8 +32,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public static final int WEST = 3;
 	public static final long mMoveDelay = 100;
 
-	public GameEngine() {
+	public GameEngine(Handler handler) {
 		players = new ArrayList<Player>();
+		this.handler = handler;
 	}
 
 	public void setArenaView(princeTron.UserInterface.ArenaView arena) {
@@ -136,7 +142,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			if (GameEngine.this.arenaView == null) {
 				System.out.println("null!");
 			}
-			isReady = true;
+			handler.sendEmptyMessage(0);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

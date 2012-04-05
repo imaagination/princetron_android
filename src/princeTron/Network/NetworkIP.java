@@ -48,6 +48,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 				@Override
 				public void onMessage( String message ) 
 				{
+					Log.i("NetworkIP", message);
 					/* Parse message and make appropriate call to Game Manager */
 					try
 					{

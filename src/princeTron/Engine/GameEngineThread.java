@@ -2,6 +2,7 @@ package princeTron.Engine;
 
 import android.os.Parcelable;
 import android.os.Parcel;
+import android.os.Handler;
 
 public class GameEngineThread extends Thread implements Parcelable {
 	
@@ -18,9 +19,9 @@ public class GameEngineThread extends Thread implements Parcelable {
 	
 	private boolean toRun = true;
 	
-	public GameEngineThread () {
+	public GameEngineThread (Handler handler) {
 		network = new princeTron.Network.NetworkIP();
-		engine = new GameEngine();
+		engine = new GameEngine(handler);
 		network.setGameEngine(engine);
 	}
 	
