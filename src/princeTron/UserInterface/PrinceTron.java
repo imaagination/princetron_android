@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.util.Log;
 
 /**
  * Tron: a simple game that everyone can enjoy.
@@ -48,7 +49,8 @@ public class PrinceTron extends Activity {
 
 		// set up listeners for the home screen buttons
 		newgamebutton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {		
+			public void onClick(View view) {
+				Log.i("PrinceTron", "starting Arena");
 				Intent myIntent = new Intent(view.getContext(),
 						Arena.class);
 				startActivityForResult(myIntent, 0);				

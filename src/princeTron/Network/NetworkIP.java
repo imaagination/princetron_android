@@ -42,7 +42,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	{
 		try 
 		{
-			client = new WebSocketClient(new URI("SOME URL"), new Draft_17())  
+			client = new WebSocketClient(new URI("ws://ec2-107-22-122-48.compute-1.amazonaws.com:8080"), new Draft_17())  
 			{
 
 				@Override
@@ -102,8 +102,9 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 				{
 				}
 			};
-
+			Log.i("NetworkIP", "client made");
 			client.connect();
+			Log.i("NetworkIP", "client connected");
 		}
 		catch ( URISyntaxException ex ) 
 		{

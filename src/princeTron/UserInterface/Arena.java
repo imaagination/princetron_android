@@ -23,10 +23,18 @@ public class Arena extends Activity{
 		Drawable draw = resource.getDrawable(R.drawable.waitingroompic);
 		imView.setImageDrawable(draw);
 		setContentView(imView);
+		Log.i("Arena", "about to instantiate GameEngine");
 		engine = new GameEngineThread();
+		Log.i("Arena", "engine instantiated");
 		setContentView(R.layout.arena_layout);
 		engine.start();
-		while (!engine.isReady());
+		int i = 0;
+		while (!engine.isReady()) {
+			i++;
+			if (i%10000000 == 0) {
+				Log.i("Arena", "still spinning");
+			}
+		}
 		Log.i("Arena 29", "going to arena");
 		goToArena();
 	}
