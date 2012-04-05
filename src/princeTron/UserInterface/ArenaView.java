@@ -1,6 +1,6 @@
 package princeTron.UserInterface;
 
-import princeTron.Engine.Player;
+import princeTron.Engine.*;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.util.Log;
 import android.graphics.Point;
+import java.util.ArrayList;
 
 /**
  * ArenaView: implementation of a simple game of Tron
@@ -30,15 +31,7 @@ public class ArenaView extends TileView {
 	public static final int RUNNING = 2;
 	public static final int LOSE = 3;
 
-	public int playerID = 0;			//stores which player the user controls
-	private int numPlayers = 1;  		//number of players
-	private Player[] players;			//array of players to be drawn
-
-
-	private static final int NORTH = 1;
-	private static final int SOUTH = 2;
-	private static final int EAST = 3;
-	private static final int WEST = 4;
+	private princeTron.Engine.GameEngineThread engineThread;
 
 	/**
 	 * Labels for the drawables that will be loaded into the TileView class
@@ -48,16 +41,10 @@ public class ArenaView extends TileView {
 	private static final int GREEN_STAR = 3;
 
 	/**
-	 * mMoveDelay: number of milliseconds between player movements.
-	 * This essentially controls game speed
-	 */
-	private static final long mMoveDelay = 100;
-
-	/**
 	 * mLastMove: tracks the absolute time when the snake last moved, and is used
 	 * to determine if a move should be made based on mMoveDelay.
 	 */
-	private long mLastMove;
+	//	private long mLastMove;
 
 	/**
 	 * mStatusText: text shows to the user in some run states
@@ -74,14 +61,40 @@ public class ArenaView extends TileView {
 	 * set ourselves as a target and we can use the sleep()
 	 * function to cause an update/invalidate to occur at a later date.
 	 */
-	//private RefreshHandler mRedrawHandler = new RefreshHandler();
+	private RefreshHandler mRedrawHandler = new RefreshHandler();
 
-	/*class RefreshHandler extends Handler {
+	class RefreshHandler extends Handler {
 
 		@Override
 		public void handleMessage(Message msg) {
+			if (!(ArenaView.this.mMode == LOSE)) {
+				ArenaView.this.update();
+				ArenaView.this.invalidate();
+				sleep(100);
+			}
+		}
+
+		public void sleep(long delayMillis) {
+			this.removeMessages(0);
+			sendMessageDelayed(obtainMessage(0), delayMillis);
+		}
+	};
+
+
+	/*private RefreshHandler mRedrawHandler = new RefreshHandler();
+
+	class RefreshHandler extends Handler {
+
+		@Override
+		public void handleMessage(Message msg) {
+			// advances all of the players
+			if (ArenaView.this.engineThread.update()) {
+				//handle collision event
+			}
+			// updates the UI
 			ArenaView.this.update();
 			ArenaView.this.invalidate();
+			sleep(GameEngine.mMoveDelay);
 		}
 
 		public void sleep(long delayMillis) {
@@ -89,7 +102,6 @@ public class ArenaView extends TileView {
 			sendMessageDelayed(obtainMessage(0), delayMillis);
 		}
 	};*/
-
 
 	/**
 	 * Constructs a ArenaView based on inflation from XML
@@ -105,36 +117,40 @@ public class ArenaView extends TileView {
 		// THIS HAS BEEN MOVED
 		this.setOnTouchListener(new OnTouchListener(){
 			public boolean onTouch(View v, MotionEvent event){
+				Log.i("ArenaView 116", "in onTouch");
 				float x;       
+				
+				if (mMode == READY) {
+					/*
+					 * At the beginning of the game, or the end of a previous one,
+					 * we should start a new game.
+					 */
 
+					Log.w("onKeyDown", "initializing new game up");
+					Log.w("onKeyDown", "game initialized");
+					setMode(RUNNING);
+					Log.w("onKeyDown", "running mode set");
+					update();
+					Log.w("onKeyDown", "updated");
+					mRedrawHandler.sleep(100);
+					return (true);
+				}
 
+				Log.i("ArenaView 137", "handling action");
 				switch (event.getAction())
 				{
 				case MotionEvent.ACTION_DOWN:
 				{
 					x = event.getX();    
-
-					int direction = players[playerID].getDirection();
-
 					if (x >= width/2.0) { //right side of screen (favored bc has = sign)
-						if ((direction == SOUTH) || (direction == NORTH)) 
-							players[playerID].setDirection(EAST);
-						else if (direction == WEST)
-							players[playerID].setDirection(NORTH);
-						else
-							players[playerID].setDirection(SOUTH);
-
+						Log.i("turn direction", "right");
+						engineThread.turn(false);
 						return (true);
 					}
 
 					if (x < width/2.0) { //left side of screen
-						if ((direction == SOUTH) || (direction == NORTH)) 
-							players[playerID].setDirection(WEST);
-						else if(direction == WEST)
-							players[playerID].setDirection(SOUTH);
-						else
-							players[playerID].setDirection(NORTH);
-
+						Log.i("turn direction", "left");
+						engineThread.turn(true);
 						return (true);
 					}					
 					break;
@@ -155,6 +171,10 @@ public class ArenaView extends TileView {
 		loadTile(YELLOW_STAR, r.getDrawable(R.drawable.yellowstar));
 		loadTile(GREEN_STAR, r.getDrawable(R.drawable.outline));
 
+	}
+
+	public void setGameEngine(GameEngineThread engineThread) {
+		this.engineThread = engineThread;
 	}
 
 	// THIS HAS BEEN MOVED
@@ -223,60 +243,52 @@ public class ArenaView extends TileView {
 	 * handles key events in the game. Update the direction the player is traveling
 	 * based on the DPAD and screen touch
 	 */
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent msg) {
-
-		if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-			if (mMode == READY | mMode == LOSE) {
-				/*
-				 * At the beginning of the game, or the end of a previous one,
-				 * we should start a new game.
-				 */
-
-				Log.w("onKeyDown", "initializing new game up");
-				//initNewGame();
-				Log.w("onKeyDown", "game initialized");
-				setMode(RUNNING);
-				Log.w("onKeyDown", "running mode set");
-				//update();
-				Log.w("onKeyDown", "updated");
-				return (true);
-			}
-
-			if (players[playerID].getDirection() != SOUTH) {
-				players[playerID].setDirection(NORTH);
-			}
-			return (true);
-		}
-
-		if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-			Log.w("onKeyDown", "down pressed");
-
-			if (players[playerID].getDirection() != NORTH) {
-				players[playerID].setDirection(SOUTH);
-			}
-			return (true);
-		}
-
-		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-			Log.w("KeyEvent", "left pressed");
-
-			if (players[playerID].getDirection() != EAST) {
-				players[playerID].setDirection(WEST);
-			}
-			return (true);
-		}
-
-		if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-			Log.w("onKeyDown", "right pressed");
-			if (players[playerID].getDirection() !=WEST) {
-				players[playerID].setDirection(EAST);
-			}
-			return (true);
-		}
-
-		return super.onKeyDown(keyCode, msg);
-	}
+//	public boolean onKeyDown(int keyCode, KeyEvent msg) {
+//		Log.i("ArenaView 226", "in onKeyDown. Code = " + keyCode);
+//		if (mMode == READY | mMode == LOSE) {
+//			/*
+//			 * At the beginning of the game, or the end of a previous one,
+//			 * we should start a new game.
+//			 */
+//
+//			Log.w("onKeyDown", "initializing new game up");
+//			Log.w("onKeyDown", "game initialized");
+//			setMode(RUNNING);
+//			Log.w("onKeyDown", "running mode set");
+//			update();
+//			Log.w("onKeyDown", "updated");
+//
+//			return (true);
+//		}
+//
+//		if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+//			Log.w("onKeyDown", "down pressed");
+//
+//			/*if (players[playerID].getDirection() != NORTH) {
+//				players[playerID].setDirection(SOUTH);
+//			}*/
+//			return (true);
+//		}
+//
+//		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+//			Log.w("KeyEvent", "left pressed");
+//
+//			/*if (players[playerID].getDirection() != EAST) {
+//				players[playerID].setDirection(WEST);
+//			}*/
+//			return (true);
+//		}
+//
+//		if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+//			Log.w("onKeyDown", "right pressed");
+//			/*if (players[playerID].getDirection() !=WEST) {
+//				players[playerID].setDirection(EAST);
+//			}*/
+//			return (true);
+//		}
+//
+//		return super.onKeyDown(keyCode, msg);
+//	}
 
 	/**
 	 * Sets the TextView that will be used to give information (such as "Game
@@ -301,7 +313,7 @@ public class ArenaView extends TileView {
 
 		if (newMode == RUNNING & oldMode != RUNNING) {
 			mStatusText.setVisibility(View.INVISIBLE);
-			//update();
+			update();
 			return;
 		}
 
@@ -312,6 +324,8 @@ public class ArenaView extends TileView {
 		}
 		if (newMode == LOSE) {
 			str = "Game Over";
+			mRedrawHandler.sleep(100000);
+			Log.i("ArenaView 326", "in newMode==LOSE");
 		}
 
 		mStatusText.setText(str);
@@ -328,10 +342,15 @@ public class ArenaView extends TileView {
 	// THIS WILL BE CHANGED SLIGHTLY - updateWalls() and/or updateSnake() will 
 	// be function calls into the GameEngine
 	// Actually, this is all departing to the GameEngine
-	public void update(Iterable<Player> players) {
+	public void update() {
+		if (engineThread.update()) {
+			setMode(LOSE);
+		}
+		Iterable<Player> players = engineThread.getPlayers();
 		clearTiles();
 		updateWalls();
 		updateSnake(players);
+		invalidate();
 	}
 
 	/**
@@ -404,8 +423,8 @@ public class ArenaView extends TileView {
 		}
 
 		// Look for collisions with other players!!!!!!!!!!!!!!!!!!!!!!!!!
-		
-		
+
+
 		// push a new head onto the ArrayList
 		players[playerID].playerTrail.add(0, newHead);
 		// -----INTERFACE-----
@@ -418,8 +437,19 @@ public class ArenaView extends TileView {
 		//		}
 		// }*/
 		for (Player player : players) {
+			//Log.i("playerid", ""+player.getId());
 			for (Point p : player.getPoints()) {
-				setTile(player.getId(), p.x, p.y);
+				try {
+					if (player.getId() == 1) {
+						//Log.i("x, y", p.x + ", " + p.y);
+					}
+					setTile(player.getId() + 1, p.x, p.y);
+				}
+				catch (ArrayIndexOutOfBoundsException e) {
+					if (player.getId() == 0) {
+						setMode(LOSE);
+					}
+				}
 			}
 		}
 		/*int index = 0;

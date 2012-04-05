@@ -1,11 +1,12 @@
 package princeTron.Engine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import princeTron.UserInterface.ArenaView;
 import android.graphics.Point;
-import android.os.Handler;
-import android.os.Message;
+
 import android.util.Log;
 
 public class GameEngine extends princeTron.Network.NetworkGame {
@@ -15,6 +16,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	private ArenaView arenaView;
 	// number of tics since game started
 	private int numTics = 0;
+	private boolean isReady = false;
+	HashMap<Integer, HashSet<Integer>> visited = new HashMap<Integer, HashSet<Integer>>();
+
 	public static final int X_SCALE = 100;
 	public static final int Y_SCALE = 100;
 	public static final int NORTH = 0;
@@ -23,91 +27,120 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public static final int WEST = 3;
 	public static final long mMoveDelay = 100;
 
-	private RefreshHandler mRedrawHandler = new RefreshHandler();
-
-	class RefreshHandler extends Handler {
-
-		@Override
-		public void handleMessage(Message msg) {
-			// advances all of the players
-			for (Player player : GameEngine.this.players) {
-				player.stepForward(1);
-			}
-			// updates the UI
-			GameEngine.this.arenaView.update(players);
-			GameEngine.this.arenaView.invalidate();
-			GameEngine.this.numTics++;
-			sleep(GameEngine.mMoveDelay);
-		}
-
-		public void sleep(long delayMillis) {
-			this.removeMessages(0);
-			sendMessageDelayed(obtainMessage(0), delayMillis);
-		}
-	};
-
 	public GameEngine() {
 		players = new ArrayList<Player>();
+	}
+
+	public void setArenaView(princeTron.UserInterface.ArenaView arena) {
+		arenaView = arena;
+	}
+	
+	// steps all the snakes forwards, returns true if there was a collision
+	// on the local snake
+	public boolean update() {
+		for (Player player : players) {
+			player.stepForward(1);
+			Point current = player.currentPoint();
+			// this is a terrible collision detection algorithm
+			if (visited.containsKey(current.x)) {
+				Log.i("visited contains", "true");
+				HashSet<Integer> yvals = visited.get(current.x);
+				if (yvals.contains(current.y)) {
+					Log.w("returning", "TRUE!");
+					return true;
+				}
+				yvals.add(current.y);
+				visited.put(current.x, yvals);
+			}
+			else {
+				HashSet<Integer> yvals = new HashSet<Integer>();
+				yvals.add(current.y);
+				visited.put(current.x, yvals);
+			}
+		}
+		numTics++;
+		
+		return false; // for now!
+	}
+	
+	public Iterable<Player> getPlayers() {
+		return players;
 	}
 
 	// called by the UI when the player turns. argument is true if 
 	// left turn, false otherwise
 	public void turn(boolean isLeft) {
 		Player player = players.get(0);
+		Log.i("player id", ""+player.getId());
 		int direction = 0;
-		if (isLeft) direction = -1;
-		else direction = 1;
-		player.setDirection((player.getDirection() + direction)%4);
+		if (isLeft) direction = 1;
+		else direction = -1;
+		Log.i("old player direction", ""+player.getDirection());
+		Log.i("", ""+(-1%4));
+		int newDirection = (player.getDirection() + direction)%4;
+		if (newDirection == -1) newDirection = 3; // stupid mod op in java
+		player.setDirection(newDirection);
+		Log.i("new player direction", ""+player.getDirection());
 	}
 
 	public ArrayList<Player> getTrails() {
 		return players;
 	}
+	
+	public boolean isReady() {
+		return isReady;
+	}
 
 	@Override
 	public void startGame(int countdown, int numPlayers) {
-		//should initialize based on screen height and width
-		if(numPlayers == 1){
-			Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
-			players.add(player);
+		try {
+			//should initialize based on screen height and width
+			if(numPlayers == 1){
+				Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
+				players.add(player);
+			}
+
+			else if(numPlayers == 2){
+				Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), NORTH);
+				players.add(player);
+
+				player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), SOUTH);
+				players.add(player);
+			}
+
+			else if(numPlayers == 3){
+				Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
+				players.add(player);
+
+				player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
+				players.add(player);
+
+				player = new Player(new Point((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), SOUTH);
+				players.add(player);
+			}
+
+			else if(numPlayers == 4){
+				Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
+				players.add(player);
+
+				player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
+				players.add(player);
+
+				player = new Player(new Point((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), WEST);
+				players.add(player);
+
+				player = new Player(new Point((int) (0.9*X_SCALE), (int) (0.5*Y_SCALE)), NORTH);
+				players.add(player);
+				Log.i("GameEngine 96", ""+player.getId());
+			}
+			if (GameEngine.this.arenaView == null) {
+				System.out.println("null!");
+			}
+			isReady = true;
 		}
-
-		else if(numPlayers == 2){
-			Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
-			players.add(player);
-
-			player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
-			players.add(player);
+		catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		else if(numPlayers == 3){
-			Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
-			players.add(player);
-
-			player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
-			players.add(player);
-
-			player = new Player(new Point((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), SOUTH);
-			players.add(player);
-		}
-
-		else if(numPlayers == 4){
-			Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
-			players.add(player);
-
-			player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
-			players.add(player);
-
-			player = new Player(new Point((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), WEST);
-			players.add(player);
-
-			player = new Player(new Point((int) (0.9*X_SCALE), (int) (0.5*Y_SCALE)), NORTH);
-			players.add(player);
-			Log.i("GameEngine 96", ""+player.getId());
-		}
-		GameEngine.this.arenaView.update(players);
-		GameEngine.this.arenaView.invalidate();
-		mRedrawHandler.sleep(countdown*1000);
 	}
 
 	// TODO: Include a "WIN" condition

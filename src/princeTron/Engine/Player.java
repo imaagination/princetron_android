@@ -75,6 +75,10 @@ public class Player {
 		return id;
 	}
 	
+	public Point currentPoint() {
+		return lastPoint;
+	}
+	
 	public Iterable<Point> getPoints() {
 		return playerTrail;
 	}

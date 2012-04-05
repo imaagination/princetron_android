@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import princeTron.Engine.*;
 
 /**
  * WaitingRoom: a player is at this stage while
@@ -33,6 +34,8 @@ import android.widget.TextView;
  */
 public class WaitingRoom extends Activity {
 
+	private GameEngineThread engine;
+	
 	/**
 	 * Called when Activity is first created. Turns off the title bar, sets up
 	 * the content views, and fires up the ArenaView.
@@ -40,25 +43,21 @@ public class WaitingRoom extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-
 		Resources resource = this.getResources();
 		ImageView imView = new ImageView(this);
 		Drawable draw = resource.getDrawable(R.drawable.waitingroompic);
 		imView.setImageDrawable(draw);
-		
-
 		setContentView(imView);
-
-
-
+		engine = new GameEngineThread();
+		//engine.setLobby(this);
 	}
 
 	public void goToArena(){
 		
-		/*Intent myIntent = new Intent(this,
-				ArenaView.class);
-		startActivityForResult(myIntent, 0);*/
+		Intent myIntent = new Intent(this,
+				Arena.class);
+		//myIntent.putExtra("GameEngineThread", (Object) engine);
+		startActivityForResult(myIntent, 0);
 	}
 
 
