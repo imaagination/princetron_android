@@ -112,6 +112,9 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			ex.printStackTrace();
 			Log.e("NetworkIP 109", "" + (client==null));
 		}
+		catch (Exception e) {
+			
+		}
 	}
 	
 	public boolean clientIsNull() {
@@ -128,7 +131,9 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			JSONObject j = new JSONObject();
 			j.append("connect", true);
 			String toSend = j.toString();
+			Log.i("NetworkIP", "about to send 'connect' message");
 			client.send(toSend);     
+			Log.i("NetworkIP", "sent 'connect' message");
 		}
 		catch ( InterruptedException ex) 
 		{

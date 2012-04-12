@@ -4,6 +4,8 @@ import android.os.Parcelable;
 import android.os.Parcel;
 import android.os.Handler;
 
+import android.util.Log;
+
 public class GameEngineThread extends Thread implements Parcelable {
 	
 	public int describeContents() {
@@ -22,7 +24,9 @@ public class GameEngineThread extends Thread implements Parcelable {
 	public GameEngineThread (Handler handler) {
 		network = new princeTron.Network.NetworkIP();
 		engine = new GameEngine(handler);
+		Log.i("GET", "setting game engine");
 		network.setGameEngine(engine);
+		Log.i("GET", "game engine set");
 	}
 	
 	// Just keeps sleeping. Probably not the right way to do this
@@ -30,15 +34,16 @@ public class GameEngineThread extends Thread implements Parcelable {
 	public void run() {
 		if (((princeTron.Network.NetworkIP) network).clientIsNull()) {
 			// this is for testing purposes
+			Log.i("G.E.T.", "about to start game");
 			engine.startGame(5, 2);
 		}
 		while (toRun) {
-			try {
+			/*try {
 				sleep(10000);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 	}
 	

@@ -22,14 +22,15 @@ public class Arena extends Activity{
 		
 		@Override
 		public void handleMessage(Message msg) {
+			Log.i("Arena", "getting a message!");
 			Arena.this.goToArena();
 		}
 	}
 
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
+		handler = new StartHandler();
 		Resources resource = this.getResources();
 		ImageView imView = new ImageView(this);
 		Drawable draw = resource.getDrawable(R.drawable.waitingroompic);
@@ -40,9 +41,11 @@ public class Arena extends Activity{
 		Log.i("Arena", "engine instantiated");
 		setContentView(R.layout.arena_layout);
 		engine.start();
+		Log.i("Arena", "engine started");
 	}
 
 	public void goToArena(){
+		Log.i("Arena", "going to arena");
 		setContentView(R.layout.arena_layout);
 		ArenaView mArenaView = (ArenaView) findViewById(R.id.arena);
 		mArenaView.setGameEngine(engine);

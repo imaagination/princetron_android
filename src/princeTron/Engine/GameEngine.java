@@ -51,7 +51,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			if (visited.containsKey(current.x)) {
 				Log.i("visited contains", "true");
 				HashSet<Integer> yvals = visited.get(current.x);
-				if (yvals.contains(current.y)) {
+				if (yvals.contains(current.y) && player.getId() == 0) {
 					Log.w("returning", "TRUE!");
 					return true;
 				}
