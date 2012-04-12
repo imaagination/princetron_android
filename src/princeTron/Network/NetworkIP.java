@@ -129,7 +129,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		try 
 		{
 			JSONObject j = new JSONObject();
-			j.append("connect", true);
+			j.put("connect", true);
 			String toSend = j.toString();
 			Log.i("NetworkIP", "about to send 'connect' message");
 			client.send(toSend);     
@@ -156,11 +156,11 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		{
 			JSONObject j = new JSONObject();
 			JSONObject turn = new JSONObject();
-			turn.append("xPos", position.x);
-			turn.append("yPos", position.y);
-			turn.append("timestamp", time);
-			turn.append("isLeft", isLeft);
-			j.append("turn", turn);
+			turn.put("xPos", position.x);
+			turn.put("yPos", position.y);
+			turn.put("timestamp", time);
+			turn.put("isLeft", isLeft);
+			j.put("turn", turn);
 
 			client.send(j.toString());
 		}
@@ -181,8 +181,8 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		{
 			JSONObject j = new JSONObject();
 			JSONObject collision = new JSONObject();
-			collision.append("timestamp", time);
-			j.append("collision", collision);
+			collision.put("timestamp", time);
+			j.put("collision", collision);
 
 			client.send(j.toString());
 		}
