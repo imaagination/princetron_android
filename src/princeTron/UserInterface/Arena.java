@@ -51,6 +51,12 @@ public class Arena extends Activity{
 		mArenaView.setGameEngine(engine);
 		mArenaView.setTextView((TextView) findViewById(R.id.text));
 		mArenaView.setMode(ArenaView.READY);
-		mArenaView.setMode(ArenaView.RUNNING);
+		try {
+			Thread.sleep(1000);
+			mArenaView.setMode(ArenaView.RUNNING);
+		}
+		catch (Exception e) {
+			mArenaView.setMode(ArenaView.RUNNING);
+		}
 	}
 }
