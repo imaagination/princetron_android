@@ -69,7 +69,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							int timestamp = ot.getInt("timestamp");
 							boolean isLeft = ot.getBoolean("isLeft");
 
-							game.opponentTurn(0, new Point(xPos,yPos), timestamp, isLeft);
+							game.opponentTurn(1, new Point(xPos,yPos), timestamp, isLeft);
 							System.out.println("Turn Occured");
 						}
 						else if (j.has("endGame"))

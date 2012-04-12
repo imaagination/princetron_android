@@ -164,7 +164,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 				int direction = 0;
 				if (isLeft) direction = -1;
 				else direction = 1;
-				player.setDirection((player.getDirection() + direction)%4);
+				int newDirection = (player.getDirection() + direction)%4;
+				if (newDirection == -1) newDirection = 3; // stupid mod op in java
+				player.setDirection(newDirection);
 				player.stepForward(numTics - time);
 			}
 		}
