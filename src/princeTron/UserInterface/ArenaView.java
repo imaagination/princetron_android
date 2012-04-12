@@ -180,119 +180,6 @@ public class ArenaView extends TileView {
 		this.engineThread = engineThread;
 	}
 
-	// THIS HAS BEEN MOVED
-	/*private void initNewGame() {
-		//clear all player lists
-
-		for(int i = 0; i < numPlayers; i++){
-			if(players != null)
-				players[i].playerTrail.clear();
-		}
-
-
-
-		players = new Player[numPlayers];
-		Player player;
-
-
-		//should initialize based on screen height and width
-		if(numPlayers == 1){
-			player = new Player(new Point(2, 20), EAST);
-			players[0] = player;
-		}
-
-		else if(numPlayers == 2){
-			player = new Player(new Point(2, 20), EAST);
-			players[0] = player;
-
-			player = new Player(new Point(40, 20), WEST);
-			players[1] = player;
-		}
-
-		else if(numPlayers == 3){
-			player = new Player(new Point(2, 20), EAST);
-			players[0] = player;
-
-			player = new Player(new Point(40, 20), WEST);
-			players[1] = player;
-
-			player = new Player(new Point(19, 2), SOUTH);
-			players[2] = player;
-		}
-
-		else if(numPlayers == 4){
-			player = new Player(new Point(2, 20), EAST);
-			players[0] = player;
-
-			player = new Player(new Point(40, 20), WEST);
-			players[1] = player;
-
-			player = new Player(new Point(19, 2), SOUTH);
-			players[2] = player;
-
-			player = new Player(new Point(10, 40), NORTH);
-			players[3] = player;
-		}
-
-
-
-	}*/
-
-
-
-
-
-	/**
-	 * handles key events in the game. Update the direction the player is traveling
-	 * based on the DPAD and screen touch
-	 */
-//	public boolean onKeyDown(int keyCode, KeyEvent msg) {
-//		Log.i("ArenaView 226", "in onKeyDown. Code = " + keyCode);
-//		if (mMode == READY | mMode == LOSE) {
-//			/*
-//			 * At the beginning of the game, or the end of a previous one,
-//			 * we should start a new game.
-//			 */
-//
-//			Log.w("onKeyDown", "initializing new game up");
-//			Log.w("onKeyDown", "game initialized");
-//			setMode(RUNNING);
-//			Log.w("onKeyDown", "running mode set");
-//			update();
-//			Log.w("onKeyDown", "updated");
-//
-//			return (true);
-//		}
-//
-//		if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-//			Log.w("onKeyDown", "down pressed");
-//
-//			/*if (players[playerID].getDirection() != NORTH) {
-//				players[playerID].setDirection(SOUTH);
-//			}*/
-//			return (true);
-//		}
-//
-//		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-//			Log.w("KeyEvent", "left pressed");
-//
-//			/*if (players[playerID].getDirection() != EAST) {
-//				players[playerID].setDirection(WEST);
-//			}*/
-//			return (true);
-//		}
-//
-//		if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-//			Log.w("onKeyDown", "right pressed");
-//			/*if (players[playerID].getDirection() !=WEST) {
-//				players[playerID].setDirection(EAST);
-//			}*/
-//			return (true);
-//		}
-//
-//		return super.onKeyDown(keyCode, msg);
-//	}
-
 	/**
 	 * Sets the TextView that will be used to give information (such as "Game
 	 * Over" to the user.
@@ -311,10 +198,11 @@ public class ArenaView extends TileView {
 	 */
 	// THIS STUFF MIGHT GET CHANGED
 	public void setMode(int newMode) {
+		Log.i("setMode", ""+mMode + "\t" + newMode);
 		int oldMode = mMode;
 		mMode = newMode;
 
-		if (newMode == RUNNING & oldMode != RUNNING) {
+		if (newMode == RUNNING && oldMode != RUNNING) {
 			try {
 				mStatusText.setVisibility(View.INVISIBLE);
 			}
