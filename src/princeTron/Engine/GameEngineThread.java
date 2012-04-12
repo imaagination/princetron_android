@@ -20,6 +20,9 @@ public class GameEngineThread extends Thread implements Parcelable {
 	private GameEngine engine;
 	private princeTron.Engine.GameNetwork network;
 	
+	private Point p;
+	private int time;
+	
 	private boolean toRun = true;
 	
 	public GameEngineThread (Handler handler) {
@@ -39,17 +42,25 @@ public class GameEngineThread extends Thread implements Parcelable {
 			engine.startGame(5, 2);
 		}
 		while (toRun) {
-			/*try {
-				sleep(10000);
+			try {
+				sleep(100);
+				if (p != null) {
+					network.userCrash(p, time);
+				}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-			}*/
+			}
 		}
 	}
 	
 	public synchronized void setArenaView(princeTron.UserInterface.ArenaView arena) {
 		engine.setArenaView(arena);
+	}
+	
+	public void userCrash(Point p, int time) {
+		this.p = p;
+		this.time = time;
 	}
 	
 	public synchronized void turn(boolean isLeft) {

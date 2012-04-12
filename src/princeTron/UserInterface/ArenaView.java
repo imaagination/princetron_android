@@ -165,6 +165,9 @@ public class ArenaView extends TileView {
 		});
 	}
 
+	public void userCrash(Point p, int time) {
+		engineThread.userCrash(p, time);
+	}
 
 	public void initArenaView() {
 		setFocusable(true);

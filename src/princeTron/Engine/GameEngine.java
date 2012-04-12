@@ -53,6 +53,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 				HashSet<Integer> yvals = visited.get(current.x);
 				if (yvals.contains(current.y) && player.getId() == 0) {
 					Log.w("returning", "TRUE!");
+					arenaView.userCrash(player.currentPoint(), numTics);
 					return true;
 				}
 				yvals.add(current.y);
