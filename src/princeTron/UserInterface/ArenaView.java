@@ -31,6 +31,7 @@ public class ArenaView extends TileView {
 	public static final int READY = 1;
 	public static final int RUNNING = 2;
 	public static final int LOSE = 3;
+	public static final int WIN = 4;
 
 	private princeTron.Engine.GameEngineThread engineThread;
 
@@ -216,13 +217,19 @@ public class ArenaView extends TileView {
 		}
 
 		Resources res = getContext().getResources();
-		CharSequence str = "";
+		String str = "";
 		if (newMode == READY) {
 			Log.i("setMode", "in newMode==READY");
-			str = res.getText(R.string.mode_ready);
+			str = res.getText(R.string.mode_ready).toString();
 		}
-		if (newMode == LOSE) {
+		if (newMode == LOSE || newMode == WIN) {
 			str = "Game Over";
+			if (newMode == LOSE) {
+				str += "\nYou Lose!";
+			}
+			else {
+				str += "\nYou Win!";
+			}
 			mRedrawHandler.sleep(100000);
 			Log.i("ArenaView 326", "in newMode==LOSE");
 		}

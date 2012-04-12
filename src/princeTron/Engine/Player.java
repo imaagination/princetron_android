@@ -23,23 +23,29 @@ public class Player {
 		//this.nextDirection = direction;
 	}
 	
+	public void stepForward(int numSteps) {
+		for (int i = 0; i < numSteps; i++) {
+			stepForward();
+		}
+	}
+	
 	// numSteps will likely always be 1, except in the case that a "turn"
 	// message is received, in which case the player is "rewound", and then
 	// "fast-forwarded" the difference between the time stamp and current time
-	public void stepForward(int numSteps) {
+	public void stepForward() {
 		Point newPoint = new Point(lastPoint.x, lastPoint.y);
 		switch (direction) {
 		case GameEngine.NORTH:
-			newPoint = new Point(lastPoint.x, lastPoint.y + numSteps);
+			newPoint = new Point(lastPoint.x, lastPoint.y + 1);
 			break;
 		case GameEngine.EAST:
-			newPoint = new Point(lastPoint.x + numSteps, lastPoint.y);
+			newPoint = new Point(lastPoint.x + 1, lastPoint.y);
 			break;
 		case GameEngine.SOUTH:
-			newPoint = new Point(lastPoint.x, lastPoint.y - numSteps);
+			newPoint = new Point(lastPoint.x, lastPoint.y - 1);
 			break;
 		case GameEngine.WEST:
-			newPoint = new Point(lastPoint.x - numSteps, lastPoint.y);
+			newPoint = new Point(lastPoint.x - 1, lastPoint.y);
 			break;
 		}
 		playerTrail.add(newPoint);
@@ -48,14 +54,8 @@ public class Player {
 	
 	// if a playerTurned message arrives in the past, we rewind the player
 	public void stepBackward(long numSteps) {
-		int stepsBack = 0;
-		Point prev = playerTrail.get(playerTrail.size() - 1);
-		while (stepsBack < numSteps && !playerTrail.isEmpty()) {
-			Point removed = playerTrail.remove(playerTrail.size() - 1);
-			// this assumes that only one dimension will change per point
-			int dist = Math.abs((prev.x - removed.x)) + Math.abs((prev.x - removed.x));
-			stepsBack += dist;
-			prev = removed;
+		for (int i = 0; i < numSteps; i++) {
+			playerTrail.remove(playerTrail.size() - 1);
 		}
 	}
 

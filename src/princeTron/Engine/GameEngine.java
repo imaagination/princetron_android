@@ -153,7 +153,12 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// TODO: Include a "WIN" condition
 	@Override
 	public void gameOver(boolean isWin) {
-		arenaView.setMode(ArenaView.LOSE);
+		if (isWin) {
+			arenaView.setMode(ArenaView.WIN);
+		}
+		else {
+			arenaView.setMode(ArenaView.LOSE);
+		}
 	}
 
 	@Override
