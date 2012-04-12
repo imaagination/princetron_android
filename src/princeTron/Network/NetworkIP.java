@@ -134,6 +134,11 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			Log.i("NetworkIP", "about to send 'connect' message");
 			client.send(toSend);     
 			Log.i("NetworkIP", "sent 'connect' message");
+			JSONObject rtp = new JSONObject();
+			rtp.put("readyToPlay", true);
+			String r = rtp.toString();
+			client.send(r);
+			Log.i("NetworkIP", "sent rtp");
 		}
 		catch ( InterruptedException ex) 
 		{
@@ -146,7 +151,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
 	}
 
 	// informs the Network that the user has turned                                   

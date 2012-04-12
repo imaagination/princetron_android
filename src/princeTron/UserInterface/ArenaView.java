@@ -26,7 +26,8 @@ public class ArenaView extends TileView {
 	 * lost. static final ints are used instead of an enum for performance
 	 * reasons.
 	 */
-	private int mMode = READY;
+	private int mMode = NOT_READY;
+	public static final int NOT_READY = 0;
 	public static final int READY = 1;
 	public static final int RUNNING = 2;
 	public static final int LOSE = 3;
@@ -119,7 +120,9 @@ public class ArenaView extends TileView {
 			public boolean onTouch(View v, MotionEvent event){
 				Log.i("ArenaView 116", "in onTouch");
 				float x;       
-				
+				if (mMode == NOT_READY) {
+					Log.i("ArenaView", "not ready to play yet!");
+				}
 				if (mMode == READY) {
 					/*
 					 * At the beginning of the game, or the end of a previous one,
@@ -312,7 +315,12 @@ public class ArenaView extends TileView {
 		mMode = newMode;
 
 		if (newMode == RUNNING & oldMode != RUNNING) {
-			mStatusText.setVisibility(View.INVISIBLE);
+			try {
+				mStatusText.setVisibility(View.INVISIBLE);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 			update();
 			return;
 		}
