@@ -210,6 +210,7 @@ public class ArenaView extends TileView {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+			mRedrawHandler.sleep(100);
 			update();
 			return;
 		}
