@@ -203,6 +203,7 @@ public class ArenaView extends TileView {
 		mMode = newMode;
 
 		if (newMode == RUNNING && oldMode != RUNNING) {
+			Log.i("setMode", "newMode==RUNNING && oldMode != RUNNING");
 			try {
 				mStatusText.setVisibility(View.INVISIBLE);
 			}
@@ -216,6 +217,7 @@ public class ArenaView extends TileView {
 		Resources res = getContext().getResources();
 		CharSequence str = "";
 		if (newMode == READY) {
+			Log.i("setMode", "in newMode==READY");
 			str = res.getText(R.string.mode_ready);
 		}
 		if (newMode == LOSE) {
@@ -240,6 +242,7 @@ public class ArenaView extends TileView {
 	// Actually, this is all departing to the GameEngine
 	public void update() {
 		if (engineThread.update()) {
+			Log.i("update()", "engine update was true");
 			setMode(LOSE);
 		}
 		Iterable<Player> players = engineThread.getPlayers();
@@ -271,67 +274,6 @@ public class ArenaView extends TileView {
 	 */
 	// THIS WILL BE MOVED MOSTLY - SEE BELOW
 	private void updateSnake(Iterable<Player> players) {
-
-		// grab the snake by the head
-		/*Point head = players[playerID].playerTrail.get(0);
-		Point newHead = new Point(1, 1);
-
-		players[playerID].setDirection(players[playerID].getDirection());
-
-
-		switch (players[playerID].getDirection()) {
-		case EAST: {
-			newHead = new Point(head.x + 1, head.y);
-			break;
-		}
-		case WEST: {
-			newHead = new Point(head.x - 1, head.y);
-			break;
-		}
-		case NORTH: {
-			newHead = new Point(head.x, head.y - 1);
-			break;
-		}
-		case SOUTH: {
-			newHead = new Point(head.x, head.y + 1);
-			break;
-		}
-		}
-
-		// Collision detection
-		// For now we have a 1-square wall around the entire arena
-		if ((newHead.x < 1) || (newHead.y < 1) || (newHead.x > mXTileCount - 2)
-				|| (newHead.y > mYTileCount - 2)) {
-			setMode(LOSE);
-			return;
-
-		}
-
-		// Look for self collisions
-		int snakelength1 = players[playerID].getSize();
-		for (int snakeindex = 0; snakeindex < snakelength1; snakeindex++) {
-			Point c = players[playerID].playerTrail.get(snakeindex);
-			Log.w("updateSnake coordinate: ", "" + c.toString());
-			if (c.equals(newHead)) {
-				setMode(LOSE);
-				return;
-			}
-		}
-
-		// Look for collisions with other players!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-		// push a new head onto the ArrayList
-		players[playerID].playerTrail.add(0, newHead);
-		// -----INTERFACE-----
-
-		int index = 0;
-		// playerTrails = GameEngine.getTrails();
-		// for (Player player : playerTrails) {
-		//		for (Point p : player.playerTrail) {
-		//			setTile(...);
-		//		}
-		// }*/
 		for (Player player : players) {
 			//Log.i("playerid", ""+player.getId());
 			for (Point p : player.getPoints()) {
@@ -348,15 +290,5 @@ public class ArenaView extends TileView {
 				}
 			}
 		}
-		/*int index = 0;
-		for (Point c : players[playerID].playerTrail) {
-			if (index == 0) {
-				setTile(YELLOW_STAR, c.x, c.y);
-			} else {
-				setTile(RED_STAR, c.x, c.y);
-			}
-			index++;
-		}*/
-
 	}
 }
