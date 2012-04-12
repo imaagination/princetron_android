@@ -17,7 +17,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// ArenaView, to be updated
 	private ArenaView arenaView;
 	// number of tics since game started
-	private int numTics = 0;
+	public int numTics = 0;
 	private boolean isReady = false;
 	// for collision detection
 	private HashMap<Integer, HashSet<Integer>> visited = new HashMap<Integer, HashSet<Integer>>();
@@ -75,7 +75,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 
 	// called by the UI when the player turns. argument is true if 
 	// left turn, false otherwise
-	public void turn(boolean isLeft) {
+	public Point turn(boolean isLeft) {
 		Player player = players.get(0);
 		Log.i("player id", ""+player.getId());
 		int direction = 0;
@@ -87,6 +87,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		if (newDirection == -1) newDirection = 3; // stupid mod op in java
 		player.setDirection(newDirection);
 		Log.i("new player direction", ""+player.getDirection());
+		return player.currentPoint();
 	}
 
 	public ArrayList<Player> getTrails() {

@@ -137,6 +137,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			JSONObject rtp = new JSONObject();
 			rtp.put("readyToPlay", true);
 			String r = rtp.toString();
+			Thread.sleep(1000);
 			client.send(r);
 			Log.i("NetworkIP", "sent rtp");
 		}
