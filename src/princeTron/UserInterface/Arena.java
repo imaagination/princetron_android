@@ -5,8 +5,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
+import android.content.res.Configuration;
 import princeTron.Engine.*;
 import android.util.Log;
 import android.os.Handler;
@@ -19,7 +18,6 @@ public class Arena extends Activity{
 	private StartHandler handler;
 	
 	class StartHandler extends Handler {
-		
 		@Override
 		public void handleMessage(Message msg) {
 			Log.i("Arena", "getting a message!");
@@ -30,16 +28,12 @@ public class Arena extends Activity{
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.waitingroom);
 		handler = new StartHandler();
-		Resources resource = this.getResources();
-		ImageView imView = new ImageView(this);
-		Drawable draw = resource.getDrawable(R.drawable.waitingroompic);
-		imView.setImageDrawable(draw);
-		setContentView(imView);
 		Log.i("Arena", "about to instantiate GameEngine");
 		engine = new GameEngineThread(handler);
 		Log.i("Arena", "engine instantiated");
-		setContentView(R.layout.arena_layout);
 		engine.start();
 		Log.i("Arena", "engine started");
 	}
@@ -58,5 +52,11 @@ public class Arena extends Activity{
 		catch (Exception e) {
 			mArenaView.setMode(ArenaView.RUNNING);
 		}
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	  // ignore orientation/keyboard change
+	  super.onConfigurationChanged(newConfig);
 	}
 }

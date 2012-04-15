@@ -9,12 +9,11 @@
     <TextView
         android:id="@+id/welcomePrompt"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:editable="true"
-        android:text="@string/waiting_string" />
+        android:layout_height="wrap_content"
+        android:editable="true" />
 
     <Button
-        android:id="@+id/newgamebutton"
+        android:id="@+id/playnowbutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight=".20"
@@ -23,20 +22,20 @@
     </Button>
 
     <Button
-        android:id="@+id/statsbutton"
+        android:id="@+id/playfriendbutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight=".20"
-        android:text="@string/_stats"
+        android:text="@string/_playfriend"
         android:textColor="#800000" >
     </Button>
 
     <Button
-        android:id="@+id/recordsbutton"
+        android:id="@+id/statsrecordsbutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight=".20"
-        android:text="@string/_records"
+        android:text="@string/_statsrecords"
         android:textColor="#800000" >
     </Button>
 

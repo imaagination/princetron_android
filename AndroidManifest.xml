@@ -4,7 +4,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="7" />
+    <uses-sdk android:minSdkVersion="8" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -25,7 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Arena"></activity>
+        <activity
+            android:screenOrientation="landscape" 
+            android:configChanges="orientation|keyboardHidden" 
+            android:name=".Arena"></activity>
+        
         <activity android:name=".Stats"></activity>
         <activity android:name=".Records"></activity>
         <activity android:name=".Profile"></activity>

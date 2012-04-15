@@ -14,13 +14,5 @@ public class Profile extends Activity{
 		TextView tv = new TextView(this);
 		tv.setText("Hello, Profile");
 		setContentView(tv);
-
-
-		AccountManager am = AccountManager.get(this); // "this" references the current Context
-
-		Account[] accounts = am.getAccountsByType("com.google");
-
-		for(int i = 0; i < accounts.length; i++)
-			Toast.makeText(this, accounts[i].name, Toast.LENGTH_SHORT).show();
 	}
 }

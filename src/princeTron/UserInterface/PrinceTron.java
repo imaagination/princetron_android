@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.util.Log;
 
 /**
@@ -49,14 +48,16 @@ public class PrinceTron extends Activity {
 		TextView tv = (TextView) findViewById(R.id.welcomePrompt);
 
 		if(accounts.length != 0){
-			tv.setText("Hello, " + accounts[0].name.replace("@gmail.com", "") + ". What would you like to do?");
+			String userName = accounts[0].name;
+			userName = userName.substring(0, userName.length() - 10); //get rid of @gmail.com
+			tv.setText("Hello, " + userName + ". What would you like to do?");
 		}else
 			tv.setText("Hello." + " What would you like to do?");
 
 		// initialize the home screen buttons
-		Button newgamebutton = (Button) findViewById(R.id.newgamebutton);
-		Button statsbutton = (Button) findViewById(R.id.statsbutton);
-		Button recordsbutton = (Button) findViewById(R.id.recordsbutton);
+		Button newgamebutton = (Button) findViewById(R.id.playnowbutton);
+		Button playfriendbutton = (Button) findViewById(R.id.playfriendbutton);
+		Button statsrecordsbutton = (Button) findViewById(R.id.statsrecordsbutton);
 		Button profilebutton = (Button) findViewById(R.id.profilebutton);
 
 		// set up listeners for the home screen buttons
@@ -69,7 +70,7 @@ public class PrinceTron extends Activity {
 			}
 		});
 
-		statsbutton.setOnClickListener(new View.OnClickListener() {
+		playfriendbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				Intent myIntent = new Intent(view.getContext(),
 						Stats.class);
@@ -77,7 +78,7 @@ public class PrinceTron extends Activity {
 			}
 		});
 
-		recordsbutton.setOnClickListener(new View.OnClickListener() {
+		statsrecordsbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {		
 				Intent myIntent = new Intent(view.getContext(),
 						Records.class);
@@ -93,15 +94,6 @@ public class PrinceTron extends Activity {
 			}
 		});
 
-
-
-
-
-
-
 	}
-
-
-
 
 }
