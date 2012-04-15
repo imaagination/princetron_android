@@ -8,6 +8,7 @@ import princeTron.UserInterface.ArenaView;
 import android.graphics.Point;
 
 import android.os.Handler;
+import android.os.Vibrator;
 
 import android.util.Log;
 
@@ -21,7 +22,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	private boolean isReady = false;
 	// for collision detection
 	private HashMap<Integer, HashSet<Integer>> visited = new HashMap<Integer, HashSet<Integer>>();
-	
+	private Vibrator vibe;
+
 	private Handler handler;
 
 	public static final int X_SCALE = 100;
@@ -40,7 +42,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public void setArenaView(princeTron.UserInterface.ArenaView arena) {
 		arenaView = arena;
 	}
-	
+
 	// steps all the snakes forwards, returns true if there was a collision
 	// on the local snake
 	public boolean update() {
@@ -66,10 +68,10 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			}
 		}
 		numTics++;
-		
+
 		return false; // for now!
 	}
-	
+
 	public Iterable<Player> getPlayers() {
 		return players;
 	}
@@ -94,7 +96,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public ArrayList<Player> getTrails() {
 		return players;
 	}
-	
+
 	public boolean isReady() {
 		return isReady;
 	}
@@ -158,6 +160,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			arenaView.setMode(ArenaView.WIN);
 		}
 		else {
+			vibe.vibrate(1000);
+			for(int i = 0; i <1000; i++)
+				continue;
 			arenaView.setMode(ArenaView.LOSE);
 		}
 	}
