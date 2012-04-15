@@ -8,5 +8,9 @@
     <string name="mode_lose_suffix">\nPress Up To Play</string>
     <string name="snake_layout_text_text"></string>
     <string name="waiting_string">Waiting for other players. Please be patient...</string>
+    <string name="_new_game">New Game</string>
+    <string name="_stats">Stats</string>
+    <string name="_records">Records</string>
+    <string name="_profile">Profile</string>
 
 </resources>

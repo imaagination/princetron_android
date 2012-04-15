@@ -1,59 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="fill_parent"
-	android:background="#000000"
-	android:weightSum="1">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="#000000"
+    android:orientation="vertical"
+    android:weightSum="1" >
 
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:id="@+id/linearLayout1"
-		android:layout_width="match_parent">
-		<Button
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:id="@+id/newgamebutton"
-			android:textColor="#800000"
-			android:text="New Game"
-			android:layout_width="match_parent"></Button>
-	</LinearLayout>
+    <TextView
+        android:id="@+id/welcomePrompt"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:editable="true"
+        android:text="@string/waiting_string" />
 
+    <Button
+        android:id="@+id/newgamebutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".20"
+        android:text="@string/_new_game"
+        android:textColor="#800000" >
+    </Button>
 
+    <Button
+        android:id="@+id/statsbutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".20"
+        android:text="@string/_stats"
+        android:textColor="#800000" >
+    </Button>
 
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:id="@+id/linearLayout2"
-		android:layout_width="match_parent">
+    <Button
+        android:id="@+id/recordsbutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".20"
+        android:text="@string/_records"
+        android:textColor="#800000" >
+    </Button>
 
-		<Button
-		    android:id="@+id/statsbutton"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_weight="1"
-		    android:text="Stats"
-		    android:textColor="#800000" />
-	</LinearLayout>
-
-	<Button
-	    android:id="@+id/recordsbutton"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:text="Records"
-	    android:textColor="#800000" />
-
-	<Button
-	    android:id="@+id/profilebutton"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:text="Profile"
-	    android:textColor="#800000" />
-
-	<FrameLayout
-	    android:id="@+id/frameLayout1"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content" >
-	</FrameLayout>
+    <Button
+        android:id="@+id/profilebutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".20"
+        android:text="@string/_profile"
+        android:textColor="#800000" >
+    </Button>
 
 </LinearLayout>

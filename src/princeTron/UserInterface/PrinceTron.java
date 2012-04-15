@@ -16,12 +16,15 @@
 
 package princeTron.UserInterface;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.util.Log;
 
 /**
@@ -37,9 +40,18 @@ public class PrinceTron extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-
-
+		//get the google account associated with this phone
+		AccountManager am = AccountManager.get(this);
+		Account[] accounts = am.getAccountsByType("com.google");
+		
+		//set content view
 		setContentView(R.layout.homescreen);
+		TextView tv = (TextView) findViewById(R.id.welcomePrompt);
+
+		if(accounts.length != 0){
+			tv.setText("Hello, " + accounts[0].name.replace("@gmail.com", "") + ". What would you like to do?");
+		}else
+			tv.setText("Hello." + " What would you like to do?");
 
 		// initialize the home screen buttons
 		Button newgamebutton = (Button) findViewById(R.id.newgamebutton);
