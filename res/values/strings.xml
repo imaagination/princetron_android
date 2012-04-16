@@ -8,6 +8,7 @@
     <string name="mode_lose_suffix">\nPress Up To Play</string>
     <string name="waiting_string">Waiting for other players. Please be patient.</string>
     <string name="_new_game">New Game</string>
+    <string name="snake_layout_text_text"></string>
     <string name="_statsrecords">Stats &amp; Records</string>
     <string name="_playfriend">Play Against Friend</string>
     <string name="_profile">Profile</string>

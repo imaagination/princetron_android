@@ -21,3 +21,23 @@ Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.
 
 !ENTRY org.eclipse.core.net 1 0 2012-04-03 23:05:39.783
 !MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+!SESSION 2012-04-16 09:31:40.760 -----------------------------------------------
+eclipse.buildId=M20110909-1335
+java.version=1.6.0_26
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.java.product -product org.eclipse.epp.package.java.product -keyring /Users/kashifssmith/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.java.product -data /Users/kashifssmith/Documents/Senior/SecondSemester/COS333/Project/princetron_android -product org.eclipse.epp.package.java.product -keyring /Users/kashifssmith/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2012-04-16 09:32:02.515
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+!SESSION 2012-04-16 09:34:46.962 -----------------------------------------------
+eclipse.buildId=M20110909-1335
+java.version=1.6.0_26
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.java.product -keyring /Users/kashifssmith/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.java.product -keyring /Users/kashifssmith/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2012-04-16 09:34:56.229
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences

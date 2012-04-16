@@ -1,11 +1,8 @@
 package princeTron.UserInterface;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Profile extends Activity{
 	/** Called when the activity is first created. */

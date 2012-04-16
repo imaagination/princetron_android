@@ -138,6 +138,11 @@ public abstract class WebSocketClient extends WebSocketAdapter implements Runnab
 		client = SocketChannel.open();
 		client.configureBlocking( false );
 		client.connect( remote );
+		
+		//android 2.2 bug workaround
+		java.lang.System.setProperty("java.net.preferIPv4Stack", "true");
+		java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
+		
 		selector = Selector.open();
 		client.register( selector, SelectionKey.OP_CONNECT );
 	}
