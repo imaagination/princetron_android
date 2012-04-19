@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Handler;
 
 import android.util.Log;
+import java.util.Collection;
 
 public class GameEngineThread extends Thread implements Parcelable {
 	
@@ -38,11 +39,11 @@ public class GameEngineThread extends Thread implements Parcelable {
 		if (((princeTron.Network.NetworkIP) network).clientIsNull()) {
 			// this is for testing purposes
 			Log.i("G.E.T.", "about to start game");
-			engine.startGame(5, 2);
+			//engine.startGame(5, 2);
 		}
 		while (toRun) {
 			try {
-				sleep(100);
+				sleep(10);
 				if (p != null) {
 					network.userCrash(p, time);
 				}
@@ -57,7 +58,15 @@ public class GameEngineThread extends Thread implements Parcelable {
 		engine.setArenaView(arena);
 	}
 	
-	public void userCrash(Coordinate p, int time) {
+	public synchronized void readyToPlay() {
+		network.readyToPlay((Collection<String>) null);
+	}
+	
+	public synchronized void logIn(String accountName) {
+		network.logIn(accountName);
+	}
+	
+	private void userCrash(Coordinate p, int time) {
 		this.p = p;
 		this.time = time;
 	}
@@ -68,20 +77,23 @@ public class GameEngineThread extends Thread implements Parcelable {
 		network.userTurn(p, time, isLeft);
 	}
 	
-	public void cancel() {
+	public synchronized void cancel() {
 		toRun = false;
 		interrupt();
 	}
 	
-	public boolean update() {
-		return engine.update();
+	public synchronized void update() {
+		Coordinate crashLoc = engine.update();
+		if (crashLoc != null) {
+			userCrash(crashLoc, engine.numTics);
+		}
 	}
 	
-	public Iterable<Player> getPlayers() {
+	public synchronized Iterable<Player> getPlayers() {
 		return engine.getPlayers();
 	}
 	
-	public boolean isReady() {
+	public synchronized boolean isReady() {
 		return engine.isReady();
 	}
 

@@ -33,6 +33,7 @@
         <activity android:name=".Stats"></activity>
         <activity android:name=".Records"></activity>
         <activity android:name=".Profile"></activity>
+        <activity android:name=".Lobby"></activity>
     </application>
 
 </manifest>

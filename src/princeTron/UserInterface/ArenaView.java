@@ -116,6 +116,7 @@ public class ArenaView extends TileView {
 		// THIS HAS BEEN MOVED
 		this.setOnTouchListener(new OnTouchListener(){
 			public boolean onTouch(View v, MotionEvent event){
+				if (engineThread == null) return true;
 				Log.i("ArenaView 116", "in onTouch");
 				float x;       
 				if (mMode == NOT_READY) {
@@ -160,10 +161,6 @@ public class ArenaView extends TileView {
 				return true;
 			}
 		});
-	}
-
-	public void userCrash(Coordinate p, int time) {
-		engineThread.userCrash(p, time);
 	}
 
 	public void initArenaView() {
@@ -249,10 +246,7 @@ public class ArenaView extends TileView {
 	// be function calls into the GameEngine
 	// Actually, this is all departing to the GameEngine
 	public void update() {
-		if (engineThread.update()) {
-			Log.i("update()", "engine update was true");
-			setMode(LOSE);
-		}
+		engineThread.update();
 		Iterable<Player> players = engineThread.getPlayers();
 		clearTiles();
 		updateWalls();

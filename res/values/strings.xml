@@ -12,5 +12,6 @@
     <string name="_statsrecords">Stats &amp; Records</string>
     <string name="_playfriend">Play Against Friend</string>
     <string name="_profile">Profile</string>
+    <string name="ready_button_text">Ready To Play</string>
 
 </resources>

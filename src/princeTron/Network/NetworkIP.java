@@ -56,10 +56,32 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 						JSONObject j = new JSONObject(message);
 						if (j.has("enterArena"))
 						{
-							JSONObject ea= j.getJSONObject("enterArena");
-							int waitTime = ea.getInt("waitTime");
-							game.startGame(waitTime, 2); // 2 players is default for now
-							System.out.println("Start Game in " + waitTime);
+							// parses the json, passes the data to the engine
+							JSONObject info = j.getJSONObject("enterArena");
+							JSONArray opponentsArray = info.getJSONArray("opponents");
+							Coordinate[] oppStarts = new Coordinate[opponentsArray.length()];
+							int[] oppDirs = new int[opponentsArray.length()];
+							for (int i = 0; i < opponentsArray.length(); i++) {
+								JSONObject opponent = opponentsArray.getJSONObject(i);
+								oppStarts[i] = new Coordinate(opponent.getInt("xStart"), opponent.getInt("yStart"));
+								String dir = opponent.getString("dirStart");
+								if (dir.equals("NORTH")) oppDirs[i] = GameEngine.NORTH;
+								if (dir.equals("EAST")) oppDirs[i] = GameEngine.EAST;
+								if (dir.equals("SOUTH")) oppDirs[i] = GameEngine.SOUTH;
+								if (dir.equals("WEST")) oppDirs[i] = GameEngine.WEST;
+							}
+							JSONObject myInfo = info.getJSONObject("startPosition");
+							String dir = myInfo.getString("dirStart");
+							int myDirStart = -1;
+							if (dir.equals("NORTH")) myDirStart = GameEngine.NORTH;
+							if (dir.equals("EAST")) myDirStart = GameEngine.EAST;
+							if (dir.equals("SOUTH")) myDirStart = GameEngine.SOUTH;
+							if (dir.equals("WEST")) myDirStart = GameEngine.WEST;
+							game.passEnterArena(oppStarts, oppDirs, 
+									new Coordinate(myInfo.getInt("xStart"), myInfo.getInt("yStart")), myDirStart);
+						}
+						else if (j.has("startGame")) {
+							game.startGame();
 						}
 						else if (j.has("opponentTurn"))
 						{
@@ -88,7 +110,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 						}
 						else if (j.has("endGame"))
 						{
-							
+							game.endGame();
 						}
 					}
 					catch (JSONException e)
@@ -126,12 +148,12 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 	
-	public boolean clientIsNull() {
+	public synchronized boolean clientIsNull() {
 		return client == null;
 	}
 
 	// pass GameEngine to GameNetwork so network can call back to GameEngine
-	public void setGameEngine (princeTron.Engine.GameEngine engine)
+	public synchronized void setGameEngine (princeTron.Engine.GameEngine engine)
 	{
 		game = engine;
 
@@ -165,7 +187,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	}
 
 	// informs the Network that the user has turned                                   
-	public void userTurn(princeTron.Engine.Coordinate position, int time, boolean isLeft)  
+	public synchronized void userTurn(princeTron.Engine.Coordinate position, int time, boolean isLeft)  
 	{
 		try
 		{
@@ -190,7 +212,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	}
 
 	// informs the Network that the user has crashed
-	public void userCrash(Coordinate location, int time) 
+	public synchronized void userCrash(Coordinate location, int time) 
 	{
 		try
 		{
@@ -211,7 +233,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 
-	public void logIn(String username) {
+	public synchronized void logIn(String username) {
 		JSONObject j = new JSONObject();
 		JSONObject user = new JSONObject();
 		try {
@@ -227,7 +249,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 	
-	public void acceptInvitation() {
+	public synchronized void acceptInvitation() {
 		JSONObject j = new JSONObject();
 		try {
 			j.put("acceptInvitation", "true");
@@ -241,7 +263,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 	
-	public void readyToPlay(Collection<String> invitations) {
+	public synchronized void readyToPlay(Collection<String> invitations) {
 		JSONObject j = new JSONObject();
 		JSONObject invites = new JSONObject();
 		try {
@@ -255,6 +277,9 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			jex.printStackTrace();
 		}
 		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		catch (java.nio.channels.NotYetConnectedException e) {
 			e.printStackTrace();
 		}
 	}

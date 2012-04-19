@@ -1,9 +1,10 @@
 package princeTron.Engine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Arrays;
 
+import princeTron.UserInterface.Arena;
 import princeTron.UserInterface.ArenaView;
 
 import android.os.Handler;
@@ -20,8 +21,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// number of tics since game started
 	public int numTics = 0;
 	private boolean isReady = false;
+	private int myId = -1;
 	// for collision detection
-	private HashMap<Integer, HashSet<Integer>> visited = new HashMap<Integer, HashSet<Integer>>();
+	private HashSet<Coordinate> visited = new HashSet<Coordinate>();
 	private Vibrator vibe;
 
 	private Handler handler;
@@ -49,38 +51,48 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		msg.sendToTarget();
 	}
 	
+	// initializes the game, and the informs the UI
+	// the player id's are with respect to the initial X values, 
+	// and then Y values to break a tie
 	public void passEnterArena(Coordinate[] oppStarts, int[] oppDirStarts, 
 			Coordinate myStart, int myDirStart) {
-			
+		Arrays.sort(oppStarts);
+		for (int i = 0; i < oppStarts.length; i++) {
+				if (oppStarts[i].x > myStart.x) {
+					Player p = new Player(myStart, myDirStart);
+					players.add(p);
+					myId = p.getId();
+				}
+				else if (oppStarts[i].x == myStart.x && oppStarts[i].y > myStart.y) {
+					// if they're both equal, there's a problem, 
+					// so these should be the only two cases
+					Player p = new Player(myStart, myDirStart);
+					players.add(p);
+					myId = p.getId();
+				}
+				Player p = new Player(oppStarts[i], oppDirStarts[i]);
+				players.add(p);
+		}
+		Message msg = handler.obtainMessage(Arena.IN_ARENA);
+		msg.sendToTarget();
 	}
 
 	// steps all the snakes forwards, returns true if there was a collision
 	// on the local snake
-	public boolean update() {
+	public Coordinate update() {
 		for (Player player : players) {
 			player.stepForward(1);
 			Coordinate current = player.currentPoint();
-			// this is a terrible collision detection algorithm
-			if (visited.containsKey(current.x)) {
-				Log.i("visited contains", "true");
-				HashSet<Integer> yvals = visited.get(current.x);
-				if (yvals.contains(current.y) && player.getId() == 0) {
-					Log.w("returning", "TRUE!");
-					arenaView.userCrash(player.currentPoint(), numTics);
-					return true;
-				}
-				yvals.add(current.y);
-				visited.put(current.x, yvals);
+			if (visited.contains(current) && player.getId() == myId) {
+				return current;
 			}
 			else {
-				HashSet<Integer> yvals = new HashSet<Integer>();
-				yvals.add(current.y);
-				visited.put(current.x, yvals);
+				visited.add(current);
 			}
 		}
 		numTics++;
 
-		return false; // for now!
+		return null;
 	}
 
 	public Iterable<Player> getPlayers() {
@@ -111,56 +123,15 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public boolean isReady() {
 		return isReady;
 	}
-
-	@Override
-	public void startGame(int countdown, int numPlayers) {
-		try {
-			//should initialize based on screen height and width
-			if(numPlayers == 1){
-				Player player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
-				players.add(player);
-			}
-
-			else if(numPlayers == 2){
-				Player player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), NORTH);
-				players.add(player);
-
-				player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), SOUTH);
-				players.add(player);
-			}
-
-			else if(numPlayers == 3){
-				Player player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
-				players.add(player);
-
-				player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
-				players.add(player);
-
-				player = new Player(new Coordinate((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), SOUTH);
-				players.add(player);
-			}
-
-			else if(numPlayers == 4){
-				Player player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
-				players.add(player);
-
-				player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
-				players.add(player);
-
-				player = new Player(new Coordinate((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), WEST);
-				players.add(player);
-
-				player = new Player(new Coordinate((int) (0.9*X_SCALE), (int) (0.5*Y_SCALE)), NORTH);
-				players.add(player);
-				Log.i("GameEngine 96", ""+player.getId());
-			}
-			if (GameEngine.this.arenaView == null) {
-				System.out.println("null!");
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+	
+	public void startGame() {
+		Message msg = handler.obtainMessage(Arena.PLAYING);
+		msg.sendToTarget();
+	}
+	
+	public void endGame() {
+		Message msg = handler.obtainMessage(Arena.IN_LOBBY);
+		msg.sendToTarget();
 	}
 
 	// TODO: Include a "WIN" condition
