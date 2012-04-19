@@ -84,7 +84,7 @@ public class Arena extends Activity{
 			Log.i("Arena", "account name: " + accountName);
 		}
 		engine.logIn(accountName);
-//		setContentView(R.layout.lobby_layout);
+		setContentView(R.layout.lobby_layout);
 	}
 
 	ArrayList<String> invitees;
@@ -95,14 +95,14 @@ public class Arena extends Activity{
 	}
 	
 	public void addInvitee(View view) {
-//		EditText et = (EditText) findViewById(R.id.invitee_edit_text);
-//		String email = et.getText().toString();
-		// TODO: Validate email!
-//		TextView tv = (TextView) findViewById(R.id.invitee_list);
-//		String text = tv.getText().toString();
-//		if (text.equals("None")) tv.setText(email);	
-//		else tv.setText(text + "\n" + email);
-//		invitees.add(email);
+		EditText et = (EditText) findViewById(R.id.invitee_edit_text);
+		String email = et.getText().toString();
+//		 TODO: Validate email!
+		TextView tv = (TextView) findViewById(R.id.invitee_list);
+		String text = tv.getText().toString();
+		if (text.equals("None")) tv.setText(email);	
+		else tv.setText(text + "\n" + email);
+		invitees.add(email);
 	}
 	
 	public void goToArena(){
