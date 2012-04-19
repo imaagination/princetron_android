@@ -44,7 +44,9 @@ public class Arena extends Activity{
 				break;
 			case Arena.INVITED:
 				// tbd
-				
+				toast = Toast.makeText(Arena.this, "Got invitation", Toast.LENGTH_SHORT);
+				toast.show();
+				Arena.this.engine.acceptInvitation();
 				break;
 			case Arena.INVITATION_ACCEPTED:
 				// tbd
@@ -88,7 +90,8 @@ public class Arena extends Activity{
 	ArrayList<String> invitees;
 	
 	public void readyToPlay(View view) {
-		engine.readyToPlay();
+		if (invitees.size() == 0) invitees.add("amy.ousterhout@gmail.com");
+		engine.readyToPlay(invitees);
 	}
 	
 	public void addInvitee(View view) {
@@ -97,7 +100,8 @@ public class Arena extends Activity{
 		// TODO: Validate email!
 		TextView tv = (TextView) findViewById(R.id.invitee_list);
 		String text = tv.getText().toString();
-		tv.setText(text + "\n" + email);
+		if (text.equals("None")) tv.setText(email);	
+		else tv.setText(text + "\n" + email);
 		invitees.add(email);
 	}
 	

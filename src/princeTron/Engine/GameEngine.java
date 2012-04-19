@@ -102,7 +102,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// called by the UI when the player turns. argument is true if 
 	// left turn, false otherwise
 	public Coordinate turn(boolean isLeft) {
-		Player player = players.get(0);
+		if (myId == -1) return null;
+		Player player = players.get(myId);
 		Log.i("player id", ""+player.getId());
 		int direction = 0;
 		if (isLeft) direction = 1;

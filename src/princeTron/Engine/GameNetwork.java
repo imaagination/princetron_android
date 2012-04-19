@@ -14,4 +14,6 @@ public abstract class GameNetwork {
 	public abstract void readyToPlay(Collection<String> invites);
 	// logs in with the given account name
 	public abstract void logIn(String accountName);
+	// accept an invitation to play
+	public abstract void acceptInvitation();
 }

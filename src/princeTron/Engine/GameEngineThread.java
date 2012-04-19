@@ -58,8 +58,13 @@ public class GameEngineThread extends Thread implements Parcelable {
 		engine.setArenaView(arena);
 	}
 	
-	public synchronized void readyToPlay() {
-		network.readyToPlay((Collection<String>) null);
+	public synchronized void readyToPlay(Collection<String> arg) {
+		network.readyToPlay(arg);
+	}
+	
+	public synchronized void acceptInvitation() {
+		Log.i("GET", "accepting invitation");
+		network.acceptInvitation();
 	}
 	
 	public synchronized void logIn(String accountName) {
@@ -73,6 +78,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 	
 	public synchronized void turn(boolean isLeft) {
 		Coordinate p = engine.turn(isLeft);
+		if (p == null) return;
 		int time = engine.numTics;
 		network.userTurn(p, time, isLeft);
 	}

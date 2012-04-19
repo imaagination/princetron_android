@@ -106,6 +106,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 						else if (j.has("invitation")) {
 							JSONObject invite = j.getJSONObject("invitation");
 							String user = invite.getString("user");
+							Log.i("NetworkIP", "got invitation from " + user);
 							game.passInvitation(user);
 						}
 						else if (j.has("endGame"))
@@ -148,12 +149,12 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 	
-	public synchronized boolean clientIsNull() {
+	public boolean clientIsNull() {
 		return client == null;
 	}
 
 	// pass GameEngine to GameNetwork so network can call back to GameEngine
-	public synchronized void setGameEngine (princeTron.Engine.GameEngine engine)
+	public void setGameEngine (princeTron.Engine.GameEngine engine)
 	{
 		game = engine;
 
@@ -187,7 +188,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	}
 
 	// informs the Network that the user has turned                                   
-	public synchronized void userTurn(princeTron.Engine.Coordinate position, int time, boolean isLeft)  
+	public void userTurn(princeTron.Engine.Coordinate position, int time, boolean isLeft)  
 	{
 		try
 		{
@@ -212,7 +213,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	}
 
 	// informs the Network that the user has crashed
-	public synchronized void userCrash(Coordinate location, int time) 
+	public void userCrash(Coordinate location, int time) 
 	{
 		try
 		{
@@ -233,13 +234,19 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 
-	public synchronized void logIn(String username) {
-		JSONObject j = new JSONObject();
-		JSONObject user = new JSONObject();
+	public void logIn(String username) {
 		try {
+			Log.i("NetworkIP", "logging in");
+			JSONObject j = new JSONObject();
+			JSONObject user = new JSONObject();
 			user.put("user", username);
 			j.put("logIn", user);
+			while (client.getConnection() == null);
+			System.out.println("connection isn't null");
+			while (client.getReadyState() != 1);
+			System.out.println(j.toString() + " about to send login");
 			client.send(j.toString());
+			System.out.println(j.toString() + " sent login");
 		}
 		catch (JSONException jex) {
 			jex.printStackTrace();
@@ -249,11 +256,13 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 	
-	public synchronized void acceptInvitation() {
+	public void acceptInvitation() {
+		Log.i("NetworkIP", "accepting invitation");
 		JSONObject j = new JSONObject();
 		try {
-			j.put("acceptInvitation", "true");
+			j.put("acceptInvitation", true);
 			client.send(j.toString());
+			Log.i("NetworkIP", "invitation acceptance sent: " + j.toString());
 		}
 		catch (JSONException jex) {
 			jex.printStackTrace();
@@ -263,7 +272,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 	
-	public synchronized void readyToPlay(Collection<String> invitations) {
+	public void readyToPlay(Collection<String> invitations) {
 		JSONObject j = new JSONObject();
 		JSONObject invites = new JSONObject();
 		try {
