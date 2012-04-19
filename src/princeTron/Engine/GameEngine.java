@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import princeTron.UserInterface.ArenaView;
-import android.graphics.Point;
 
 import android.os.Handler;
 import android.os.Vibrator;
+import android.os.Message;
 
 import android.util.Log;
 
@@ -42,13 +42,24 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public void setArenaView(princeTron.UserInterface.ArenaView arena) {
 		arenaView = arena;
 	}
+	
+	public void passInvitation(String username) {
+		Message msg = handler.obtainMessage(princeTron.UserInterface.Arena.INVITED);
+		msg.obj = username;
+		msg.sendToTarget();
+	}
+	
+	public void passEnterArena(Coordinate[] oppStarts, int[] oppDirStarts, 
+			Coordinate myStart, int myDirStart) {
+			
+	}
 
 	// steps all the snakes forwards, returns true if there was a collision
 	// on the local snake
 	public boolean update() {
 		for (Player player : players) {
 			player.stepForward(1);
-			Point current = player.currentPoint();
+			Coordinate current = player.currentPoint();
 			// this is a terrible collision detection algorithm
 			if (visited.containsKey(current.x)) {
 				Log.i("visited contains", "true");
@@ -78,7 +89,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 
 	// called by the UI when the player turns. argument is true if 
 	// left turn, false otherwise
-	public Point turn(boolean isLeft) {
+	public Coordinate turn(boolean isLeft) {
 		Player player = players.get(0);
 		Log.i("player id", ""+player.getId());
 		int direction = 0;
@@ -106,47 +117,46 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		try {
 			//should initialize based on screen height and width
 			if(numPlayers == 1){
-				Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
+				Player player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
 				players.add(player);
 			}
 
 			else if(numPlayers == 2){
-				Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), NORTH);
+				Player player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), NORTH);
 				players.add(player);
 
-				player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), SOUTH);
+				player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), SOUTH);
 				players.add(player);
 			}
 
 			else if(numPlayers == 3){
-				Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
+				Player player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
 				players.add(player);
 
-				player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
+				player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
 				players.add(player);
 
-				player = new Player(new Point((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), SOUTH);
+				player = new Player(new Coordinate((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), SOUTH);
 				players.add(player);
 			}
 
 			else if(numPlayers == 4){
-				Player player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
+				Player player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.1*Y_SCALE)), SOUTH);
 				players.add(player);
 
-				player = new Player(new Point((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
+				player = new Player(new Coordinate((int) (0.5*X_SCALE), (int) (0.9*Y_SCALE)), NORTH);
 				players.add(player);
 
-				player = new Player(new Point((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), WEST);
+				player = new Player(new Coordinate((int) (0.1*X_SCALE), (int) (0.5*Y_SCALE)), WEST);
 				players.add(player);
 
-				player = new Player(new Point((int) (0.9*X_SCALE), (int) (0.5*Y_SCALE)), NORTH);
+				player = new Player(new Coordinate((int) (0.9*X_SCALE), (int) (0.5*Y_SCALE)), NORTH);
 				players.add(player);
 				Log.i("GameEngine 96", ""+player.getId());
 			}
 			if (GameEngine.this.arenaView == null) {
 				System.out.println("null!");
 			}
-			handler.sendEmptyMessage(0);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -168,7 +178,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	}
 
 	@Override
-	public void opponentTurn(int playerId, Point position, int time, boolean isLeft) {
+	public void opponentTurn(int playerId, Coordinate position, int time, boolean isLeft) {
 		for (Player player : players) {
 			if (player.getId() == playerId) {
 				player.stepBackward(numTics - time);

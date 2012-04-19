@@ -7,14 +7,11 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.util.Log;
-import android.graphics.Point;
-import java.util.ArrayList;
 
 /**
  * ArenaView: implementation of a simple game of Tron
@@ -165,7 +162,7 @@ public class ArenaView extends TileView {
 		});
 	}
 
-	public void userCrash(Point p, int time) {
+	public void userCrash(Coordinate p, int time) {
 		engineThread.userCrash(p, time);
 	}
 
@@ -287,7 +284,7 @@ public class ArenaView extends TileView {
 	private void updateSnake(Iterable<Player> players) {
 		for (Player player : players) {
 			//Log.i("playerid", ""+player.getId());
-			for (Point p : player.getPoints()) {
+			for (Coordinate p : player.getPoints()) {
 				try {
 					if (player.getId() == 1) {
 						//Log.i("x, y", p.x + ", " + p.y);

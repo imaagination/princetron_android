@@ -3,7 +3,6 @@ package princeTron.Engine;
 import android.os.Parcelable;
 import android.os.Parcel;
 import android.os.Handler;
-import android.graphics.Point;
 
 import android.util.Log;
 
@@ -20,7 +19,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 	private GameEngine engine;
 	private princeTron.Engine.GameNetwork network;
 	
-	private Point p;
+	private Coordinate p;
 	private int time;
 	
 	private boolean toRun = true;
@@ -58,13 +57,13 @@ public class GameEngineThread extends Thread implements Parcelable {
 		engine.setArenaView(arena);
 	}
 	
-	public void userCrash(Point p, int time) {
+	public void userCrash(Coordinate p, int time) {
 		this.p = p;
 		this.time = time;
 	}
 	
 	public synchronized void turn(boolean isLeft) {
-		Point p = engine.turn(isLeft);
+		Coordinate p = engine.turn(isLeft);
 		int time = engine.numTics;
 		network.userTurn(p, time, isLeft);
 	}

@@ -25,8 +25,9 @@ import org.java_websocket.handshake.*;
 
 import json.org.json.*;
 
-import android.graphics.Point;
+import princeTron.Engine.Coordinate;
 import android.util.Log;
+import java.util.Collection;
 
 
 
@@ -69,17 +70,25 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							int timestamp = ot.getInt("timestamp");
 							boolean isLeft = ot.getBoolean("isLeft");
 
-							game.opponentTurn(1, new Point(xPos,yPos), timestamp, isLeft);
+							game.opponentTurn(1, new Coordinate(xPos,yPos), timestamp, isLeft);
 							System.out.println("Turn Occured");
+						}
+						else if (j.has("gameResult")) {
+							JSONObject result = j.getJSONObject("result");
+							boolean win = false;
+							if (result.getString("result").equals("win")) {
+								win = true;
+							}
+							game.gameOver(win);
+						}
+						else if (j.has("invitation")) {
+							JSONObject invite = j.getJSONObject("invitation");
+							String user = invite.getString("user");
+							game.passInvitation(user);
 						}
 						else if (j.has("endGame"))
 						{
-							boolean win = false;
-							JSONObject eg = j.getJSONObject("endGame");
-							if (eg.getString("result").equals("win"))
-								win = true;
-							game.gameOver(win);
-							System.out.println("Game Over");
+							
 						}
 					}
 					catch (JSONException e)
@@ -134,12 +143,12 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			Log.i("NetworkIP", "about to send 'connect' message");
 			client.send(toSend);     
 			Log.i("NetworkIP", "sent 'connect' message");
-			JSONObject rtp = new JSONObject();
-			rtp.put("readyToPlay", true);
-			String r = rtp.toString();
-			Thread.sleep(1000);
-			client.send(r);
-			Log.i("NetworkIP", "sent rtp");
+			//JSONObject rtp = new JSONObject();
+			//rtp.put("readyToPlay", true);
+			//String r = rtp.toString();
+			//Thread.sleep(1000);
+			//client.send(r);
+			//Log.i("NetworkIP", "sent rtp");
 		}
 		catch ( InterruptedException ex) 
 		{
@@ -156,7 +165,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	}
 
 	// informs the Network that the user has turned                                   
-	public void userTurn(android.graphics.Point position, int time, boolean isLeft)  
+	public void userTurn(princeTron.Engine.Coordinate position, int time, boolean isLeft)  
 	{
 		try
 		{
@@ -181,7 +190,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	}
 
 	// informs the Network that the user has crashed
-	public void userCrash(Point location, int time) 
+	public void userCrash(Coordinate location, int time) 
 	{
 		try
 		{
@@ -202,13 +211,60 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 
+	public void logIn(String username) {
+		JSONObject j = new JSONObject();
+		JSONObject user = new JSONObject();
+		try {
+			user.put("user", username);
+			j.put("logIn", user);
+			client.send(j.toString());
+		}
+		catch (JSONException jex) {
+			jex.printStackTrace();
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void acceptInvitation() {
+		JSONObject j = new JSONObject();
+		try {
+			j.put("acceptInvitation", "true");
+			client.send(j.toString());
+		}
+		catch (JSONException jex) {
+			jex.printStackTrace();
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void readyToPlay(Collection<String> invitations) {
+		JSONObject j = new JSONObject();
+		JSONObject invites = new JSONObject();
+		try {
+			if (invitations != null) {
+				invites.put("invitations", invitations);
+			}
+			j.put("readyToPlay", invites);
+			client.send(j.toString());
+		}
+		catch (JSONException jex) {
+			jex.printStackTrace();
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static void main(String[] args)
 	{
-		NetworkIP n = new NetworkIP();
+		//NetworkIP n = new NetworkIP();
 		//	n.startGame(5);
-		//n.turn(new Point(0,0), 17, true);
-		//n.collision(new Point(0,0));
+		//n.turn(new Coordinate(0,0), 17, true);
+		//n.collision(new Coordinate(0,0));
 	}
 
 

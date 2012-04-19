@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.content.Intent;
+import android.widget.Toast;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import princeTron.Engine.*;
@@ -13,17 +13,37 @@ import android.os.Handler;
 import android.os.Message;
 
 public class Arena extends Activity{
+	
+	public static final int IN_LOBBY = 0;
+	public static final int INVITED = 1;
+	public static final int INVITATION_ACCEPTED = 2;
+	public static final int IN_ARENA = 3;
+	public static final int INVITATIONS_PENDING = 4;
+	public static final int PLAYING = 5;
 
 	private GameEngineThread engine;
 	// for the callback to start the game
 	private StartHandler handler;
 
 	class StartHandler extends Handler {
-
+		
 		@Override
 		public void handleMessage(Message msg) {
-			Log.i("Arena", "getting a message!");
-			Arena.this.goToArena();
+			switch (msg.what){
+			case Arena.IN_LOBBY:
+				Toast toast = Toast.makeText(Arena.this, "In Lobby", Toast.LENGTH_SHORT);
+				toast.show();
+			case Arena.INVITED:
+				
+			case Arena.INVITATION_ACCEPTED:
+				
+			case Arena.IN_ARENA:
+				
+			case Arena.INVITATIONS_PENDING:
+				
+			case Arena.PLAYING:
+				
+			}
 		}
 	}
 
