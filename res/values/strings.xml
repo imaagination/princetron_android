@@ -13,5 +13,6 @@
     <string name="_playfriend">Play Against Friend</string>
     <string name="_profile">Profile</string>
     <string name="ready_button_text">Ready To Play</string>
+        <string name="_leaderboard">See Leaderboard</string>
 
 </resources>

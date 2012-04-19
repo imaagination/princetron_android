@@ -34,6 +34,8 @@
         <activity android:name=".Records"></activity>
         <activity android:name=".Profile"></activity>
         <activity android:name=".Lobby"></activity>
+        <activity android:name=".Leaderboard"></activity>
+        
     </application>
 
 </manifest>
