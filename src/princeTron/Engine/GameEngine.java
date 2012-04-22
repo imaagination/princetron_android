@@ -2,7 +2,6 @@ package princeTron.Engine;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Arrays;
 
 import princeTron.UserInterface.Arena;
 import princeTron.UserInterface.ArenaView;
@@ -54,25 +53,14 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// initializes the game, and the informs the UI
 	// the player id's are with respect to the initial X values, 
 	// and then Y values to break a tie
-	public void passEnterArena(Coordinate[] oppStarts, int[] oppDirStarts, 
-			Coordinate myStart, int myDirStart) {
-		Arrays.sort(oppStarts);
-		for (int i = 0; i < oppStarts.length; i++) {
-				if (oppStarts[i].x > myStart.x) {
-					Player p = new Player(myStart, myDirStart);
-					players.add(p);
-					myId = p.getId();
-				}
-				else if (oppStarts[i].x == myStart.x && oppStarts[i].y > myStart.y) {
-					// if they're both equal, there's a problem, 
-					// so these should be the only two cases
-					Player p = new Player(myStart, myDirStart);
-					players.add(p);
-					myId = p.getId();
-				}
-				Player p = new Player(oppStarts[i], oppDirStarts[i]);
+	public void passEnterArena(Coordinate[] starts, int[] dirs, int myId) {
+		Log.i("GameEngine", ""+starts.length);
+		for (int i = 0; i < starts.length; i++) {
+				Player p = new Player(starts[i], dirs[i]);
 				players.add(p);
 		}
+		this.myId = myId;
+		Log.i("GameEngine", "myId: " + myId);
 		Message msg = handler.obtainMessage(Arena.IN_ARENA);
 		msg.sendToTarget();
 	}
@@ -83,8 +71,12 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		for (Player player : players) {
 			player.stepForward(1);
 			Coordinate current = player.currentPoint();
-			if (visited.contains(current) && player.getId() == myId) {
-				return current;
+			if (player.getId() == myId && visited.contains(current)) {
+				return current; // collision
+			}
+			else if (player.getId() == myId && (current.x > 200 || current.y > 200 
+					|| current.x < 0 || current.y < 0)) {
+				return current; // off the edge
 			}
 			else {
 				visited.add(current);
@@ -109,7 +101,6 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		if (isLeft) direction = 1;
 		else direction = -1;
 		Log.i("old player direction", ""+player.getDirection());
-		Log.i("", ""+(-1%4));
 		int newDirection = (player.getDirection() + direction)%4;
 		if (newDirection == -1) newDirection = 3; // stupid mod op in java
 		player.setDirection(newDirection);

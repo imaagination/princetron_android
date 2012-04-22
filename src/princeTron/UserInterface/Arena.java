@@ -41,6 +41,9 @@ public class Arena extends Activity{
 			case Arena.IN_LOBBY:
 				Toast toast = Toast.makeText(Arena.this, "In Lobby", Toast.LENGTH_SHORT);
 				toast.show();
+				Intent intent = Arena.this.getIntent();
+				Arena.this.finish();
+				Arena.this.startActivity(intent);
 				break;
 			case Arena.INVITED:
 				// tbd
@@ -85,6 +88,13 @@ public class Arena extends Activity{
 		}
 		engine.logIn(accountName);
 		setContentView(R.layout.lobby_layout);
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		engine.disconnect();
+		engine.cancel();
 	}
 
 	ArrayList<String> invitees;

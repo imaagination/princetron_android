@@ -58,27 +58,22 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 						{
 							// parses the json, passes the data to the engine
 							JSONObject info = j.getJSONObject("enterArena");
-							JSONArray opponentsArray = info.getJSONArray("opponents");
-							Coordinate[] oppStarts = new Coordinate[opponentsArray.length()];
-							int[] oppDirs = new int[opponentsArray.length()];
+							JSONArray opponentsArray = info.getJSONArray("players");
+							Coordinate[] starts = new Coordinate[opponentsArray.length()];
+							int[] dirs = new int[opponentsArray.length()];
 							for (int i = 0; i < opponentsArray.length(); i++) {
 								JSONObject opponent = opponentsArray.getJSONObject(i);
-								oppStarts[i] = new Coordinate(opponent.getInt("xStart"), opponent.getInt("yStart"));
+								starts[i] = new Coordinate(opponent.getInt("xStart"), opponent.getInt("yStart"));
 								String dir = opponent.getString("dirStart");
-								if (dir.equals("NORTH")) oppDirs[i] = GameEngine.NORTH;
-								if (dir.equals("EAST")) oppDirs[i] = GameEngine.EAST;
-								if (dir.equals("SOUTH")) oppDirs[i] = GameEngine.SOUTH;
-								if (dir.equals("WEST")) oppDirs[i] = GameEngine.WEST;
+								dir = dir.toLowerCase();
+								if (dir.equals("north")) dirs[i] = GameEngine.NORTH;
+								if (dir.equals("east")) dirs[i] = GameEngine.EAST;
+								if (dir.equals("south")) dirs[i] = GameEngine.SOUTH;
+								if (dir.equals("west")) dirs[i] = GameEngine.WEST;
+								Log.i("NetworkIP", "id = " + i + "\tdir = " + dir);
 							}
-							JSONObject myInfo = info.getJSONObject("startPosition");
-							String dir = myInfo.getString("dirStart");
-							int myDirStart = -1;
-							if (dir.equals("NORTH")) myDirStart = GameEngine.NORTH;
-							if (dir.equals("EAST")) myDirStart = GameEngine.EAST;
-							if (dir.equals("SOUTH")) myDirStart = GameEngine.SOUTH;
-							if (dir.equals("WEST")) myDirStart = GameEngine.WEST;
-							game.passEnterArena(oppStarts, oppDirs, 
-									new Coordinate(myInfo.getInt("xStart"), myInfo.getInt("yStart")), myDirStart);
+							int myId = info.getInt("playerId");
+							game.passEnterArena(starts, dirs, myId);
 						}
 						else if (j.has("startGame")) {
 							game.startGame();
@@ -91,12 +86,12 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							int yPos = ot.getInt("yPos");
 							int timestamp = ot.getInt("timestamp");
 							boolean isLeft = ot.getBoolean("isLeft");
-
-							game.opponentTurn(1, new Coordinate(xPos,yPos), timestamp, isLeft);
+							int playerId = ot.getInt("playerId");
+							game.opponentTurn(playerId, new Coordinate(xPos,yPos), timestamp, isLeft);
 							System.out.println("Turn Occured");
 						}
 						else if (j.has("gameResult")) {
-							JSONObject result = j.getJSONObject("result");
+							JSONObject result = j.getJSONObject("gameResult");
 							boolean win = false;
 							if (result.getString("result").equals("win")) {
 								win = true;
@@ -116,7 +111,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 					}
 					catch (JSONException e)
 					{
-						System.out.println("JSON Error Creating Object");
+						e.printStackTrace();
 					}
 
 				}
@@ -199,7 +194,6 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			turn.put("timestamp", time);
 			turn.put("isLeft", isLeft);
 			j.put("turn", turn);
-
 			client.send(j.toString());
 		}
 		catch ( InterruptedException ex )
@@ -209,6 +203,21 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		catch ( JSONException jex)
 		{
 			System.out.println("JSON Error Turn");
+		}
+		catch (Exception e) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONObject turn = new JSONObject();
+				turn.put("xPos", position.x);
+				turn.put("yPos", position.y);
+				turn.put("timestamp", time);
+				turn.put("isLeft", isLeft);
+				j.put("turn", turn);
+				client.send(j.toString());
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
 		}
 	}
 
@@ -291,6 +300,10 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		catch (java.nio.channels.NotYetConnectedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void disconnect() {
+		client.close();
 	}
 
 	public static void main(String[] args)

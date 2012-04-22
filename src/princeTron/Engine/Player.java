@@ -1,6 +1,7 @@
 package princeTron.Engine;
 
 import java.util.ArrayList;
+import android.util.Log;
 
 //import android.util.Log;
 
@@ -46,6 +47,8 @@ public class Player {
 		case GameEngine.WEST:
 			newPoint = new Coordinate(lastPoint.x - 1, lastPoint.y);
 			break;
+		default:
+			Log.i("Player", "No direction!");
 		}
 		playerTrail.add(newPoint);
 		lastPoint = newPoint;

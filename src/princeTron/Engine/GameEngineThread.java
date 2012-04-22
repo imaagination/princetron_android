@@ -46,10 +46,12 @@ public class GameEngineThread extends Thread implements Parcelable {
 				sleep(10);
 				if (p != null) {
 					network.userCrash(p, time);
+					p = null;
 				}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
+				p = null;
 			}
 		}
 	}
@@ -71,7 +73,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 		network.logIn(accountName);
 	}
 	
-	private void userCrash(Coordinate p, int time) {
+	private synchronized void userCrash(Coordinate p, int time) {
 		this.p = p;
 		this.time = time;
 	}
@@ -91,16 +93,22 @@ public class GameEngineThread extends Thread implements Parcelable {
 	public synchronized void update() {
 		Coordinate crashLoc = engine.update();
 		if (crashLoc != null) {
+			Log.i("GET", "crashLoc wasn't null!");
 			userCrash(crashLoc, engine.numTics);
 		}
 	}
 	
 	public synchronized Iterable<Player> getPlayers() {
+		//Log.i("GET", "getting players!");
 		return engine.getPlayers();
 	}
 	
 	public synchronized boolean isReady() {
 		return engine.isReady();
+	}
+	
+	public synchronized void disconnect() {
+		network.disconnect();
 	}
 
 }

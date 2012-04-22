@@ -66,10 +66,13 @@ public class ArenaView extends TileView {
 
 		@Override
 		public void handleMessage(Message msg) {
+			//Log.i("ArenaView", "ticked!");
 			if (!(ArenaView.this.mMode == LOSE)) {
 				ArenaView.this.update();
-				ArenaView.this.invalidate();
 				sleep(100);
+			}
+			else {
+				Log.i("ArenaView", "in mode LOSE");
 			}
 		}
 
@@ -208,6 +211,7 @@ public class ArenaView extends TileView {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+			initArenaView();
 			mRedrawHandler.sleep(100);
 			update();
 			return;
@@ -246,12 +250,18 @@ public class ArenaView extends TileView {
 	// be function calls into the GameEngine
 	// Actually, this is all departing to the GameEngine
 	public void update() {
-		engineThread.update();
-		Iterable<Player> players = engineThread.getPlayers();
-		clearTiles();
-		updateWalls();
-		updateSnake(players);
-		invalidate();
+		try {
+			//Log.i("ArenaView", "updating!");
+			engineThread.update();
+			Iterable<Player> players = engineThread.getPlayers();
+			clearTiles();
+			updateWalls();
+			updateSnake(players);
+			invalidate();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -259,13 +269,13 @@ public class ArenaView extends TileView {
 	 */
 	// THIS WILL BE MOVED
 	private void updateWalls() {
-		for (int x = 0; x < mXTileCount; x++) {
+		for (int x = 0; x < 199; x++) {
 			setTile(GREEN_STAR, x, 0);
-			setTile(GREEN_STAR, x, mYTileCount - 1);
+			setTile(GREEN_STAR, x, 199);
 		}
-		for (int y = 1; y < mYTileCount - 1; y++) {
+		for (int y = 1; y < 199; y++) {
 			setTile(GREEN_STAR, 0, y);
-			setTile(GREEN_STAR, mXTileCount - 1, y);
+			setTile(GREEN_STAR, 199, y);
 		}
 	}
 
@@ -280,15 +290,11 @@ public class ArenaView extends TileView {
 			//Log.i("playerid", ""+player.getId());
 			for (Coordinate p : player.getPoints()) {
 				try {
-					if (player.getId() == 1) {
-						//Log.i("x, y", p.x + ", " + p.y);
-					}
+					//Log.i("x, y", p.x + ", " + p.y);
 					setTile(player.getId() + 1, p.x, p.y);
 				}
-				catch (ArrayIndexOutOfBoundsException e) {
-					if (player.getId() == 0) {
-						setMode(LOSE);
-					}
+				catch (Exception e) {
+					//e.printStackTrace();
 				}
 			}
 		}

@@ -16,4 +16,6 @@ public abstract class GameNetwork {
 	public abstract void logIn(String accountName);
 	// accept an invitation to play
 	public abstract void acceptInvitation();
+	// disconnects socket
+	public abstract void disconnect();
 }

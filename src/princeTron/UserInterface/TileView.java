@@ -24,6 +24,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.util.Log;
 
 
 /**
@@ -100,11 +101,15 @@ public class TileView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         mXTileCount = (int) Math.floor(w / mTileSize);
         mYTileCount = (int) Math.floor(h / mTileSize);
+        mXTileCount = Math.min(mXTileCount, mYTileCount);
+        mYTileCount = mXTileCount;
 
         mXOffset = ((w - (mTileSize * mXTileCount)) / 2);
         mYOffset = ((h - (mTileSize * mYTileCount)) / 2);
 
         mTileGrid = new int[mXTileCount][mYTileCount];
+        Log.i("TileView", "xTileCount: "+ mXTileCount);
+        Log.i("TileView", "yTileCount: " + mYTileCount);
         clearTiles();
     }
 
@@ -146,9 +151,21 @@ public class TileView extends View {
      * @param y
      */
     public void setTile(int tileindex, int x, int y) {
+    	// maps [0,200] -> [min x/y on screen, max x/y on screen]
+    	x = mapX(x);
+    	y = mapY(y);
         mTileGrid[x][y] = tileindex;
     }
 
+    private int mapX(int x) {
+    	double proportion = x/200.0;
+    	return (int) Math.floor(proportion*mXTileCount);
+    }
+    
+    private int mapY(int y) {
+    	double proportion = y/200.0;
+    	return (int) Math.floor(proportion*mYTileCount);
+    }
 
     @Override
     public void onDraw(Canvas canvas) {
