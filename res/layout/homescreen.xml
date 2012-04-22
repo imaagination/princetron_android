@@ -48,4 +48,13 @@
         android:textColor="#800000" >
     </Button>
 
+    <Button
+        android:id="@+id/leaderbutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".20"
+        android:text="@string/_leaderboard"
+        android:textColor="#800000" >
+    </Button>
+
 </LinearLayout>
