@@ -169,6 +169,9 @@ public class TileView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
+    	int count = Math.min(mXTileCount, mYTileCount);
+    	mXTileCount = count;
+    	mYTileCount = count;
         super.onDraw(canvas);
         for (int x = 0; x < mXTileCount; x += 1) {
             for (int y = 0; y < mYTileCount; y += 1) {

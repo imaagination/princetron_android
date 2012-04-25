@@ -1,7 +1,7 @@
 package princeTron.Engine;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 
 import princeTron.UserInterface.Arena;
 import princeTron.UserInterface.ArenaView;
@@ -21,8 +21,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public int numTics = 0;
 	private boolean isReady = false;
 	private int myId = -1;
-	// for collision detection
-	private HashSet<Coordinate> visited = new HashSet<Coordinate>();
+	// for collision detection - the proper way is mysteriously not working
+	private HashMap<Integer, ArrayList<Integer>> visitedMap = new HashMap<Integer, ArrayList<Integer>>();
 	private Vibrator vibe;
 
 	private Handler handler;
@@ -37,6 +37,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 
 	public GameEngine(Handler handler) {
 		players = new ArrayList<Player>();
+		visitedMap = new HashMap<Integer, ArrayList<Integer>>();
 		this.handler = handler;
 	}
 
@@ -68,18 +69,27 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// steps all the snakes forwards, returns true if there was a collision
 	// on the local snake
 	public Coordinate update() {
+		Log.i("GameEngine", "visited: " + visitedMap.size());
 		for (Player player : players) {
-			player.stepForward(1);
-			Coordinate current = player.currentPoint();
-			if (player.getId() == myId && visited.contains(current)) {
-				return current; // collision
-			}
-			else if (player.getId() == myId && (current.x > 200 || current.y > 200 
-					|| current.x < 0 || current.y < 0)) {
-				return current; // off the edge
-			}
-			else {
-				visited.add(current);
+			if (!player.hasStopped()) {
+				player.stepForward(1);
+				Coordinate current = player.currentPoint();
+				ArrayList<Integer> yList = visitedMap.get(current.x);
+				if (yList == null) {
+					yList = new ArrayList<Integer>();
+				}
+				if (yList.contains(current.y)) {
+					Log.i("GameEngine", "crash!");
+					return current; // collision
+				}
+				else {
+					yList.add(current.y);
+				}
+				if ((player.getId() == myId) && (current.x > 200 || current.y > 200 
+						|| current.x < 0 || current.y < 0)) {
+					return current; // off the edge
+				}
+				visitedMap.put(current.x, yList);
 			}
 		}
 		numTics++;
@@ -127,27 +137,26 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	}
 
 	// TODO: Include a "WIN" condition
-	@Override
-	public void gameOver(boolean isWin) {
-		if (isWin) {
-			arenaView.setMode(ArenaView.WIN);
+	public void gameResult(int playerId, boolean isWin) {
+		for (Player player : players) {
+			if (player.getId() == playerId) {
+				player.stop();
+			}
 		}
-		else {
-			vibe.vibrate(1000);
-			for(int i = 0; i <1000; i++)
-				continue;
-			arenaView.setMode(ArenaView.LOSE);
+		if (playerId == myId) {
+			if (isWin) arenaView.setMode(ArenaView.WIN);
+			else arenaView.setMode(ArenaView.LOSE);
 		}
 	}
 
 	@Override
 	public void opponentTurn(int playerId, Coordinate position, int time, boolean isLeft) {
 		for (Player player : players) {
-			if (player.getId() == playerId) {
+			if (player.getId() == playerId) { // obviously should use a symtable
 				player.stepBackward(numTics - time);
 				int direction = 0;
-				if (isLeft) direction = -1;
-				else direction = 1;
+				if (isLeft) direction = 1;
+				else direction = -1;
 				int newDirection = (player.getDirection() + direction)%4;
 				if (newDirection == -1) newDirection = 3; // stupid mod op in java
 				player.setDirection(newDirection);

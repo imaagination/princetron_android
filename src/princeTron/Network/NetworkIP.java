@@ -92,11 +92,12 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 						}
 						else if (j.has("gameResult")) {
 							JSONObject result = j.getJSONObject("gameResult");
-							boolean win = false;
+							boolean isWin = false;
 							if (result.getString("result").equals("win")) {
-								win = true;
+								isWin = true;
 							}
-							game.gameOver(win);
+							int playerId = result.getInt("playerId");
+							game.gameResult(playerId, isWin);
 						}
 						else if (j.has("invitation")) {
 							JSONObject invite = j.getJSONObject("invitation");
@@ -106,6 +107,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 						}
 						else if (j.has("endGame"))
 						{
+							Log.i("NetworkIP", "ending game");
 							game.endGame();
 						}
 					}

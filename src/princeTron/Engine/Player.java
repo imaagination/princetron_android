@@ -13,6 +13,7 @@ public class Player {
 	private int direction;
 	private int id;
 	public static int static_id = 0;
+	private boolean hasStopped = false;
 
 	public Player(Coordinate coord, int direction){
 		playerTrail.add(coord);
@@ -83,6 +84,14 @@ public class Player {
 	
 	public Iterable<Coordinate> getPoints() {
 		return playerTrail;
+	}
+	
+	public void stop() {
+		hasStopped = true;
+	}
+	
+	public boolean hasStopped() {
+		return hasStopped;
 	}
 }
 
