@@ -153,7 +153,14 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public void opponentTurn(int playerId, Coordinate position, int time, boolean isLeft) {
 		for (Player player : players) {
 			if (player.getId() == playerId) { // obviously should use a symtable
-				player.stepBackward(numTics - time);
+				//player.stepBackward(numTics - time);
+				Coordinate current = player.currentPoint();
+				int count = 0;
+				while ((!(current.x == position.x && current.y == position.y)) && (count <= (numTics - time))) {
+					player.stepBackward(1);
+					current = player.currentPoint();
+					count++;
+				}
 				int direction = 0;
 				if (isLeft) direction = 1;
 				else direction = -1;

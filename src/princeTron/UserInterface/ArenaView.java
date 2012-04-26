@@ -69,7 +69,7 @@ public class ArenaView extends TileView {
 			//Log.i("ArenaView", "ticked!");
 			if (!(ArenaView.this.mMode == LOSE || ArenaView.this.mMode == WIN) ) {
 				ArenaView.this.update();
-				sleep(10);
+				sleep(50);
 			}
 			else {
 				Log.i("ArenaView", "in mode LOSE");

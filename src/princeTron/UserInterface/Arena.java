@@ -74,6 +74,11 @@ public class Arena extends Activity{
 		invitees = new ArrayList<String>();
 		Resources resource = this.getResources();
 		Log.i("Arena", "about to instantiate GameEngine");
+		setContentView(R.layout.lobby_layout);
+	}
+	
+	public void onStart() {
+		super.onStart();
 		engine = new GameEngineThread(handler);
 		Log.i("Arena", "engine instantiated");
 		engine.start();
@@ -87,7 +92,20 @@ public class Arena extends Activity{
 			Log.i("Arena", "account name: " + accountName);
 		}
 		engine.logIn(accountName);
-		setContentView(R.layout.lobby_layout);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		engine.disconnect();
+		engine.cancel();
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		engine.disconnect();
+		engine.cancel();
 	}
 	
 	@Override

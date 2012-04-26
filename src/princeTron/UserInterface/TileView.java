@@ -172,18 +172,22 @@ public class TileView extends View {
     	int count = Math.min(mXTileCount, mYTileCount);
     	mXTileCount = count;
     	mYTileCount = count;
-        super.onDraw(canvas);
-        for (int x = 0; x < mXTileCount; x += 1) {
-            for (int y = 0; y < mYTileCount; y += 1) {
-                if (mTileGrid[x][y] > 0) {
-                    canvas.drawBitmap(mTileArray[mTileGrid[x][y]], 
-                                mXOffset + x * mTileSize,
-                                mYOffset + y * mTileSize,
-                                mPaint);
-                }
-            }
-        }
-
+    	super.onDraw(canvas);
+    	try {
+    		for (int x = 0; x < mXTileCount; x += 1) {
+    			for (int y = 0; y < mYTileCount; y += 1) {
+    				if (mTileGrid[x][y] > 0) {
+    					canvas.drawBitmap(mTileArray[mTileGrid[x][y]], 
+    							mXOffset + x * mTileSize,
+    							mYOffset + y * mTileSize,
+    							mPaint);
+    				}
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		
+    	}
     }
 
 }
