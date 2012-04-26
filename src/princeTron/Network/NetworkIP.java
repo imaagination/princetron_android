@@ -110,6 +110,15 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							Log.i("NetworkIP", "ending game");
 							game.endGame();
 						}
+						else if (j.has("lobby")) {
+							JSONObject lobby = j.getJSONObject("lobby");
+							JSONArray array = lobby.getJSONArray("users");
+							String[] users = new String[array.length()];
+							for (int i = 0; i < users.length; i++) {
+								users[i] = array.getString(i);
+							}
+							game.passLogin(users);
+						}
 					}
 					catch (JSONException e)
 					{

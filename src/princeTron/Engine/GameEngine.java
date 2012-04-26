@@ -51,6 +51,12 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		msg.sendToTarget();
 	}
 	
+	public void passLogin(String[] otherUsers) {
+		Message msg = handler.obtainMessage(princeTron.UserInterface.Arena.LOGGED_IN);
+		msg.obj = otherUsers;
+		msg.sendToTarget();
+	}
+	
 	// initializes the game, and the informs the UI
 	// the player id's are with respect to the initial X values, 
 	// and then Y values to break a tie
@@ -69,7 +75,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// steps all the snakes forwards, returns true if there was a collision
 	// on the local snake
 	public Coordinate update() {
-		Log.i("GameEngine", "visited: " + visitedMap.size());
+		//Log.i("GameEngine", "visited: " + visitedMap.size());
 		for (Player player : players) {
 			if (!player.hasStopped()) {
 				player.stepForward(1);
@@ -78,7 +84,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 				if (yList == null) {
 					yList = new ArrayList<Integer>();
 				}
-				if (yList.contains(current.y)) {
+				if (player.getId() == myId && yList.contains(current.y)) {
 					Log.i("GameEngine", "crash!");
 					return current; // collision
 				}

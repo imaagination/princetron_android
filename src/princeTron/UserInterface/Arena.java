@@ -3,12 +3,17 @@ package princeTron.UserInterface;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.ListActivity;
+import android.widget.ListView;
 import android.os.Bundle;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -19,8 +24,9 @@ import android.os.Message;
 import android.view.View;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.Context;
 
-public class Arena extends Activity{
+public class Arena extends Activity {
 	
 	public static final int IN_LOBBY = 0;
 	public static final int INVITED = 1;
@@ -28,6 +34,7 @@ public class Arena extends Activity{
 	public static final int IN_ARENA = 3;
 	public static final int INVITATIONS_PENDING = 4;
 	public static final int PLAYING = 5;
+	public static final int LOGGED_IN = 6;
 
 	private GameEngineThread engine;
 	// for the callback to start the game
@@ -38,6 +45,41 @@ public class Arena extends Activity{
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what){
+			case Arena.LOGGED_IN:
+				Log.i("Arena", "in LOGGED_IN");
+				String[] others = (String[]) msg.obj;
+				ListView logged_in_list = (ListView) findViewById(android.R.id.list);
+				try {
+					//logged_in_list = getListView();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					ArrayAdapter<String> items = new ArrayAdapter<String>(Arena.this, R.layout.leaderboard, others);
+					logged_in_list.setAdapter(items);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				logged_in_list.setOnItemClickListener(new OnItemClickListener() {
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						// When clicked, show a toast with the TextView text
+						try {
+							String text = (String) ((TextView) view).getText();
+							Arena.this.invitees.add(text);
+							TextView tv = (TextView) findViewById(R.id.invitee_list);
+							String names = tv.getText().toString();
+							if (text.contains("None")) tv.setText(text);	
+							else tv.setText(text + "\n" + names);
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+				break;
 			case Arena.IN_LOBBY:
 				Toast toast = Toast.makeText(Arena.this, "In Lobby", Toast.LENGTH_SHORT);
 				toast.show();
@@ -69,12 +111,26 @@ public class Arena extends Activity{
 
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		handler = new StartHandler();
-		invitees = new ArrayList<String>();
-		Resources resource = this.getResources();
-		Log.i("Arena", "about to instantiate GameEngine");
-		setContentView(R.layout.lobby_layout);
+		try {
+			super.onCreate(savedInstanceState);
+			//ListView logged_in_list = (ListView) findViewById(android.R.id.list);
+			handler = new StartHandler();
+			invitees = new ArrayList<String>();
+			Resources resource = this.getResources();
+			Log.i("Arena", "about to instantiate GameEngine");
+			try {
+				setContentView(R.layout.lobby_layout);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			super.onCreate(savedInstanceState);
+		}
 	}
 	
 	public void onStart() {
@@ -97,8 +153,15 @@ public class Arena extends Activity{
 	@Override
 	public void onPause() {
 		super.onPause();
-		engine.disconnect();
-		engine.cancel();
+		try {
+			ArenaView mArenaView = (ArenaView) findViewById(R.id.arena);
+			mArenaView.setMode(ArenaView.LOSE);
+			engine.disconnect();
+			engine.cancel();
+		}
+		catch (Exception e) {
+			
+		}
 	}
 	
 	@Override
