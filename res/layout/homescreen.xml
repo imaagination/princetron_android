@@ -22,11 +22,11 @@
     </Button>
 
     <Button
-        android:id="@+id/playfriendbutton"
+        android:id="@+id/profilebutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight=".20"
-        android:text="@string/_playfriend"
+        android:text="@string/_profile"
         android:textColor="#800000" >
     </Button>
 
@@ -39,14 +39,7 @@
         android:textColor="#800000" >
     </Button>
 
-    <Button
-        android:id="@+id/profilebutton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight=".20"
-        android:text="@string/_profile"
-        android:textColor="#800000" >
-    </Button>
+
 
     <Button
         android:id="@+id/leaderbutton"

@@ -56,7 +56,6 @@ public class PrinceTron extends Activity {
 
 		// initialize the home screen buttons
 		Button newgamebutton = (Button) findViewById(R.id.playnowbutton);
-		Button playfriendbutton = (Button) findViewById(R.id.playfriendbutton);
 		Button statsrecordsbutton = (Button) findViewById(R.id.statsrecordsbutton);
 		Button profilebutton = (Button) findViewById(R.id.profilebutton);
 		Button leaderbutton = (Button) findViewById(R.id.leaderbutton);
@@ -71,13 +70,6 @@ public class PrinceTron extends Activity {
 			}
 		});
 
-		playfriendbutton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				Intent myIntent = new Intent(view.getContext(),
-						Stats.class);
-				startActivityForResult(myIntent, 0);		
-			}
-		});
 
 		statsrecordsbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {		
