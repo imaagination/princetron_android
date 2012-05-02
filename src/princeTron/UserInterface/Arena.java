@@ -3,6 +3,7 @@ package princeTron.UserInterface;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.widget.ListView;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -35,6 +37,8 @@ public class Arena extends Activity {
 	public static final int INVITATIONS_PENDING = 4;
 	public static final int PLAYING = 5;
 	public static final int LOGGED_IN = 6;
+	public static final int WIN = 7;
+	public static final int LOSE = 8;
 
 	private GameEngineThread engine;
 	// for the callback to start the game
@@ -63,6 +67,8 @@ public class Arena extends Activity {
 					e.printStackTrace();
 				}
 				logged_in_list.setOnItemClickListener(new OnItemClickListener() {
+					
+					boolean firsttime = true;
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
 						// When clicked, show a toast with the TextView text
@@ -71,7 +77,7 @@ public class Arena extends Activity {
 							Arena.this.invitees.add(text);
 							TextView tv = (TextView) findViewById(R.id.invitee_list);
 							String names = tv.getText().toString();
-							if (text.contains("None")) tv.setText(text);	
+							if (firsttime) {tv.setText(text); firsttime = false;}
 							else tv.setText(text + "\n" + names);
 						}
 						catch (Exception e) {
@@ -83,27 +89,47 @@ public class Arena extends Activity {
 			case Arena.IN_LOBBY:
 				Toast toast = Toast.makeText(Arena.this, "In Lobby", Toast.LENGTH_SHORT);
 				toast.show();
-				Intent intent = Arena.this.getIntent();
+				setResult(RESULT_OK);
 				Arena.this.finish();
-				Arena.this.startActivity(intent);
 				break;
 			case Arena.INVITED:
 				// tbd
-				toast = Toast.makeText(Arena.this, "Got invitation", Toast.LENGTH_SHORT);
-				toast.show();
-				Arena.this.engine.acceptInvitation();
+				AlertDialog.Builder builder = new AlertDialog.Builder(Arena.this);
+				builder.setMessage("Do you want to accept the invitation from " + (String) msg.obj)
+				       .setCancelable(false)
+				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				                Arena.this.engine.acceptInvitation();
+				           }
+				       })
+				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				                
+				           }
+				       });
+				builder.show();
+				//Arena.this.engine.acceptInvitation();
 				break;
 			case Arena.INVITATION_ACCEPTED:
 				// tbd
 				break;
 			case Arena.IN_ARENA:
+				Arena.this.goToArena();
 				toast = Toast.makeText(Arena.this, "About to play...", Toast.LENGTH_SHORT);
 				toast.show();
 				break;
 			case Arena.INVITATIONS_PENDING:
-				
+				break;
 			case Arena.PLAYING:
-				Arena.this.goToArena();
+				startGame();
+				break;
+			case WIN:
+				ArenaView mArenaView = (ArenaView) findViewById(R.id.arena);
+				mArenaView.setMode(ArenaView.WIN);
+				break;
+			case LOSE:
+				mArenaView = (ArenaView) findViewById(R.id.arena);
+				mArenaView.setMode(ArenaView.LOSE);
 				break;
 			}
 		}
@@ -116,7 +142,6 @@ public class Arena extends Activity {
 			//ListView logged_in_list = (ListView) findViewById(android.R.id.list);
 			handler = new StartHandler();
 			invitees = new ArrayList<String>();
-			Resources resource = this.getResources();
 			Log.i("Arena", "about to instantiate GameEngine");
 			try {
 				setContentView(R.layout.lobby_layout);
@@ -133,8 +158,8 @@ public class Arena extends Activity {
 		}
 	}
 	
-	public void onStart() {
-		super.onStart();
+	public void onResume() {
+		super.onResume();
 		engine = new GameEngineThread(handler);
 		Log.i("Arena", "engine instantiated");
 		engine.start();
@@ -203,8 +228,11 @@ public class Arena extends Activity {
 		mArenaView.setGameEngine(engine);
 		mArenaView.setTextView((TextView) findViewById(R.id.text));
 		mArenaView.setMode(ArenaView.READY);
+	}
+	
+	public void startGame() {
+		ArenaView mArenaView = (ArenaView) findViewById(R.id.arena);
 		try {
-			Thread.sleep(1000); // give it time to inflate the view
 			mArenaView.setMode(ArenaView.RUNNING);
 		}
 		catch (Exception e) {

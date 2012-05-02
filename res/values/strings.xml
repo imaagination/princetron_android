@@ -13,6 +13,9 @@
     <string name="_playfriend">Play Against Friend</string>
     <string name="_profile">Profile</string>
     <string name="ready_button_text">Ready To Play</string>
-        <string name="_leaderboard">See Leaderboard</string>
+    <string name="_leaderboard">See Leaderboard</string>
+    <string name="none">None</string>
+    <string name="add_invitee">Add Invitee</string>
+    <string name="invitee_header">Invite List:</string>
 
 </resources>

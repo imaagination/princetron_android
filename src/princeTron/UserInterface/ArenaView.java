@@ -61,15 +61,48 @@ public class ArenaView extends TileView {
 	 * function to cause an update/invalidate to occur at a later date.
 	 */
 	private RefreshHandler mRedrawHandler = new RefreshHandler();
+	//private TicThread mRedrawHandler = new TicThread(100);
+	
+	class TicThread extends Thread {
+		
+		private long interval;
+		private boolean toRun = true;
+		
+		public TicThread(int interval) {
+			this.interval = interval;
+		}
+		
+		public void run() {
+			while (toRun) {
+				try {
+					sleep(interval);
+					ArenaView.this.update();
+				}
+				catch (Exception e) {
+					ArenaView.this.update();
+				}
+			}
+		}
+		
+		public void cancel() {
+			toRun = false;
+			interrupt();
+		}
+	}
 
 	class RefreshHandler extends Handler {
 
+		private int count = 0;
+		
 		@Override
 		public void handleMessage(Message msg) {
 			//Log.i("ArenaView", "ticked!");
 			if (!(ArenaView.this.mMode == LOSE || ArenaView.this.mMode == WIN) ) {
+				if (count == 0) Log.i("ArenaView", ""+System.currentTimeMillis());
+				else Log.i("ArenaView", ""+count);
+				count++;
 				ArenaView.this.update();
-				sleep(50);
+				sleep(100);
 			}
 			else {
 				Log.i("ArenaView", "in mode LOSE");
@@ -77,8 +110,12 @@ public class ArenaView extends TileView {
 		}
 
 		public void sleep(long delayMillis) {
-			this.removeMessages(0);
 			sendMessageDelayed(obtainMessage(0), delayMillis);
+		}
+		
+		public void cancel() {
+			this.removeMessages(0);
+			Log.i("ArenaView", ""+System.currentTimeMillis());
 		}
 	};
 
@@ -124,21 +161,6 @@ public class ArenaView extends TileView {
 				float x;       
 				if (mMode == NOT_READY) {
 					Log.i("ArenaView", "not ready to play yet!");
-				}
-				if (mMode == READY) {
-					/*
-					 * At the beginning of the game, or the end of a previous one,
-					 * we should start a new game.
-					 */
-
-					Log.w("onKeyDown", "initializing new game up");
-					Log.w("onKeyDown", "game initialized");
-					setMode(RUNNING);
-					Log.w("onKeyDown", "running mode set");
-					update();
-					Log.w("onKeyDown", "updated");
-					mRedrawHandler.sleep(100);
-					return (true);
 				}
 
 				Log.i("ArenaView 137", "handling action");
@@ -211,9 +233,8 @@ public class ArenaView extends TileView {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-			initArenaView();
-			mRedrawHandler.sleep(100);
 			update();
+			mRedrawHandler.sleep(100);
 			return;
 		}
 
@@ -231,7 +252,7 @@ public class ArenaView extends TileView {
 			else {
 				str += "\nYou Win!";
 			}
-			mRedrawHandler.sleep(100000);
+			mRedrawHandler.cancel();
 			Log.i("ArenaView 326", "in newMode==LOSE");
 		}
 
@@ -269,13 +290,13 @@ public class ArenaView extends TileView {
 	 */
 	// THIS WILL BE MOVED
 	private void updateWalls() {
-		for (int x = 0; x < 199; x++) {
+		for (int x = 0; x < 99; x++) {
 			setTile(GREEN_STAR, x, 0);
-			setTile(GREEN_STAR, x, 199);
+			setTile(GREEN_STAR, x, 99);
 		}
-		for (int y = 1; y < 199; y++) {
+		for (int y = 1; y < 99; y++) {
 			setTile(GREEN_STAR, 0, y);
-			setTile(GREEN_STAR, 199, y);
+			setTile(GREEN_STAR, 99, y);
 		}
 	}
 

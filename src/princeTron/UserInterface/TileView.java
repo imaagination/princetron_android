@@ -152,19 +152,24 @@ public class TileView extends View {
      */
     public void setTile(int tileindex, int x, int y) {
     	// maps [0,200] -> [min x/y on screen, max x/y on screen]
-    	x = mapX(x);
-    	y = mapY(y);
-        mTileGrid[x][y] = tileindex;
+    	try {
+    		x = mapX(x);
+    		y = mapY(y);
+    		mTileGrid[x][y] = tileindex;
+    	}
+    	catch (Exception e) {
+    		//e.printStackTrace();
+    	}
     }
 
     private int mapX(int x) {
-    	double proportion = x/200.0;
+    	double proportion = x/100.0;
     	return (int) Math.floor(proportion*mXTileCount);
     }
     
     private int mapY(int y) {
-    	double proportion = y/200.0;
-    	return (int) Math.floor(proportion*mYTileCount);
+    	double proportion = y/100.0;
+    	return (mYTileCount - (int) Math.floor(proportion*mYTileCount) - 1);
     }
 
     @Override

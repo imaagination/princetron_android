@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
+
     <Button
-        	android:id="@+id/ready_button"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:text="@string/ready_button_text"
-        	android:onClick="readyToPlay" />
+        android:id="@+id/ready_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="readyToPlay"
+        android:text="@string/ready_button_text" />
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -20,19 +20,25 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Invitee"
-            android:onClick="addInvitee" />
+            android:onClick="addInvitee"
+            android:text="@string/add_invitee" />
 
         <EditText
             android:id="@+id/invitee_edit_text"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:inputType="textEmailAddress" >
 
             <requestFocus />
         </EditText>
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/invitee_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/invitee_header" />
 
     <ScrollView
         android:id="@+id/scrollView1"
@@ -48,7 +54,7 @@
                 android:id="@+id/invitee_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="None" />
+                android:text="@string/none" />
 
         </LinearLayout>
     </ScrollView>
@@ -56,7 +62,8 @@
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="0dip"
+        android:layout_weight="1.54" >
     </ListView>
 
 </LinearLayout>

@@ -82,12 +82,10 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 						{
 							JSONObject ot = j.getJSONObject("opponentTurn");
 
-							int xPos = ot.getInt("xPos");
-							int yPos = ot.getInt("yPos");
 							int timestamp = ot.getInt("timestamp");
 							boolean isLeft = ot.getBoolean("isLeft");
 							int playerId = ot.getInt("playerId");
-							game.opponentTurn(playerId, new Coordinate(xPos,yPos), timestamp, isLeft);
+							game.opponentTurn(playerId, timestamp, isLeft);
 							System.out.println("Turn Occured");
 						}
 						else if (j.has("gameResult")) {
@@ -115,7 +113,12 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							JSONArray array = lobby.getJSONArray("users");
 							String[] users = new String[array.length()];
 							for (int i = 0; i < users.length; i++) {
-								users[i] = array.getString(i);
+								try {
+									users[i] = array.getString(i);
+								}
+								catch (Exception e) {
+									users[i] = "";
+								}
 							}
 							game.passLogin(users);
 						}

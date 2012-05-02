@@ -91,7 +91,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 				else {
 					yList.add(current.y);
 				}
-				if ((player.getId() == myId) && (current.x > 200 || current.y > 200 
+				if ((player.getId() == myId) && (current.x > 100 || current.y > 100 
 						|| current.x < 0 || current.y < 0)) {
 					return current; // off the edge
 				}
@@ -114,8 +114,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		Player player = players.get(myId);
 		Log.i("player id", ""+player.getId());
 		int direction = 0;
-		if (isLeft) direction = 1;
-		else direction = -1;
+		if (isLeft) direction = -1;
+		else direction = 1;
 		Log.i("old player direction", ""+player.getDirection());
 		int newDirection = (player.getDirection() + direction)%4;
 		if (newDirection == -1) newDirection = 3; // stupid mod op in java
@@ -139,42 +139,51 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	
 	public void endGame() {
 		Message msg = handler.obtainMessage(Arena.IN_LOBBY);
-		msg.sendToTarget();
+		handler.sendMessageDelayed(msg, 6000);
 	}
 
 	// TODO: Include a "WIN" condition
 	public void gameResult(int playerId, boolean isWin) {
 		for (Player player : players) {
+			Log.i("GameEngine", "player " + player.getId() + "loc: " + player.currentPoint());
 			if (player.getId() == playerId) {
 				player.stop();
 			}
 		}
 		if (playerId == myId) {
-			if (isWin) arenaView.setMode(ArenaView.WIN);
-			else arenaView.setMode(ArenaView.LOSE);
+			Log.i("GameEngine", "id was equal!");
+			if (isWin) {
+				Message msg = handler.obtainMessage(Arena.WIN);
+				msg.sendToTarget();
+			}
+			else {
+				Message msg = handler.obtainMessage(Arena.LOSE);
+				msg.sendToTarget();
+			}
 		}
 	}
 
 	@Override
-	public void opponentTurn(int playerId, Coordinate position, int time, boolean isLeft) {
-		for (Player player : players) {
-			if (player.getId() == playerId) { // obviously should use a symtable
-				//player.stepBackward(numTics - time);
-				Coordinate current = player.currentPoint();
-				int count = 0;
-				while ((!(current.x == position.x && current.y == position.y)) && (count <= (numTics - time))) {
-					player.stepBackward(1);
-					current = player.currentPoint();
-					count++;
-				}
-				int direction = 0;
-				if (isLeft) direction = 1;
-				else direction = -1;
-				int newDirection = (player.getDirection() + direction)%4;
-				if (newDirection == -1) newDirection = 3; // stupid mod op in java
-				player.setDirection(newDirection);
-				player.stepForward(numTics - time);
-			}
+	public void opponentTurn(int playerId, int time, boolean isLeft) {
+		//player.stepBackward(numTics - time);
+		int count = 0;
+		while (count <= (numTics - time)) {
+			for (Player player : players)
+				player.stepBackward(1);
+			count++;
+		}
+		int direction = 0;
+		if (isLeft) direction = -1;
+		else direction = 1;
+		Player player = null;
+		for (Player p : players) {
+			if (p.getId() == playerId) {player = p; break;}
+		}
+		int newDirection = (player.getDirection() + direction)%4;
+		if (newDirection == -1) newDirection = 3; // stupid mod op in java
+		player.setDirection(newDirection);
+		for (int i = 0; i < count; i++) {
+			update();
 		}
 	}
 }
