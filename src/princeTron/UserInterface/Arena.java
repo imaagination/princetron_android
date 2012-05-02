@@ -89,8 +89,9 @@ public class Arena extends Activity {
 			case Arena.IN_LOBBY:
 				Toast toast = Toast.makeText(Arena.this, "In Lobby", Toast.LENGTH_SHORT);
 				toast.show();
-				setResult(RESULT_OK);
+				Intent intent = Arena.this.getIntent();
 				Arena.this.finish();
+				Arena.this.startActivity(intent);
 				break;
 			case Arena.INVITED:
 				// tbd
@@ -142,6 +143,7 @@ public class Arena extends Activity {
 			//ListView logged_in_list = (ListView) findViewById(android.R.id.list);
 			handler = new StartHandler();
 			invitees = new ArrayList<String>();
+			Resources resource = this.getResources();
 			Log.i("Arena", "about to instantiate GameEngine");
 			try {
 				setContentView(R.layout.lobby_layout);

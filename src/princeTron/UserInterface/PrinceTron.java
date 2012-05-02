@@ -35,6 +35,8 @@ public class PrinceTron extends Activity {
 	 * Called when Activity is first created. Turns off the title bar, sets up
 	 * the content views, and fires up the ArenaView.
 	 */
+	private String userName;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,12 +45,13 @@ public class PrinceTron extends Activity {
 		AccountManager am = AccountManager.get(this);
 		Account[] accounts = am.getAccountsByType("com.google");
 		
+		
 		//set content view
 		setContentView(R.layout.homescreen);
 		TextView tv = (TextView) findViewById(R.id.welcomePrompt);
 
 		if(accounts.length != 0){
-			String userName = accounts[0].name;
+			userName = accounts[0].name;
 			userName = userName.substring(0, userName.length() - 10); //get rid of @gmail.com
 			tv.setText("Hello, " + userName + ". What would you like to do?");
 		}else
@@ -56,8 +59,6 @@ public class PrinceTron extends Activity {
 
 		// initialize the home screen buttons
 		Button newgamebutton = (Button) findViewById(R.id.playnowbutton);
-		Button playfriendbutton = (Button) findViewById(R.id.playfriendbutton);
-		Button statsrecordsbutton = (Button) findViewById(R.id.statsrecordsbutton);
 		Button profilebutton = (Button) findViewById(R.id.profilebutton);
 		Button leaderbutton = (Button) findViewById(R.id.leaderbutton);
 
@@ -67,30 +68,23 @@ public class PrinceTron extends Activity {
 				Log.i("PrinceTron", "starting Arena");
 				Intent myIntent = new Intent(view.getContext(),
 						Arena.class);
+				
+				myIntent.putExtra("userName", userName);
+				
 				startActivityForResult(myIntent, 0);				
 			}
 		});
 
-		playfriendbutton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				Intent myIntent = new Intent(view.getContext(),
-						Stats.class);
-				startActivityForResult(myIntent, 0);		
-			}
-		});
 
-		statsrecordsbutton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {		
-				Intent myIntent = new Intent(view.getContext(),
-						Records.class);
-				startActivityForResult(myIntent, 0);		
-			}
-		});
+
 
 		profilebutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				Intent myIntent = new Intent(view.getContext(),
 						Profile.class);
+				
+				myIntent.putExtra("userName", userName);
+				
 				startActivityForResult(myIntent, 0);		
 			}
 		});
@@ -100,6 +94,9 @@ public class PrinceTron extends Activity {
 				Log.i("PrinceTron", "starting Arena");
 				Intent myIntent = new Intent(view.getContext(),
 						Leaderboard.class);
+				
+				myIntent.putExtra("userName", userName);
+				
 				startActivityForResult(myIntent, 0);				
 			}
 		});
