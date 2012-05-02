@@ -20,43 +20,43 @@ import android.widget.Toast;
 
 public class Leaderboard extends ListActivity{
 	TextView tv;
-	
+
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		tv = new TextView(this);
-		
-		
-		
-		
-		String[] leaders = DownloadLeaders("http://morning-sword-5225.herokuapp.com/leaderboard/"); 
-		
-		  setListAdapter(new ArrayAdapter<String>(this, R.layout.leaderboard, leaders));
 
-		  ListView lv = getListView();
-		  lv.setTextFilterEnabled(true);
 
-		  lv.setOnItemClickListener(new OnItemClickListener() {
-		    public void onItemClick(AdapterView<?> parent, View view,
-		        int position, long id) {
-		      // When clicked, show a toast with the TextView text
-		      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
-		          Toast.LENGTH_SHORT).show();
-		    }
-		  });
-		
-		
-		
+
+
+		String[] leaders = DownloadLeaders(); 
+
+		setListAdapter(new ArrayAdapter<String>(this, R.layout.leaderboard, leaders));
+
+		ListView lv = getListView();
+		lv.setTextFilterEnabled(true);
+
+		lv.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				// When clicked, show a toast with the TextView text
+				Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+
+
+
 	}
 
 
 
 
 
-	private String[] DownloadLeaders(String URL) {
+	private String[] DownloadLeaders() {
 		URL url = null;
 		try {
-			url = new URL(URL);
+			url = new URL("http://morning-sword-5225.herokuapp.com/leaderboard/");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -87,12 +87,12 @@ public class Leaderboard extends ListActivity{
 		String start = "[&quot;";
 		int startLen = 7; //length of string "start"
 		String reg = "&quot;, &quot;";
-//		Log.i("start index", builder.indexOf(start) + "");
+		//		Log.i("start index", builder.indexOf(start) + "");
 		String part = builder
 				.substring(builder.indexOf(start) + startLen);
-		
-		
-		
+
+
+
 		String[] top10 = part.split(reg);
 		for(int i = 0; i < top10.length; i++){
 			if(i != 9){
@@ -104,7 +104,7 @@ public class Leaderboard extends ListActivity{
 			}
 		}
 		return top10;
-		
+
 	}
 
 

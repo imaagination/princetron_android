@@ -35,6 +35,8 @@ public class PrinceTron extends Activity {
 	 * Called when Activity is first created. Turns off the title bar, sets up
 	 * the content views, and fires up the ArenaView.
 	 */
+	private String userName;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,7 +50,7 @@ public class PrinceTron extends Activity {
 		TextView tv = (TextView) findViewById(R.id.welcomePrompt);
 
 		if(accounts.length != 0){
-			String userName = accounts[0].name;
+			userName = accounts[0].name;
 			userName = userName.substring(0, userName.length() - 10); //get rid of @gmail.com
 			tv.setText("Hello, " + userName + ". What would you like to do?");
 		}else
@@ -83,6 +85,9 @@ public class PrinceTron extends Activity {
 			public void onClick(View view) {
 				Intent myIntent = new Intent(view.getContext(),
 						Profile.class);
+				
+				myIntent.putExtra("userName", userName);
+				
 				startActivityForResult(myIntent, 0);		
 			}
 		});
