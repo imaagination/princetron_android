@@ -7,9 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import json.org.json.JSONArray;
+import json.org.json.JSONException;
+import json.org.json.JSONObject;
 import android.app.ListActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -29,7 +31,15 @@ public class Leaderboard extends ListActivity{
 
 
 
-		String[] leaders = DownloadLeaders(); 
+
+
+		String[] leaders = null;
+		try {
+			leaders = DownloadLeaders();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 
 		setListAdapter(new ArrayAdapter<String>(this, R.layout.leaderboard, leaders));
 
@@ -53,10 +63,10 @@ public class Leaderboard extends ListActivity{
 
 
 
-	private String[] DownloadLeaders() {
+	private String[] DownloadLeaders() throws JSONException {
 		URL url = null;
 		try {
-			url = new URL("http://morning-sword-5225.herokuapp.com/leaderboard/");
+			url = new URL("http://www.princetron.com/leaderboard/");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -84,25 +94,27 @@ public class Leaderboard extends ListActivity{
 				} catch (IOException logOrIgnore) {
 				}
 		}
-		String start = "[&quot;";
-		int startLen = 7; //length of string "start"
-		String reg = "&quot;, &quot;";
-		//		Log.i("start index", builder.indexOf(start) + "");
-		String part = builder
-				.substring(builder.indexOf(start) + startLen);
 
 
 
-		String[] top10 = part.split(reg);
-		for(int i = 0; i < top10.length; i++){
-			if(i != 9){
-				top10[i] = (i+1) + " " + top10[i];
-			}
-			else{
-				//get rid of extra stuff at end
-				top10[i] = (String) ((i+1) + " " + top10[i].subSequence(0, top10[i].length() - 8)); 
-			}
-		}
+
+		String input = builder.toString().replace("&quot;", "\"");
+		JSONObject j = new JSONObject(input);
+		JSONArray arr = j.getJSONArray("users");
+		String[] top10 = new String[10];
+
+		for(int i = 0; i < 10; i++)
+			top10[i] = (i + 1) + " " + arr.get(i).toString();
+		
+		
+
+
+//		for(int i = 0; i < 10; i++){
+//			Toast.makeText(getApplicationContext(), leaders[i]
+//					, Toast.LENGTH_SHORT).show();
+//		}
+
+
 		return top10;
 
 	}

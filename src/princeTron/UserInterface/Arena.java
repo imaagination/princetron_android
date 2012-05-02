@@ -2,23 +2,20 @@ package princeTron.UserInterface;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import princeTron.Engine.*;
-import android.util.Log;
-import android.os.Handler;
-import android.os.Message;
-import android.view.View;
+
+import princeTron.Engine.GameEngineThread;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class Arena extends Activity{
 	
@@ -32,6 +29,8 @@ public class Arena extends Activity{
 	private GameEngineThread engine;
 	// for the callback to start the game
 	private StartHandler handler;
+	
+	private String userName;
 
 	class StartHandler extends Handler {
 		
@@ -75,22 +74,23 @@ public class Arena extends Activity{
 		Log.i("Arena", "engine instantiated");
 		engine.start();
 		Log.i("Arena", "engine started");
-		Account[] accounts = AccountManager.get(this).getAccounts();
-		String accountName = "";
-		for (Account account : accounts) {
-			if (account.name.contains("@gmail.com")) {
-				accountName = account.name;
-			}
-			Log.i("Arena", "account name: " + accountName);
-		}
-		engine.logIn(accountName);
+		 
+		Bundle extras = getIntent().getExtras(); 
+		if(extras !=null){
+			userName = extras.getString("userName");
+		}		
+		else
+			userName = "";
+		
+		
+		engine.logIn(userName);
 		setContentView(R.layout.lobby_layout);
 	}
 
 	ArrayList<String> invitees;
 	
 	public void readyToPlay(View view) {
-		if (invitees.size() == 0) invitees.add("amy.ousterhout@gmail.com");
+		if (invitees.size() == 0) invitees.add("amy.ousterhout");
 		engine.readyToPlay(invitees);
 	}
 	

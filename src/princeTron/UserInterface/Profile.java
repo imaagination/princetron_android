@@ -19,8 +19,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Profile extends Activity{
 	/** Called when the activity is first created. */
@@ -60,12 +60,15 @@ public class Profile extends Activity{
 
 		String month = new DateFormatSymbols().getMonths()[profile[1]];
 
+		tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 
 		tv.setText("User Name: " + userName + "\n" +
 				"Date Joined: " + month + " " + Ordinal(profile[0])+ ", " + profile[5] + "\n" +
 				"User Rank: " + profile[4] + "\n" +
 				"Wins: " + profile[2] + "\n" +
 				"Losses: " + profile[3]);
+		
+		
 
 	}
 
@@ -93,7 +96,9 @@ public class Profile extends Activity{
 
 	private int[] DownloadProfile() throws URISyntaxException, ClientProtocolException, IOException, JSONException {
 
-		String uri = "http://www.princetron.com/u/" + "Peter";
+		if (userName == null)
+			userName = "Peter";
+		String uri = "http://www.princetron.com/u/" + userName;
 		int[] values = new int[6];
 
 		try {
@@ -119,8 +124,8 @@ public class Profile extends Activity{
 
 			String input = sb.toString().replace("&quot;", "\"");
 
-			Toast.makeText(getApplicationContext(), input
-					, Toast.LENGTH_LONG).show();
+//			Toast.makeText(getApplicationContext(), input
+//					, Toast.LENGTH_LONG).show();
 
 
 			JSONObject j = new JSONObject(input);
