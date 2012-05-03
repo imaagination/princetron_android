@@ -91,6 +91,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 	}
 	
 	public synchronized void update() {
+		Log.i("GameEngineThread", "in update()");
 		Coordinate crashLoc = engine.update();
 		if (crashLoc != null) {
 			Log.i("GET", "crashLoc wasn't null!");

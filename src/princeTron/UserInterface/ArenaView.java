@@ -228,7 +228,7 @@ public class ArenaView extends TileView {
 		if (newMode == RUNNING && oldMode != RUNNING) {
 			Log.i("setMode", "newMode==RUNNING && oldMode != RUNNING");
 			try {
-				mStatusText.setVisibility(View.INVISIBLE);
+				//mStatusText.setVisibility(View.INVISIBLE);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -254,10 +254,11 @@ public class ArenaView extends TileView {
 			}
 			mRedrawHandler.cancel();
 			Log.i("ArenaView 326", "in newMode==LOSE");
+			return;
 		}
 
-		mStatusText.setText(str);
-		mStatusText.setVisibility(View.VISIBLE);
+		//mStatusText.setText(str);
+		//mStatusText.setVisibility(View.VISIBLE);
 	}
 
 

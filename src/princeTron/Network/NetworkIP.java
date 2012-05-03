@@ -255,6 +255,9 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		{
 			System.out.println("JSON Error");
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void logIn(String username) {
@@ -277,6 +280,9 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void acceptInvitation() {
@@ -291,6 +297,9 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			jex.printStackTrace();
 		}
 		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -314,10 +323,18 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		catch (java.nio.channels.NotYetConnectedException e) {
 			e.printStackTrace();
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void disconnect() {
-		client.close();
+		try {
+			client.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args)

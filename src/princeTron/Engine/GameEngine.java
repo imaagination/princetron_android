@@ -135,11 +135,12 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public void startGame() {
 		Message msg = handler.obtainMessage(Arena.PLAYING);
 		msg.sendToTarget();
+		Thread.yield();
 	}
 	
 	public void endGame() {
 		Message msg = handler.obtainMessage(Arena.IN_LOBBY);
-		handler.sendMessageDelayed(msg, 6000);
+		msg.sendToTarget();
 	}
 
 	// TODO: Include a "WIN" condition
@@ -167,23 +168,22 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public void opponentTurn(int playerId, int time, boolean isLeft) {
 		//player.stepBackward(numTics - time);
 		int count = 0;
+		Player player = null;
+		for (Player p : players) {
+			if (p.getId() == playerId) {player = p; break;}
+		}
 		while (count <= (numTics - time)) {
-			for (Player player : players)
-				player.stepBackward(1);
+			player.stepBackward(1);
 			count++;
 		}
 		int direction = 0;
 		if (isLeft) direction = -1;
 		else direction = 1;
-		Player player = null;
-		for (Player p : players) {
-			if (p.getId() == playerId) {player = p; break;}
-		}
 		int newDirection = (player.getDirection() + direction)%4;
 		if (newDirection == -1) newDirection = 3; // stupid mod op in java
 		player.setDirection(newDirection);
 		for (int i = 0; i < count; i++) {
-			update();
+			player.stepForward(1);
 		}
 	}
 }
