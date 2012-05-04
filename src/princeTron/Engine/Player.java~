@@ -5,16 +5,19 @@ public class Player {
 	public int dir;
 	public int x;
 	public int y;
-        public boolean active;
-        public int id;
+	public boolean active;
 
-    public Player(int x, int y, int dir, int id){
+	public Player(int x, int y, int dir){
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
 		this.active = true;
-		this.id = id;
 	}
+
+    public deactivate()
+    {
+	this.active = False;
+    }
 
 	public Player() {}
 
