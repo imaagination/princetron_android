@@ -1,31 +1,18 @@
 package princeTron.Engine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import princeTron.UserInterface.Arena;
 import princeTron.UserInterface.ArenaView;
-
-import android.os.Handler;
-import android.os.Vibrator;
 import android.os.Message;
-
 import android.util.Log;
 
 public class GameEngine extends princeTron.Network.NetworkGame {
-	// array of players' turns. Indexed by player id
-	private ArrayList<Player> players;
-	// ArenaView, to be updated
 	private ArenaView arenaView;
-	// number of tics since game started
-	public int numTics = 0;
-	private boolean isReady = false;
-	private int myId = -1;
-	// for collision detection - the proper way is mysteriously not working
-	private HashMap<Integer, ArrayList<Integer>> visitedMap = new HashMap<Integer, ArrayList<Integer>>();
-	private Vibrator vibe;
-
-	private Handler handler;
+	private int timestep;
+	private int[][] gameboard;
+	private Player[] players;
+	private int myId;
 
 	public static final int X_SCALE = 100;
 	public static final int Y_SCALE = 100;
@@ -33,43 +20,24 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public static final int EAST = 1;
 	public static final int SOUTH = 2;
 	public static final int WEST = 3;
-	public static final long mMoveDelay = 100;
+	public static final long INTERVAL = 100;
 
-	public GameEngine(Handler handler) {
-		players = new ArrayList<Player>();
-		visitedMap = new HashMap<Integer, ArrayList<Integer>>();
-		this.handler = handler;
-	}
-
-	public void setArenaView(princeTron.UserInterface.ArenaView arena) {
-		arenaView = arena;
-	}
-	
-	public void passInvitation(String username) {
-		Message msg = handler.obtainMessage(princeTron.UserInterface.Arena.INVITED);
-		msg.obj = username;
-		msg.sendToTarget();
-	}
-	
-	public void passLogin(String[] otherUsers) {
-		Message msg = handler.obtainMessage(princeTron.UserInterface.Arena.LOGGED_IN);
-		msg.obj = otherUsers;
-		msg.sendToTarget();
-	}
-	
-	// initializes the game, and the informs the UI
-	// the player id's are with respect to the initial X values, 
-	// and then Y values to break a tie
-	public void passEnterArena(Coordinate[] starts, int[] dirs, int myId) {
-		Log.i("GameEngine", ""+starts.length);
-		for (int i = 0; i < starts.length; i++) {
-				Player p = new Player(starts[i], dirs[i]);
-				players.add(p);
-		}
+	public GameEngine(int[] playersX, int[] playersY, int[] playersDir, int myId) {
 		this.myId = myId;
-		Log.i("GameEngine", "myId: " + myId);
-		Message msg = handler.obtainMessage(Arena.IN_ARENA);
-		msg.sendToTarget();
+		players = new Player[playersX.length];
+		for (int i = 0; i < playersX.length; i++) {
+			players[i] = new Player(playersX[i], playersY[i], playersDir[i]);
+		}
+		gameboard = new int[X_SCALE][Y_SCALE];
+		for (int i = 0; i < X_SCALE; i++) {
+			for (int j = 0; j < Y_SCALE; j++) {
+				gameboard[i][j] = -1;
+			}
+		}
+	}
+
+	public void setArenaView(ArenaView arena) {
+		arenaView = arena;
 	}
 
 	// steps all the snakes forwards, returns true if there was a collision
