@@ -56,10 +56,6 @@ public class GameEngineThread extends Thread implements Parcelable {
 		}
 	}
 	
-	public synchronized void setArenaView(princeTron.UserInterface.ArenaView arena) {
-		engine.setArenaView(arena);
-	}
-	
 	public synchronized void readyToPlay(Collection<String> arg) {
 		network.readyToPlay(arg);
 	}
@@ -79,10 +75,9 @@ public class GameEngineThread extends Thread implements Parcelable {
 	}
 	
 	public synchronized void turn(boolean isLeft) {
-		Coordinate p = engine.turn(isLeft);
-		if (p == null) return;
-		int time = engine.numTics;
-		network.userTurn(p, time, isLeft);
+		long time = engine.numTics;
+		engine.turn(isLeft);
+		network.userTurn((int) time, isLeft);
 	}
 	
 	public synchronized void cancel() {

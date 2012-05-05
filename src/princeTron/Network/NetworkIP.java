@@ -38,6 +38,8 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 
 	private GameEngine game;
 	private WebSocketClient client;
+	
+	private boolean alreadyCrashed = false;
 
 	public NetworkIP()
 	{
@@ -106,6 +108,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 						else if (j.has("endGame"))
 						{
 							Log.i("NetworkIP", "ending game");
+							alreadyCrashed = false;
 							game.endGame();
 						}
 						else if (j.has("lobby")) {
@@ -115,9 +118,11 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							for (int i = 0; i < users.length; i++) {
 								try {
 									users[i] = array.getString(i);
+									Log.i("NetworkIP", "user: " + users[i]);
 								}
 								catch (Exception e) {
 									users[i] = "";
+									e.printStackTrace();
 								}
 							}
 							game.passLogin(users);
@@ -197,14 +202,12 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	}
 
 	// informs the Network that the user has turned                                   
-	public void userTurn(princeTron.Engine.Coordinate position, int time, boolean isLeft)  
+	public void userTurn(int time, boolean isLeft)  
 	{
 		try
 		{
 			JSONObject j = new JSONObject();
 			JSONObject turn = new JSONObject();
-			turn.put("xPos", position.x);
-			turn.put("yPos", position.y);
 			turn.put("timestamp", time);
 			turn.put("isLeft", isLeft);
 			j.put("turn", turn);
@@ -222,8 +225,6 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			try {
 				JSONObject j = new JSONObject();
 				JSONObject turn = new JSONObject();
-				turn.put("xPos", position.x);
-				turn.put("yPos", position.y);
 				turn.put("timestamp", time);
 				turn.put("isLeft", isLeft);
 				j.put("turn", turn);
@@ -238,13 +239,14 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	// informs the Network that the user has crashed
 	public void userCrash(Coordinate location, int time) 
 	{
+		if (alreadyCrashed) return;
+		else alreadyCrashed = true;
 		try
 		{
 			JSONObject j = new JSONObject();
 			JSONObject collision = new JSONObject();
 			collision.put("timestamp", time);
 			j.put("collision", collision);
-
 			client.send(j.toString());
 		}
 		catch ( InterruptedException ex )
@@ -267,7 +269,11 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			JSONObject user = new JSONObject();
 			user.put("user", username);
 			j.put("logIn", user);
-			while (client.getConnection() == null);
+			int count = 0;
+			while (client.getConnection() == null) {
+				count++;
+				if (count == 0) return;
+			}
 			System.out.println("connection isn't null");
 			while (client.getReadyState() != 1);
 			System.out.println(j.toString() + " about to send login");

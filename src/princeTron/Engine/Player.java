@@ -30,9 +30,7 @@ public class Player {
 		}
 	}
 	
-	// numSteps will likely always be 1, except in the case that a "turn"
-	// message is received, in which case the player is "rewound", and then
-	// "fast-forwarded" the difference between the time stamp and current time
+	
 	public void stepForward() {
 		Coordinate newPoint = new Coordinate(lastPoint.x, lastPoint.y);
 		switch (direction) {
@@ -54,6 +52,7 @@ public class Player {
 		playerTrail.add(newPoint);
 		lastPoint = newPoint;
 	}
+	//account
 	
 	// if a playerTurned message arrives in the past, we rewind the player
 	public void stepBackward(long numSteps) {

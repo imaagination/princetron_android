@@ -61,12 +61,12 @@ public class ArenaView extends TileView {
 	 * function to cause an update/invalidate to occur at a later date.
 	 */
 	private RefreshHandler mRedrawHandler = new RefreshHandler();
-	//private TicThread mRedrawHandler = new TicThread(100);
+	private TicThread timer = new TicThread(100);
 	
 	class TicThread extends Thread {
 		
 		private long interval;
-		private boolean toRun = true;
+		private boolean toRun = false;
 		
 		public TicThread(int interval) {
 			this.interval = interval;
@@ -76,10 +76,14 @@ public class ArenaView extends TileView {
 			while (toRun) {
 				try {
 					sleep(interval);
-					ArenaView.this.update();
+					Message msg = mRedrawHandler.obtainMessage();
+					msg.sendToTarget();
+					yield();
 				}
 				catch (Exception e) {
-					ArenaView.this.update();
+					Message msg = mRedrawHandler.obtainMessage();
+					msg.sendToTarget();
+					yield();
 				}
 			}
 		}
@@ -91,18 +95,23 @@ public class ArenaView extends TileView {
 	}
 
 	class RefreshHandler extends Handler {
-
-		private int count = 0;
+		
+		private long timeToUpdate;
+		
+		public RefreshHandler() {
+			timeToUpdate = System.currentTimeMillis();
+		}
 		
 		@Override
 		public void handleMessage(Message msg) {
 			//Log.i("ArenaView", "ticked!");
 			if (!(ArenaView.this.mMode == LOSE || ArenaView.this.mMode == WIN) ) {
-				if (count == 0) Log.i("ArenaView", ""+System.currentTimeMillis());
-				else Log.i("ArenaView", ""+count);
-				count++;
+				/*if (System.currentTimeMillis() >= timeToUpdate) {
+					ArenaView.this.update();
+					timeToUpdate += 100;
+				}*/
 				ArenaView.this.update();
-				sleep(100);
+				sleep(68);
 			}
 			else {
 				Log.i("ArenaView", "in mode LOSE");
@@ -110,11 +119,13 @@ public class ArenaView extends TileView {
 		}
 
 		public void sleep(long delayMillis) {
+			//removeMessages(0);
 			sendMessageDelayed(obtainMessage(0), delayMillis);
 		}
 		
 		public void cancel() {
 			this.removeMessages(0);
+			ArenaView.this.mMode = LOSE;
 			Log.i("ArenaView", ""+System.currentTimeMillis());
 		}
 	};
@@ -234,6 +245,7 @@ public class ArenaView extends TileView {
 				e.printStackTrace();
 			}
 			update();
+			timer.start();
 			mRedrawHandler.sleep(100);
 			return;
 		}
@@ -253,6 +265,7 @@ public class ArenaView extends TileView {
 				str += "\nYou Win!";
 			}
 			mRedrawHandler.cancel();
+			timer.cancel();
 			Log.i("ArenaView 326", "in newMode==LOSE");
 			return;
 		}
@@ -274,12 +287,17 @@ public class ArenaView extends TileView {
 	public void update() {
 		try {
 			//Log.i("ArenaView", "updating!");
+			if (engineThread == null) {
+				Log.i("ArenaView", "engine thread is null!");
+				return;
+			}
 			engineThread.update();
 			Iterable<Player> players = engineThread.getPlayers();
 			clearTiles();
 			updateWalls();
 			updateSnake(players);
 			invalidate();
+			return;
 		}
 		catch (Exception e) {
 			e.printStackTrace();

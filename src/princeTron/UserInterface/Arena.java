@@ -79,6 +79,7 @@ public class Arena extends Activity {
 		
 		@Override
 		public void handleMessage(Message msg) {
+			AlertDialog.Builder builder;
 			switch (msg.what){
 			case Arena.LOGGED_IN:
 				Log.i("Arena", "in LOGGED_IN");
@@ -86,27 +87,33 @@ public class Arena extends Activity {
 				loginObj = msg.obj;
 				break;
 			case Arena.IN_LOBBY:
-				AlertDialog.Builder builder = new AlertDialog.Builder(Arena.this);
-				builder.setMessage("Do you want to go back to the lobby?")
-				       .setCancelable(false)
-				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				                // figure out how to do shutdown properly
-				        	   setContentView(R.layout.lobby_layout);
-				        	   logIn(loginObj);
-				           }
-				       })
-				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				                
-				           }
-				       });
-				builder.show();
+				try {
+					builder = new AlertDialog.Builder(Arena.this);
+					builder.setMessage("Do you want to go back to the lobby?")
+					.setCancelable(false)
+					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							finish();
+							// figure out how to do shutdown properly
+							setContentView(R.layout.lobby_layout);
+							logIn(loginObj);
+						}
+					})
+					.setNegativeButton("No", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+
+						}
+					});
+					builder.show();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 				break;
 			case Arena.INVITED:
 				// tbd
 				builder = new AlertDialog.Builder(Arena.this);
-				builder.setMessage("Do you want to accept the invitation from " + (String) msg.obj)
+				builder.setMessage("Do you want to accept the invitation from " + (String) msg.obj + "?")
 				       .setCancelable(false)
 				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
@@ -175,10 +182,12 @@ public class Arena extends Activity {
 	public void onResume() {
 		super.onResume();
 		mArenaView = (ArenaView) findViewById(R.id.arena);
-		engine = new GameEngineThread(handler);
+		if (engine == null) engine = new GameEngineThread(handler);
 		//mArenaView.setGameEngine(engine);
 		Log.i("Arena", "engine instantiated");
-		engine.start();
+		if (!engine.isAlive()) {
+			engine.start();
+		}
 		engine.logIn(accountName);
 	}
 	
@@ -187,8 +196,8 @@ public class Arena extends Activity {
 		super.onPause();
 		try {
 			mArenaView.setMode(ArenaView.LOSE);
-			engine.disconnect();
-			engine.cancel();
+			//engine.disconnect();
+			//engine.cancel();
 		}
 		catch (Exception e) {
 			
@@ -198,21 +207,21 @@ public class Arena extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		engine.disconnect();
-		engine.cancel();
+		//engine.disconnect();
+		//engine.cancel();
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		engine.disconnect();
-		engine.cancel();
+		//engine.disconnect();
+		//engine.cancel();
 	}
 
 	ArrayList<String> invitees;
 	
 	public void readyToPlay(View view) {
-		if (invitees.size() == 0) invitees.add("amy.ousterhout@gmail.com");
+		//if (invitees.size() == 0) invitees.add("amy.ousterhout@gmail.com");
 		engine.readyToPlay(invitees);
 	}
 	
@@ -233,7 +242,13 @@ public class Arena extends Activity {
 		if (mArenaView == null) {
 			mArenaView = (ArenaView) findViewById(R.id.arena);
 		}
-		if (engine == null) engine = new GameEngineThread(handler);
+		if (engine == null) {
+			engine = new GameEngineThread(handler);
+			engine.start();
+		}
+		if (!engine.isAlive()) {
+			engine.start();
+		}
 		mArenaView.setGameEngine(engine);
 		//mArenaView.setTextView((TextView) findViewById(R.id.text));
 		mArenaView.setMode(ArenaView.READY);
