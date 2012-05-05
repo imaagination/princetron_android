@@ -142,14 +142,68 @@ public class Profile extends Activity{
 //				Toast.makeText(getApplicationContext(), values[i] + ""
 //						, Toast.LENGTH_LONG).show();
 //			}
-
 		} 
 		finally {
 			// any cleanup code...
 		}
-
-
 		return values;
-
 	}
+	
+	
+	public static int[] DownloadProfile(String userName) throws URISyntaxException, ClientProtocolException, IOException, JSONException {
+
+		if (userName == null)
+			userName = "Peter";
+		String uri = "http://www.princetron.com/u/" + userName;
+		int[] values = new int[6];
+
+		try {
+			HttpClient client = new DefaultHttpClient();
+			HttpGet request = new HttpGet();
+			request.setURI(new URI(uri));
+			HttpResponse response = client.execute(request);
+			InputStream ips  = response.getEntity().getContent();
+			BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"));
+
+			StringBuilder sb = new StringBuilder();
+			String s;
+			while(true )
+			{
+				s = buf.readLine();
+				if(s==null || s.length()==0)
+					break;
+				sb.append(s);
+
+			}
+			buf.close();
+			ips.close();
+
+			String input = sb.toString().replace("&quot;", "\"");
+
+//			Toast.makeText(getApplicationContext(), input
+//					, Toast.LENGTH_LONG).show();
+
+
+			JSONObject j = new JSONObject(input);
+
+			values[0] = j.getInt("joined_day");
+			values[1] = j.getInt("joined_month");
+			values[2] = j.getInt("wins");
+			values[3] = j.getInt("losses");
+			values[4] = j.getInt("rank");
+			values[5] = j.getInt("joined_year");
+
+
+//			for(int i = 0; i < 6; i++){
+//				Toast.makeText(getApplicationContext(), values[i] + ""
+//						, Toast.LENGTH_LONG).show();
+//			}
+		} 
+		finally {
+			// any cleanup code...
+		}
+		return values;
+	}
+	
+	
 }
