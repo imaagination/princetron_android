@@ -188,7 +188,10 @@ public class Arena extends Activity {
 		if (!engine.isAlive()) {
 			engine.start();
 		}
-		engine.logIn(accountName);
+		if (!engine.logIn(accountName)) {
+			Toast toast = Toast.makeText(Arena.this, "Log in failed. Relaunch to try again.", Toast.LENGTH_SHORT);
+			toast.show();
+		}
 	}
 	
 	@Override

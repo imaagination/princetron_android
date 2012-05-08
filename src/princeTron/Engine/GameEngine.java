@@ -4,17 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import princeTron.UserInterface.Arena;
-import princeTron.UserInterface.ArenaView;
 
 import android.os.Handler;
-import android.os.Vibrator;
 import android.os.Message;
 
 import android.util.Log;
 
 public class GameEngine extends princeTron.Network.NetworkGame {
 	// array of players' turns. Indexed by player id
-	private ArrayList<Player> players;
+	private HashMap<Integer, Player> players = new HashMap<Integer, Player>();
 	// number of tics since game started
 	public Integer numTics = 0;
 	private boolean isReady = false;
@@ -35,7 +33,6 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public static final long mMoveDelay = 100;
 
 	public GameEngine(Handler handler) {
-		players = new ArrayList<Player>();
 		visitedMap = new HashMap<Integer, ArrayList<Integer>>();
 		this.handler = handler;
 	}
@@ -61,7 +58,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		Log.i("GameEngine", ""+starts.length);
 		for (int i = 0; i < starts.length; i++) {
 				Player p = new Player(starts[i], dirs[i]);
-				players.add(p);
+				players.put(i, p);
 		}
 		this.myId = myId;
 		Log.i("GameEngine", "myId: " + myId);
@@ -73,22 +70,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// on the local snake
 	public Coordinate update() {
 		//Log.i("GameEngine", "visited: " + visitedMap.size());
-		HashMap<Integer, Boolean> turns = turnQueue.get(numTics);
-		if (turns == null) turns = new HashMap<Integer, Boolean>();
-		else Log.i("GameEngine", "there were turns!");
-		for (Player player : players) {
+		for (Integer i : players.keySet()) {
+			Player player = players.get(i);
 			if (!player.hasStopped()) {
-				if (turns.containsKey(player.getId())) {
-					boolean isLeft = turns.remove(player.getId());
-					int direction = 0;
-					if (isLeft) direction = -1;
-					else direction = 1;
-					Log.i("old player direction", ""+player.getDirection());
-					int newDirection = (player.getDirection() + direction)%4;
-					if (newDirection == -1) newDirection = 3; // stupid mod op in java
-					player.setDirection(newDirection);
-					Log.i("new player direction", ""+player.getDirection());
-				}
 				player.stepForward();
 				Coordinate current = player.currentPoint();
 				ArrayList<Integer> yList = visitedMap.get(current.x);
@@ -108,31 +92,23 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 				}
 				visitedMap.put(current.x, yList);
 			}
+			players.put(i, player);
 		}
 		numTics++;
-
 		return null;
 	}
 
 	public Iterable<Player> getPlayers() {
-		return players;
+		return players.values();
 	}
 
 	// called by the UI when the player turns. argument is true if 
 	// left turn, false otherwise
 	public void turn(boolean isLeft) {
-		HashMap<Integer, Boolean> turns = turnQueue.get(numTics);
-		if (turns == null) turns = new HashMap<Integer, Boolean>();
-		if (turns.containsKey(myId)) {
-			HashMap<Integer, Boolean> turns2 = turnQueue.get(numTics + 1);
-			if (turns2 == null) turns2 = new HashMap<Integer, Boolean>();
-			turns2.put(numTics + 1, isLeft);
-			turnQueue.put(numTics + 1, turns2);
-		}
-		else {
-			turns.put(myId, isLeft);
-			turnQueue.put(numTics, turns);
-		}/*
+		Player player = players.get(myId);
+		player.turn(isLeft, numTics);
+		players.put(myId, player);
+		/*
 		if (myId == -1) return;
 		Player player = players.get(myId);
 		Log.i("player id", ""+player.getId());
@@ -146,8 +122,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		Log.i("new player direction", ""+player.getDirection());*/
 	}
 
-	public ArrayList<Player> getTrails() {
-		return players;
+	public Iterable<Player> getTrails() {
+		return players.values();
 	}
 
 	public boolean isReady() {
@@ -167,7 +143,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 
 	// TODO: Include a "WIN" condition
 	public void gameResult(int playerId, boolean isWin) {
-		for (Player player : players) {
+		for (Player player : players.values()) {
 			Log.i("GameEngine", "player " + player.getId() + "loc: " + player.currentPoint());
 			if (player.getId() == playerId) {
 				player.stop();
@@ -190,21 +166,19 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public void opponentTurn(int playerId, int time, boolean isLeft) {
 		Log.i("GameEngine", "time: " + time);
 		Log.i("GameEngine", "numTics: " + numTics);
-		HashMap<Integer, Boolean> turns = turnQueue.get(numTics);
-		if (turns == null) turns = new HashMap<Integer, Boolean>();
-		turns.put(playerId, isLeft);
-		turnQueue.put(numTics, turns);
+		Player player = players.get(playerId);
+		player.turn(isLeft, time);
+		players.put(playerId, player);
 		int diff = numTics - time;
-		if (time < numTics) {
-			for (Player p : players) {
-				p.stepBackward(diff + 1);
-			}
-			numTics -= diff;
-			for (int i = 0; i < diff; i++) {
-				update();
-			}
+		for (Integer i : players.keySet()) {
+			Player p = players.get(i);
+			p.stepBackward(diff);
+			players.put(i, p);
 		}
-		Log.i("GameEngine", "numTics: " + numTics);
+		numTics -= diff;
+		for (int i = 0; i < diff; i++) {
+			update();
+		}
 		//player.stepBackward(numTics - time);
 		/*int count = 0;
 		Player player = null;

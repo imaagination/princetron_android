@@ -262,23 +262,27 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 
-	public void logIn(String username) {
+	public boolean logIn(String username) {
 		try {
 			Log.i("NetworkIP", "logging in");
 			JSONObject j = new JSONObject();
 			JSONObject user = new JSONObject();
 			user.put("user", username);
 			j.put("logIn", user);
-			int count = 0;
-			while (client.getConnection() == null) {
-				count++;
-				if (count == 0) return;
+			if (client.getConnection() == null) {
+				return false;
 			}
 			System.out.println("connection isn't null");
-			while (client.getReadyState() != 1);
+			long startTime = System.currentTimeMillis();
+			while (client.getReadyState() != 1) {
+				if (System.currentTimeMillis() > startTime + 2000) {
+					return false;
+				}
+			}
 			System.out.println(j.toString() + " about to send login");
 			client.send(j.toString());
 			System.out.println(j.toString() + " sent login");
+			return true;
 		}
 		catch (JSONException jex) {
 			jex.printStackTrace();
@@ -289,6 +293,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 	
 	public void acceptInvitation() {

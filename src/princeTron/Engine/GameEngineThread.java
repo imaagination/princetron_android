@@ -65,8 +65,8 @@ public class GameEngineThread extends Thread implements Parcelable {
 		network.acceptInvitation();
 	}
 	
-	public synchronized void logIn(String accountName) {
-		network.logIn(accountName);
+	public synchronized boolean logIn(String accountName) {
+		return network.logIn(accountName);
 	}
 	
 	private synchronized void userCrash(Coordinate p, int time) {
@@ -75,9 +75,9 @@ public class GameEngineThread extends Thread implements Parcelable {
 	}
 	
 	public synchronized void turn(boolean isLeft) {
-		long time = engine.numTics;
+		int time = engine.numTics;
 		engine.turn(isLeft);
-		network.userTurn((int) time, isLeft);
+		network.userTurn(time, isLeft);
 	}
 	
 	public synchronized void cancel() {

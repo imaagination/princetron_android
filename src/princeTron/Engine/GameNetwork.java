@@ -13,7 +13,7 @@ public abstract class GameNetwork {
 	// tells the network that we're ready to play, and potentially invites friends
 	public abstract void readyToPlay(Collection<String> invites);
 	// logs in with the given account name
-	public abstract void logIn(String accountName);
+	public abstract boolean logIn(String accountName);
 	// accept an invitation to play
 	public abstract void acceptInvitation();
 	// disconnects socket
