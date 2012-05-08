@@ -1,5 +1,7 @@
 package princeTron.UserInterface;
 
+import java.util.ArrayList;
+
 import princeTron.Engine.*;
 
 import android.content.Context;
@@ -247,7 +249,7 @@ public class ArenaView extends TileView {
 				e.printStackTrace();
 			}
 			//initArenaView();
-			//update();
+			update();
 			//timer.start();
 			mRedrawHandler.sleep(2);
 			return;
@@ -328,8 +330,19 @@ public class ArenaView extends TileView {
 	private void updateSnake(Iterable<Player> players) {
 		for (Player player : players) {
 			//Log.i("playerid", ""+player.getId());
-			Iterable<Coordinate> tempPoints = player.getPoints();
-			for (Coordinate p : tempPoints) {
+			/*ArrayList<Coordinate> tempPoints = new ArrayList<Coordinate>();
+			boolean cloned = true;
+			for (Coordinate p : player.getPoints()) {
+				Coordinate c = (Coordinate) p.clone();
+				if (c != null) {
+					tempPoints.add((Coordinate) p.clone());
+				}
+				else {
+					cloned = false;
+				}
+			}
+			if (!cloned) tempPoints = (ArrayList<Coordinate>) player.getPoints();*/
+			for (Coordinate p : player.getPoints()) {
 				try {
 					//Log.i("x, y", p.x + ", " + p.y);
 					setTile(player.getId() + 1, p.x, p.y);

@@ -6,7 +6,7 @@ package princeTron.Engine;
  * easy to build.
  * 
  */
-public class Coordinate {
+public class Coordinate implements Cloneable {
 	public int x;
 	public int y;
 
@@ -23,5 +23,15 @@ public class Coordinate {
 	@Override
 	public String toString() {
 		return "Coordinate: [" + x + "," + y + "]";
+	}
+	
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		}
+		catch (CloneNotSupportedException e) {
+			return null;
+		}
 	}
 }

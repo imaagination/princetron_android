@@ -19,6 +19,8 @@ public class Player {
 	private HashMap<Integer, Boolean> turns = new HashMap<Integer, Boolean>();
 	
 	public Player(Coordinate coord, int direction, int id){
+		turns = new HashMap<Integer, Boolean>();
+		playerTrail = new ArrayList<Coordinate>();
 		playerTrail.add(coord);
 		lastPoint = coord;
 		this.direction = direction;
@@ -33,31 +35,16 @@ public class Player {
 	}
 	
 	public void turn(boolean isLeft, int numTics) {
+		if (turns.containsKey(numTics)) {
+			turns.put(numTics+1, isLeft);
+			return;
+		}
 		turns.put(numTics, isLeft);
 	}
 	
-	public void stepForward() {
-		Log.i("Player", "Number of points = " + playerTrail.size());
+	public synchronized void stepForward() {
+		//Log.i("Player", "Number of points = " + playerTrail.size());
 		//Log.i("Player", ""+direction);
-		Coordinate newPoint = new Coordinate(lastPoint.x, lastPoint.y);
-		lastPoint = playerTrail.get(playerTrail.size() - 1);
-		switch (direction) {
-		case GameEngine.NORTH:
-			newPoint = new Coordinate(lastPoint.x, lastPoint.y + 1);
-			break;
-		case GameEngine.EAST:
-			newPoint = new Coordinate(lastPoint.x + 1, lastPoint.y);
-			break;
-		case GameEngine.SOUTH:
-			newPoint = new Coordinate(lastPoint.x, lastPoint.y - 1);
-			break;
-		case GameEngine.WEST:
-			newPoint = new Coordinate(lastPoint.x - 1, lastPoint.y);
-			break;
-		default:
-			Log.i("Player", "No direction!");
-		}
-		playerTrail.add(newPoint);
 		if (turns.containsKey(numTics)) {
 			boolean isLeft = turns.get(numTics);
 			switch (direction) {
@@ -103,18 +90,37 @@ public class Player {
 			}
 			//Log.i("Player", ""+direction);
 		}
+		Coordinate newPoint = new Coordinate(lastPoint.x, lastPoint.y);
+		lastPoint = playerTrail.get(playerTrail.size() - 1);
+		switch (direction) {
+		case GameEngine.NORTH:
+			newPoint = new Coordinate(lastPoint.x, lastPoint.y + 1);
+			break;
+		case GameEngine.EAST:
+			newPoint = new Coordinate(lastPoint.x + 1, lastPoint.y);
+			break;
+		case GameEngine.SOUTH:
+			newPoint = new Coordinate(lastPoint.x, lastPoint.y - 1);
+			break;
+		case GameEngine.WEST:
+			newPoint = new Coordinate(lastPoint.x - 1, lastPoint.y);
+			break;
+		default:
+			Log.i("Player", "No direction!");
+		}
+		Log.i("Player " + id, ""+newPoint);
+		playerTrail.add(newPoint);
 		numTics++;
 	}
 	//account
 	
 	// if a playerTurned message arrives in the past, we rewind the player
-	public ArrayList<Coordinate> stepBackward(int numSteps) {
-		Log.i("Player", "Id is " + id);
-		Log.i("Player", "Stepping back " + numSteps + " steps");
-		Log.i("Player", "There are " + playerTrail.size() + " points");
+	public synchronized ArrayList<Coordinate> stepBackward(int numSteps) {
 		ArrayList<Coordinate> toReturn = new ArrayList<Coordinate>();
 		for (int i = 0; i < numSteps; i++) {
-			lastPoint = playerTrail.remove(playerTrail.size() - 1);
+			playerTrail.remove(playerTrail.size() - 1);
+			lastPoint = playerTrail.get(playerTrail.size() - 1);
+			Log.i("Player " + id, ""+lastPoint);
 			toReturn.add(lastPoint);
 			if (turns.containsKey(numTics)) {
 				Log.i("Player", "turned back!");
@@ -186,7 +192,7 @@ public class Player {
 		return lastPoint;
 	}
 	
-	public Iterable<Coordinate> getPoints() {
+	public synchronized Iterable<Coordinate> getPoints() {
 		return playerTrail;
 	}
 	
