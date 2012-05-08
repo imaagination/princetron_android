@@ -15,6 +15,7 @@
         android:id="@+id/textLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dip"
         android:layout_toRightOf="@+id/iconLine"
         android:textColor="#ff000000"
@@ -26,6 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:gravity="center"
-        android:text="Info" />
+        android:text="Profile" />
 
 </RelativeLayout>

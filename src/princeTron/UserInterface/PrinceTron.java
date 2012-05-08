@@ -21,6 +21,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -45,10 +46,10 @@ public class PrinceTron extends Activity {
 		AccountManager am = AccountManager.get(this);
 		Account[] accounts = am.getAccountsByType("com.google");
 		
-		
 		//set content view
-		setContentView(R.layout.homescreen);
-		TextView tv = (TextView) findViewById(R.id.welcomePrompt);
+		setContentView(R.layout.welcome);
+		TextView tv = (TextView) findViewById(R.id.welcomeP);
+		tv.setGravity(Gravity.CENTER_HORIZONTAL);
 
 		if(accounts.length != 0){
 			userName = accounts[0].name;
@@ -56,51 +57,32 @@ public class PrinceTron extends Activity {
 			tv.setText("Hello, " + userName + ". What would you like to do?");
 		}else
 			tv.setText("Hello." + " What would you like to do?");
-
-		// initialize the home screen buttons
-		Button newgamebutton = (Button) findViewById(R.id.playnowbutton);
-		Button profilebutton = (Button) findViewById(R.id.profilebutton);
-		Button leaderbutton = (Button) findViewById(R.id.leaderbutton);
-
-		// set up listeners for the home screen buttons
-		newgamebutton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				Log.i("PrinceTron", "starting Arena");
-				Intent myIntent = new Intent(view.getContext(),
-						Arena.class);
-				
-				myIntent.putExtra("userName", userName);
-				
-				startActivityForResult(myIntent, 0);				
-			}
-		});
-
-
-
-
-		profilebutton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				Intent myIntent = new Intent(view.getContext(),
-						Profile.class);
-				
-				myIntent.putExtra("userName", userName);
-				
-				startActivityForResult(myIntent, 0);		
-			}
-		});
+	}
+	
+	public void goToGame(View v){
+		Log.i("PrinceTron", "starting Arena");
+		Intent myIntent = new Intent(v.getContext(),
+				Arena.class);
+		myIntent.putExtra("userName", userName);
+		startActivityForResult(myIntent, 0);
+	}
+	
+	public void goToProfile(View v){
+		Log.i("PrinceTron", "going to Profile");
+		Intent myIntent = new Intent(v.getContext(),
+				Profile.class);
+		myIntent.putExtra("userName", userName);
+		startActivityForResult(myIntent, 0);
 		
-		leaderbutton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				Log.i("PrinceTron", "starting Arena");
-				Intent myIntent = new Intent(view.getContext(),
-						Leaderboard.class);
-				
-				myIntent.putExtra("userName", userName);
-				
-				startActivityForResult(myIntent, 0);				
-			}
-		});
-
+	}
+	
+	public void goToLeaderBoard(View v){
+		Log.i("PrinceTron", "going to LeaderBoard");
+		Intent myIntent = new Intent(v.getContext(),
+				Leaderboard.class);
+		myIntent.putExtra("userName", userName);
+		startActivityForResult(myIntent, 0);	
+		
 	}
 
 }

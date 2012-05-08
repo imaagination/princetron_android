@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout01"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/screen_background" >
@@ -21,5 +22,6 @@
         android:layout_marginTop="10dip"
         android:cacheColorHint="#00000000"
         android:drawSelectorOnTop="false" />
+
 
 </RelativeLayout>

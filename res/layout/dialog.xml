@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#151B8D" >
+
+    <TextView
+        android:id="@+id/Tv1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#696969"
+        android:editable="true"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="25px" />
+
+    <TextView
+        android:id="@+id/Tv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Tv1"
+        android:layout_centerHorizontal="true"
+        android:editable="true"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20px" />
+
+    <Button
+        android:id="@+id/Btn1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/Tv2"
+        android:onClick="closeDialog"
+        android:text="Close" />
+
+</RelativeLayout>
