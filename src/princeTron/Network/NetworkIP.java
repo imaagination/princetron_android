@@ -269,11 +269,14 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			JSONObject user = new JSONObject();
 			user.put("user", username);
 			j.put("logIn", user);
-			if (client.getConnection() == null) {
-				return false;
+			long startTime = System.currentTimeMillis();
+			while (client.getConnection() == null) {
+				if (System.currentTimeMillis() > startTime + 2000) {
+					return false;
+				}
 			}
 			System.out.println("connection isn't null");
-			long startTime = System.currentTimeMillis();
+			startTime = System.currentTimeMillis();
 			while (client.getReadyState() != 1) {
 				if (System.currentTimeMillis() > startTime + 2000) {
 					return false;

@@ -13,17 +13,16 @@ public class Player {
 	private Coordinate lastPoint = new Coordinate(0, 0);
 	private int direction;
 	private int id;
-	private int numTics;
+	public int numTics;
 	public static int static_id = 0;
 	private boolean hasStopped = false;
 	private HashMap<Integer, Boolean> turns = new HashMap<Integer, Boolean>();
 	
-	public Player(Coordinate coord, int direction){
+	public Player(Coordinate coord, int direction, int id){
 		playerTrail.add(coord);
 		lastPoint = coord;
 		this.direction = direction;
-		id = static_id;
-		static_id++;
+		this.id = id;
 		//this.nextDirection = direction;
 	}
 	
@@ -38,7 +37,10 @@ public class Player {
 	}
 	
 	public void stepForward() {
+		Log.i("Player", "Number of points = " + playerTrail.size());
+		//Log.i("Player", ""+direction);
 		Coordinate newPoint = new Coordinate(lastPoint.x, lastPoint.y);
+		lastPoint = playerTrail.get(playerTrail.size() - 1);
 		switch (direction) {
 		case GameEngine.NORTH:
 			newPoint = new Coordinate(lastPoint.x, lastPoint.y + 1);
@@ -56,8 +58,6 @@ public class Player {
 			Log.i("Player", "No direction!");
 		}
 		playerTrail.add(newPoint);
-		lastPoint = newPoint;
-		Log.i("Player", ""+direction);
 		if (turns.containsKey(numTics)) {
 			boolean isLeft = turns.get(numTics);
 			switch (direction) {
@@ -101,17 +101,69 @@ public class Player {
 					direction = GameEngine.NORTH;
 				}
 			}
-			Log.i("Player", ""+direction);
+			//Log.i("Player", ""+direction);
 		}
 		numTics++;
 	}
 	//account
 	
 	// if a playerTurned message arrives in the past, we rewind the player
-	public void stepBackward(int numSteps) {
+	public ArrayList<Coordinate> stepBackward(int numSteps) {
+		Log.i("Player", "Id is " + id);
+		Log.i("Player", "Stepping back " + numSteps + " steps");
+		Log.i("Player", "There are " + playerTrail.size() + " points");
+		ArrayList<Coordinate> toReturn = new ArrayList<Coordinate>();
 		for (int i = 0; i < numSteps; i++) {
-			playerTrail.remove(playerTrail.size() - 1);
+			lastPoint = playerTrail.remove(playerTrail.size() - 1);
+			toReturn.add(lastPoint);
+			if (turns.containsKey(numTics)) {
+				Log.i("Player", "turned back!");
+				boolean isLeft = turns.get(numTics);
+				switch (direction) {
+				case GameEngine.NORTH:
+					if (isLeft) {
+						//Log.i("Player", "NORTH to WEST");
+						direction = GameEngine.EAST;
+					}
+					else {
+						//Log.i("Player", "NORTH to EAST");
+						direction = GameEngine.WEST;
+					}
+					break;
+				case GameEngine.EAST:
+					if (isLeft) {
+						//Log.i("Player", "EAST to NORTH");
+						direction = GameEngine.SOUTH;
+					}
+					else {
+						//Log.i("Player", "EAST to SOUTH");
+						direction = GameEngine.NORTH;
+					}
+					break;
+				case GameEngine.SOUTH:
+					if (isLeft) {
+						//Log.i("Player", "SOUTH to EAST");
+						direction = GameEngine.WEST;
+					}
+					else {
+						//Log.i("Player", "SOUTH to WEST");
+						direction = GameEngine.EAST;
+					}
+					break;
+				case GameEngine.WEST:
+					if (isLeft) {
+						//Log.i("Player", "WEST to SOUTH");
+						direction = GameEngine.NORTH;
+					}
+					else {
+						//Log.i("Player", "WEST to NORTH");
+						direction = GameEngine.SOUTH;
+					}
+				}
+			}
+			numTics--;
 		}
+		return toReturn;
 	}
 
 	public int getDirection(){

@@ -11,7 +11,7 @@
         android:onClick="readyToPlay"
         android:text="@string/ready_button_text" />
 
-    <LinearLayout
+   <!--   <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -32,7 +32,7 @@
             <requestFocus />
         </EditText>
 
-    </LinearLayout>
+    </LinearLayout> -->
 
     <TextView
         android:id="@+id/invitee_header"

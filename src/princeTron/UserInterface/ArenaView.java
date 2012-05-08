@@ -30,7 +30,7 @@ public class ArenaView extends TileView {
 	public static final int LOSE = 3;
 	public static final int WIN = 4;
 
-	private princeTron.Engine.GameEngineThread engineThread;
+	public princeTron.Engine.GameEngineThread engineThread;
 
 	/**
 	 * Labels for the drawables that will be loaded into the TileView class
@@ -61,7 +61,7 @@ public class ArenaView extends TileView {
 	 * function to cause an update/invalidate to occur at a later date.
 	 */
 	private RefreshHandler mRedrawHandler = new RefreshHandler();
-	private TicThread timer = new TicThread(100);
+	//private TicThread timer = new TicThread(100);
 	
 	class TicThread extends Thread {
 		
@@ -106,12 +106,12 @@ public class ArenaView extends TileView {
 		public void handleMessage(Message msg) {
 			//Log.i("ArenaView", "ticked!");
 			if (!(ArenaView.this.mMode == LOSE || ArenaView.this.mMode == WIN) ) {
-				/*if (System.currentTimeMillis() >= timeToUpdate) {
+				if (System.currentTimeMillis() >= timeToUpdate) {
 					ArenaView.this.update();
 					timeToUpdate += 100;
-				}*/
-				ArenaView.this.update();
-				sleep(68);
+				}
+				//ArenaView.this.update();
+				sleep(2);
 			}
 			else {
 				Log.i("ArenaView", "in mode LOSE");
@@ -119,7 +119,7 @@ public class ArenaView extends TileView {
 		}
 
 		public void sleep(long delayMillis) {
-			//removeMessages(0);
+			removeMessages(0);
 			sendMessageDelayed(obtainMessage(0), delayMillis);
 		}
 		
@@ -160,8 +160,10 @@ public class ArenaView extends TileView {
 	 */
 	public ArenaView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		Log.i("ArenaView", "IN CONSTRUCTOR!");
 		initArenaView();
 		this.mContext = context;
+		mMode = 0;
 		wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
 		width = wm.getDefaultDisplay().getWidth(); // deprecated
 		// THIS HAS BEEN MOVED
@@ -202,7 +204,7 @@ public class ArenaView extends TileView {
 	public void initArenaView() {
 		setFocusable(true);
 		Resources r = this.getContext().getResources();
-
+		Log.i("ArenaView", "initializing arena view!");
 		resetTiles(4);
 		loadTile(RED_STAR, r.getDrawable(R.drawable.orange));
 		loadTile(YELLOW_STAR, r.getDrawable(R.drawable.yellowstar));
@@ -244,9 +246,10 @@ public class ArenaView extends TileView {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-			update();
-			timer.start();
-			mRedrawHandler.sleep(100);
+			//initArenaView();
+			//update();
+			//timer.start();
+			mRedrawHandler.sleep(2);
 			return;
 		}
 
@@ -265,7 +268,7 @@ public class ArenaView extends TileView {
 				str += "\nYou Win!";
 			}
 			mRedrawHandler.cancel();
-			timer.cancel();
+			//timer.cancel();
 			Log.i("ArenaView 326", "in newMode==LOSE");
 			return;
 		}
@@ -281,9 +284,6 @@ public class ArenaView extends TileView {
 	 * Handles the basic update loop, checking to see if we are in the running
 	 * state, determining if a move should be made, updating the snake's location.
 	 */
-	// THIS WILL BE CHANGED SLIGHTLY - updateWalls() and/or updateSnake() will 
-	// be function calls into the GameEngine
-	// Actually, this is all departing to the GameEngine
 	public void update() {
 		try {
 			//Log.i("ArenaView", "updating!");
@@ -328,13 +328,14 @@ public class ArenaView extends TileView {
 	private void updateSnake(Iterable<Player> players) {
 		for (Player player : players) {
 			//Log.i("playerid", ""+player.getId());
-			for (Coordinate p : player.getPoints()) {
+			Iterable<Coordinate> tempPoints = player.getPoints();
+			for (Coordinate p : tempPoints) {
 				try {
 					//Log.i("x, y", p.x + ", " + p.y);
 					setTile(player.getId() + 1, p.x, p.y);
 				}
 				catch (Exception e) {
-					//e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 		}

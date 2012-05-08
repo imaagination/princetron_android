@@ -151,6 +151,7 @@ public class TileView extends View {
      * @param y
      */
     public void setTile(int tileindex, int x, int y) {
+    	tileindex = tileindex % 4;
     	// maps [0,200] -> [min x/y on screen, max x/y on screen]
     	try {
     		x = mapX(x);
@@ -177,12 +178,17 @@ public class TileView extends View {
     	int count = Math.min(mXTileCount, mYTileCount);
     	mXTileCount = count;
     	mYTileCount = count;
+    	//Log.i("TileView", ""+count);
     	super.onDraw(canvas);
+    	int x = 0, y = 0;
     	try {
-    		for (int x = 0; x < mXTileCount; x += 1) {
-    			for (int y = 0; y < mYTileCount; y += 1) {
+    		for (x = 0; x < mXTileCount; x += 1) {
+    			for (y = 0; y < mYTileCount; y += 1) {
     				if (mTileGrid[x][y] > 0) {
-    					canvas.drawBitmap(mTileArray[mTileGrid[x][y]], 
+    					int z = mTileGrid[x][y];
+    					//System.out.println("z: " + z);
+    					Bitmap b = mTileArray[z];
+    					canvas.drawBitmap(b, 
     							mXOffset + x * mTileSize,
     							mYOffset + y * mTileSize,
     							mPaint);
@@ -191,7 +197,9 @@ public class TileView extends View {
     		}
     	}
     	catch (Exception e) {
-    		
+    		e.printStackTrace();
+    		/*System.out.println(x);
+    		System.out.println(y);*/
     	}
     }
 

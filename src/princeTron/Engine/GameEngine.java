@@ -19,8 +19,6 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	private int myId = -1;
 	// for collision detection - the proper way is mysteriously not working
 	private HashMap<Integer, ArrayList<Integer>> visitedMap = new HashMap<Integer, ArrayList<Integer>>();
-	// for queueing turns
-	private HashMap<Integer, HashMap<Integer, Boolean>> turnQueue = new HashMap<Integer, HashMap<Integer, Boolean>>();
 
 	private Handler handler;
 
@@ -35,6 +33,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public GameEngine(Handler handler) {
 		visitedMap = new HashMap<Integer, ArrayList<Integer>>();
 		this.handler = handler;
+		visitedMap = new HashMap<Integer, ArrayList<Integer>>();
+		players = new HashMap<Integer, Player>();
 	}
 	
 	public void passInvitation(String username) {
@@ -57,7 +57,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public void passEnterArena(Coordinate[] starts, int[] dirs, int myId) {
 		Log.i("GameEngine", ""+starts.length);
 		for (int i = 0; i < starts.length; i++) {
-				Player p = new Player(starts[i], dirs[i]);
+				Player p = new Player(starts[i], dirs[i], i);
 				players.put(i, p);
 		}
 		this.myId = myId;
@@ -68,7 +68,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 
 	// steps all the snakes forwards, returns true if there was a collision
 	// on the local snake
-	public Coordinate update() {
+	public Coordinate update(boolean toReturn) {
 		//Log.i("GameEngine", "visited: " + visitedMap.size());
 		for (Integer i : players.keySet()) {
 			Player player = players.get(i);
@@ -81,14 +81,14 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 				}
 				if (player.getId() == myId && yList.contains(current.y)) {
 					Log.i("GameEngine", "crash!");
-					return current; // collision
+					if (toReturn) return current; // collision
 				}
 				else {
 					yList.add(current.y);
 				}
 				if ((player.getId() == myId) && (current.x > 100 || current.y > 100 
 						|| current.x < 0 || current.y < 0)) {
-					return current; // off the edge
+					if (toReturn) return current; // off the edge
 				}
 				visitedMap.put(current.x, yList);
 			}
@@ -170,15 +170,30 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		player.turn(isLeft, time);
 		players.put(playerId, player);
 		int diff = numTics - time;
+		if (diff < 0) return;
 		for (Integer i : players.keySet()) {
 			Player p = players.get(i);
+			Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
+			Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
 			p.stepBackward(diff);
+			/*for (Coordinate c : removed) {
+				ArrayList<Integer> yList = visitedMap.get(c.x);
+				if (yList == null) yList = new ArrayList<Integer>();
+				yList.remove(c.y);
+				visitedMap.put(c.x, yList);
+			}*/
 			players.put(i, p);
 		}
 		numTics -= diff;
 		for (int i = 0; i < diff; i++) {
-			update();
+			update(false);
 		}
+		for (Player p : players.values()) {
+			Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
+			Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
+			Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
+		}
+		Log.i("GameEngine", "numTics: " + numTics);
 		//player.stepBackward(numTics - time);
 		/*int count = 0;
 		Player player = null;

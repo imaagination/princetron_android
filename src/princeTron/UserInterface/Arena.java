@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.content.DialogInterface;
+import android.content.Intent;
 import princeTron.Engine.*;
 import android.util.Log;
 import android.os.Handler;
@@ -79,24 +80,34 @@ public class Arena extends Activity {
 		
 		@Override
 		public void handleMessage(Message msg) {
+			Log.i("Arena", "" + msg.what);
 			AlertDialog.Builder builder;
 			switch (msg.what){
 			case Arena.LOGGED_IN:
 				Log.i("Arena", "in LOGGED_IN");
+				if (mArenaView != null && mArenaView.engineThread == null) {
+					Log.i("Arena", "engineThread is null2");
+				}
 				logIn(msg.obj);
 				loginObj = msg.obj;
 				break;
 			case Arena.IN_LOBBY:
 				try {
+					if (mArenaView != null && mArenaView.engineThread == null) {
+						Log.i("Arena", "engineThread is null");
+					}
 					builder = new AlertDialog.Builder(Arena.this);
 					builder.setMessage("Do you want to go back to the lobby?")
 					.setCancelable(false)
 					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							finish();
 							// figure out how to do shutdown properly
-							setContentView(R.layout.lobby_layout);
-							logIn(loginObj);
+							//finish();
+							Intent intent = getIntent();
+							finish();
+							startActivity(intent);
+							//setContentView(R.layout.lobby_layout);
+							//logIn(loginObj);
 						}
 					})
 					.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -112,6 +123,9 @@ public class Arena extends Activity {
 				break;
 			case Arena.INVITED:
 				// tbd
+				if (mArenaView != null && mArenaView.engineThread == null) {
+					Log.i("Arena", "engineThread is null3");
+				}
 				builder = new AlertDialog.Builder(Arena.this);
 				builder.setMessage("Do you want to accept the invitation from " + (String) msg.obj + "?")
 				       .setCancelable(false)
@@ -133,6 +147,9 @@ public class Arena extends Activity {
 				break;
 			case Arena.IN_ARENA:
 				Arena.this.goToArena();
+				if (mArenaView != null && mArenaView.engineThread == null) {
+					Log.i("Arena", "engineThread is null4");
+				}
 				Toast toast = Toast.makeText(Arena.this, "About to play...", Toast.LENGTH_SHORT);
 				toast.show();
 				break;
@@ -186,7 +203,12 @@ public class Arena extends Activity {
 		//mArenaView.setGameEngine(engine);
 		Log.i("Arena", "engine instantiated");
 		if (!engine.isAlive()) {
-			engine.start();
+			try {
+				engine.start();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		if (!engine.logIn(accountName)) {
 			Toast toast = Toast.makeText(Arena.this, "Log in failed. Relaunch to try again.", Toast.LENGTH_SHORT);
@@ -199,8 +221,8 @@ public class Arena extends Activity {
 		super.onPause();
 		try {
 			mArenaView.setMode(ArenaView.LOSE);
-			//engine.disconnect();
-			//engine.cancel();
+			engine.disconnect();
+			engine.cancel();
 		}
 		catch (Exception e) {
 			
@@ -210,15 +232,15 @@ public class Arena extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		//engine.disconnect();
-		//engine.cancel();
+		engine.disconnect();
+		engine.cancel();
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		//engine.disconnect();
-		//engine.cancel();
+		engine.disconnect();
+		engine.cancel();
 	}
 
 	ArrayList<String> invitees;
@@ -228,29 +250,37 @@ public class Arena extends Activity {
 		engine.readyToPlay(invitees);
 	}
 	
-	public void addInvitee(View view) {
+	/*public void addInvitee(View view) {
 		EditText et = (EditText) findViewById(R.id.invitee_edit_text);
 		String email = et.getText().toString();
-		// TODO: Validate email!
 		TextView tv = (TextView) findViewById(R.id.invitee_list);
 		String text = tv.getText().toString();
 		if (text.equals("None")) tv.setText(email);	
 		else tv.setText(text + "\n" + email);
 		invitees.add(email);
-	}
+	}*/
 	
 	public void goToArena(){
 		Log.i("Arena", "going to arena");
 		setContentView(R.layout.arena_layout);
+		if (mArenaView != null && mArenaView.engineThread == null) {
+			Log.i("Arena", "engineThread is null5");
+		}
 		if (mArenaView == null) {
 			mArenaView = (ArenaView) findViewById(R.id.arena);
 		}
 		if (engine == null) {
 			engine = new GameEngineThread(handler);
 			engine.start();
+			mArenaView.setGameEngine(engine);
 		}
 		if (!engine.isAlive()) {
-			engine.start();
+			try {
+				engine.start();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		mArenaView.setGameEngine(engine);
 		//mArenaView.setTextView((TextView) findViewById(R.id.text));
@@ -259,6 +289,10 @@ public class Arena extends Activity {
 	
 	public void startGame() {
 		mArenaView = (ArenaView) findViewById(R.id.arena);
+		if (mArenaView != null && mArenaView.engineThread == null) {
+			Log.i("Arena", "engineThread is null6");
+			mArenaView.setGameEngine(engine);
+		}
 		try {
 			mArenaView.setMode(ArenaView.RUNNING);
 		}

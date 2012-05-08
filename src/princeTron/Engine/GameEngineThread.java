@@ -36,15 +36,11 @@ public class GameEngineThread extends Thread implements Parcelable {
 	// Just keeps sleeping. Probably not the right way to do this
 	@Override
 	public void run() {
-		if (((princeTron.Network.NetworkIP) network).clientIsNull()) {
-			// this is for testing purposes
-			Log.i("G.E.T.", "about to start game");
-			//engine.startGame(5, 2);
-		}
 		while (toRun) {
 			try {
 				sleep(10);
 				if (p != null) {
+					Log.i("GameEngineThread", "crashing");
 					network.userCrash(p, time);
 					p = null;
 				}
@@ -54,6 +50,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 				p = null;
 			}
 		}
+		System.out.println("GameEngineThread is ending");
 	}
 	
 	public synchronized void readyToPlay(Collection<String> arg) {
@@ -80,16 +77,16 @@ public class GameEngineThread extends Thread implements Parcelable {
 		network.userTurn(time, isLeft);
 	}
 	
-	public synchronized void cancel() {
+	public void cancel() {
 		toRun = false;
 		interrupt();
 	}
 	
 	public synchronized void update() {
-		Log.i("GameEngineThread", "in update()");
-		Coordinate crashLoc = engine.update();
+		//Log.i("GameEngineThread", "in update()");
+		Coordinate crashLoc = engine.update(true);
 		if (crashLoc != null) {
-			Log.i("GET", "crashLoc wasn't null!");
+			//Log.i("GET", "crashLoc wasn't null!");
 			userCrash(crashLoc, engine.numTics);
 		}
 	}
