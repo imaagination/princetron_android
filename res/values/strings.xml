@@ -17,5 +17,6 @@
     <string name="none">None</string>
     <string name="add_invitee">Add Invitee</string>
     <string name="invitee_header">Invite List:</string>
+    <string name="package_str">com.codemobiles.android.demo.customlistview</string>
 
 </resources>
