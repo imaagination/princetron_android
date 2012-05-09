@@ -40,6 +40,9 @@ public class ArenaView extends TileView {
 	private static final int RED_STAR = 1;
 	private static final int YELLOW_STAR = 2;
 	private static final int GREEN_STAR = 3;
+	private static final int BLUE_SQUARE = 4;
+	private static final int GREEN_SQUARE = 5;
+	private static final int PURPLE_SQUARE = 6;
 
 	/**
 	 * mLastMove: tracks the absolute time when the snake last moved, and is used
@@ -189,11 +192,13 @@ public class ArenaView extends TileView {
 		setFocusable(true);
 		Resources r = this.getContext().getResources();
 		Log.i("ArenaView", "initializing arena view!");
-		resetTiles(4);
+		resetTiles(5);
 		loadTile(RED_STAR, r.getDrawable(R.drawable.orange));
 		loadTile(YELLOW_STAR, r.getDrawable(R.drawable.yellowstar));
 		loadTile(GREEN_STAR, r.getDrawable(R.drawable.outline));
-
+		loadTile(BLUE_SQUARE, r.getDrawable(R.drawable.blue));
+		loadTile(PURPLE_SQUARE, r.getDrawable(R.drawable.purple));
+		loadTile(GREEN_SQUARE, r.getDrawable(R.drawable.green));
 	}
 
 	public void setGameEngine(GameEngineThread engineThread) {

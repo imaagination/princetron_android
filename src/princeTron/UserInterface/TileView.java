@@ -151,7 +151,7 @@ public class TileView extends View {
      * @param y
      */
     public void setTile(int tileindex, int x, int y) {
-    	tileindex = tileindex % 4;
+    	tileindex = tileindex % (mTileArray.length);
     	// maps [0,200] -> [min x/y on screen, max x/y on screen]
     	try {
     		x = mapX(x);
