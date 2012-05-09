@@ -27,9 +27,12 @@ public class Profile extends Activity{
 	private String userName;
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		TextView tv = new TextView(this);
-		tv.setText("Hello, Profile");
-		setContentView(tv);
+
+		setContentView(R.layout.profile_layout);
+		TextView tv = (TextView) findViewById(R.id.profileText);
+
+		//		TextView tv = new TextView(this);
+		//		setContentView(tv);
 
 
 		Bundle extras = getIntent().getExtras(); 
@@ -43,16 +46,12 @@ public class Profile extends Activity{
 		try {
 			profile = DownloadProfile();
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -60,15 +59,13 @@ public class Profile extends Activity{
 
 		String month = new DateFormatSymbols().getMonths()[profile[1]];
 
-		tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-
-		tv.setText("User Name: " + userName + "\n" +
+		tv.setText(
 				"Date Joined: " + month + " " + Ordinal(profile[0])+ ", " + profile[5] + "\n" +
-				"User Rank: " + profile[4] + "\n" +
-				"Wins: " + profile[2] + "\n" +
-				"Losses: " + profile[3]);
-		
-		
+						"User Rank: " + profile[4] + "\n" +
+						"Wins: " + profile[2] + "\n" +
+						"Losses: " + profile[3]);
+
+
 
 	}
 
@@ -107,7 +104,7 @@ public class Profile extends Activity{
 			request.setURI(new URI(uri));
 			HttpResponse response = client.execute(request);
 			InputStream ips  = response.getEntity().getContent();
-			BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"));
+			BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"),8);
 
 			StringBuilder sb = new StringBuilder();
 			String s;
@@ -121,13 +118,9 @@ public class Profile extends Activity{
 			}
 			buf.close();
 			ips.close();
-
+			
+			//is there a better way to do this?
 			String input = sb.toString().replace("&quot;", "\"");
-
-//			Toast.makeText(getApplicationContext(), input
-//					, Toast.LENGTH_LONG).show();
-
-
 			JSONObject j = new JSONObject(input);
 
 			values[0] = j.getInt("joined_day");
@@ -137,19 +130,13 @@ public class Profile extends Activity{
 			values[4] = j.getInt("rank");
 			values[5] = j.getInt("joined_year");
 
-
-//			for(int i = 0; i < 6; i++){
-//				Toast.makeText(getApplicationContext(), values[i] + ""
-//						, Toast.LENGTH_LONG).show();
-//			}
 		} 
 		finally {
-			// any cleanup code...
 		}
 		return values;
 	}
-	
-	
+
+
 	public static int[] DownloadProfile(String userName) throws URISyntaxException, ClientProtocolException, IOException, JSONException {
 
 		if (userName == null)
@@ -163,27 +150,23 @@ public class Profile extends Activity{
 			request.setURI(new URI(uri));
 			HttpResponse response = client.execute(request);
 			InputStream ips  = response.getEntity().getContent();
-			BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"));
+			BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"),8);
 
 			StringBuilder sb = new StringBuilder();
 			String s;
-			while(true )
+			while(true)
 			{
 				s = buf.readLine();
 				if(s==null || s.length()==0)
 					break;
 				sb.append(s);
-
 			}
 			buf.close();
 			ips.close();
 
+			
+			//is there a better way to do this?
 			String input = sb.toString().replace("&quot;", "\"");
-
-//			Toast.makeText(getApplicationContext(), input
-//					, Toast.LENGTH_LONG).show();
-
-
 			JSONObject j = new JSONObject(input);
 
 			values[0] = j.getInt("joined_day");
@@ -192,18 +175,11 @@ public class Profile extends Activity{
 			values[3] = j.getInt("losses");
 			values[4] = j.getInt("rank");
 			values[5] = j.getInt("joined_year");
-
-
-//			for(int i = 0; i < 6; i++){
-//				Toast.makeText(getApplicationContext(), values[i] + ""
-//						, Toast.LENGTH_LONG).show();
-//			}
 		} 
 		finally {
-			// any cleanup code...
 		}
 		return values;
 	}
-	
-	
+
+
 }

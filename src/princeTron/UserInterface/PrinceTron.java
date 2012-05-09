@@ -49,7 +49,6 @@ public class PrinceTron extends Activity {
 		//set content view
 		setContentView(R.layout.welcome);
 		TextView tv = (TextView) findViewById(R.id.welcomeP);
-		tv.setGravity(Gravity.CENTER_HORIZONTAL);
 
 		if(accounts.length != 0){
 			userName = accounts[0].name;
@@ -73,7 +72,6 @@ public class PrinceTron extends Activity {
 				Profile.class);
 		myIntent.putExtra("userName", userName);
 		startActivityForResult(myIntent, 0);
-		
 	}
 	
 	public void goToLeaderBoard(View v){
@@ -82,7 +80,6 @@ public class PrinceTron extends Activity {
 				Leaderboard.class);
 		myIntent.putExtra("userName", userName);
 		startActivityForResult(myIntent, 0);	
-		
 	}
 
 }
