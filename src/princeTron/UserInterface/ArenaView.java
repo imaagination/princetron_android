@@ -118,7 +118,6 @@ public class ArenaView extends TileView {
 					ArenaView.this.update();
 					count++;
 				}
-				//ArenaView.this.update();
 				sleep(10);
 			}
 			else {
@@ -137,29 +136,6 @@ public class ArenaView extends TileView {
 			Log.i("ArenaView", ""+System.currentTimeMillis());
 		}
 	};
-
-
-	/*private RefreshHandler mRedrawHandler = new RefreshHandler();
-
-	class RefreshHandler extends Handler {
-
-		@Override
-		public void handleMessage(Message msg) {
-			// advances all of the players
-			if (ArenaView.this.engineThread.update()) {
-				//handle collision event
-			}
-			// updates the UI
-			ArenaView.this.update();
-			ArenaView.this.invalidate();
-			sleep(GameEngine.mMoveDelay);
-		}
-
-		public void sleep(long delayMillis) {
-			this.removeMessages(0);
-			sendMessageDelayed(obtainMessage(0), delayMillis);
-		}
-	};*/
 
 	/**
 	 * Constructs a ArenaView based on inflation from XML
@@ -255,7 +231,6 @@ public class ArenaView extends TileView {
 				e.printStackTrace();
 			}
 			initArenaView();
-			update();
 			//timer.start();
 			mRedrawHandler.sleep(10);
 			return;
@@ -280,9 +255,6 @@ public class ArenaView extends TileView {
 			Log.i("ArenaView 326", "in newMode==LOSE");
 			return;
 		}
-
-		//mStatusText.setText(str);
-		//mStatusText.setVisibility(View.VISIBLE);
 	}
 
 
