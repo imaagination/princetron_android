@@ -192,7 +192,7 @@ public class ArenaView extends TileView {
 		setFocusable(true);
 		Resources r = this.getContext().getResources();
 		Log.i("ArenaView", "initializing arena view!");
-		resetTiles(5);
+		resetTiles(7);
 		loadTile(RED_STAR, r.getDrawable(R.drawable.orange));
 		loadTile(YELLOW_STAR, r.getDrawable(R.drawable.yellowstar));
 		loadTile(GREEN_STAR, r.getDrawable(R.drawable.outline));
