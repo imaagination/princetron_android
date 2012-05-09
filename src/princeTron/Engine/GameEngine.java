@@ -184,11 +184,16 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public synchronized void opponentTurn(int playerId, int time, boolean isLeft) {
 		Log.i("GameEngine", "time: " + time);
 		Log.i("GameEngine", "numTics: " + numTics);
-		Player player = players.get(playerId);
-		player.turn(isLeft, time);
-		players.put(playerId, player);
+//		Player player = players.get(playerId);
+//		player.turn(isLeft, time);
+//		players.put(playerId, player);
 		int oldNumTics = numTics;
-		if (time > numTics) return;
+		if (time > numTics) {
+			Player player = players.get(playerId);
+			player.turn(isLeft, time);
+			players.put(playerId, player);
+			return;
+		}
 		/*visitedMap = new HashMap<Integer, ArrayList<Integer>>();
 		for (Integer i : players.keySet()) {
 			Player p = players.get(i);
@@ -224,6 +229,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			Log.i("GameEngine", "\n\n\n");
 			players.put(i, p);
 		}
+		Player player = players.get(playerId);
+		player.turn(isLeft, time);
+		players.put(playerId, player);
 		numTics = time;
 		for (; numTics < oldNumTics; ) {
 			update(false);

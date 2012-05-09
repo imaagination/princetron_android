@@ -1,6 +1,7 @@
 package princeTron.UserInterface;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import princeTron.Engine.*;
 
@@ -140,6 +141,10 @@ public class ArenaView extends TileView {
 		}
 	};
 
+	
+	HashSet<MotionEvent> seenEvents;
+	HashSet<View> seenViews;
+	
 	/**
 	 * Constructs a ArenaView based on inflation from XML
 	 * @param context
@@ -147,6 +152,8 @@ public class ArenaView extends TileView {
 	 */
 	public ArenaView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		seenEvents = new HashSet<MotionEvent>();
+		seenViews = new HashSet<View>();
 		Log.i("ArenaView", "IN CONSTRUCTOR!");
 		initArenaView();
 		this.mContext = context;
@@ -164,6 +171,7 @@ public class ArenaView extends TileView {
 				}
 
 				Log.i("ArenaView 137", "handling action");
+				
 				switch (event.getAction())
 				{
 				case MotionEvent.ACTION_DOWN:

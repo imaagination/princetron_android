@@ -136,6 +136,7 @@ public class Player {
 			playerTrail = points;
 			//Log.i("Player " + id, "lastPoint: "+lastPoint);
 			toReturn.add(currentPoint());
+			numTics--;
 			if (turns.containsKey(numTics)) {
 				Log.i("Player", "turned back!");
 				boolean isLeft = turns.get(numTics);
@@ -181,7 +182,7 @@ public class Player {
 					}
 				}
 			}
-			numTics--;
+			//numTics--;
 		}
 		return toReturn;
 	}

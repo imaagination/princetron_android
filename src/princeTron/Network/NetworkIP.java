@@ -277,14 +277,14 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			j.put("logIn", user);
 			long startTime = System.currentTimeMillis();
 			while (client.getConnection() == null) {
-				if (System.currentTimeMillis() > startTime + 2000) {
+				if (System.currentTimeMillis() > startTime + 4000) {
 					return false;
 				}
 			}
 			System.out.println("connection isn't null");
 			startTime = System.currentTimeMillis();
 			while (client.getReadyState() != 1) {
-				if (System.currentTimeMillis() > startTime + 2000) {
+				if (System.currentTimeMillis() > startTime + 4000) {
 					return false;
 				}
 			}
