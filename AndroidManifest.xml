@@ -12,7 +12,8 @@
 
     <application
         android:icon="@drawable/troncycle"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:theme="@style/Theme.NoBackground" >
         <activity
             android:name=".PrinceTron"
             android:configChanges="orientation|keyboardHidden"
@@ -26,16 +27,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:screenOrientation="landscape" 
-            android:configChanges="orientation|keyboardHidden" 
-            android:name=".Arena"></activity>
-        
-        <activity android:name=".Stats"></activity>
-        <activity android:name=".Records"></activity>
-        <activity android:name=".Profile"></activity>
-        <activity android:name=".Lobby"></activity>
-        <activity android:name=".Leaderboard"></activity>
-        
+            android:name=".Arena"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity android:name=".Stats" >
+        </activity>
+        <activity android:name=".Records" >
+        </activity>
+        <activity android:name=".Profile" >
+        </activity>
+        <activity android:name=".Lobby" >
+        </activity>
+        <activity android:name=".Leaderboard" >
+        </activity>
     </application>
 
 </manifest>
