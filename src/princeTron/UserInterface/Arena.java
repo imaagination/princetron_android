@@ -98,6 +98,7 @@ public class Arena extends Activity {
 				loginObj = msg.obj;
 				break;
 			case Arena.IN_LOBBY:
+				toIgnore = false;
 				try {
 					if (mArenaView != null && mArenaView.engineThread == null) {
 						Log.i("Arena", "engineThread is null");
@@ -156,8 +157,8 @@ public class Arena extends Activity {
 				if (mArenaView != null && mArenaView.engineThread == null) {
 					Log.i("Arena", "engineThread is null4");
 				}
-				/*Toast toast = Toast.makeText(Arena.this, "About to play...", Toast.LENGTH_SHORT);
-				toast.show();*/
+				Toast toast = Toast.makeText(Arena.this, "About to play...", Toast.LENGTH_SHORT/4);
+				toast.show();
 				break;
 			case Arena.INVITATIONS_PENDING:
 				break;
@@ -174,7 +175,7 @@ public class Arena extends Activity {
 				engine.userCrash((Coordinate) msg.obj, msg.arg1);
 				break;
 			case LOBBY_UPDATE:
-				/*if (toIgnore) return;
+				if (toIgnore) return;
 				if (msg.arg1 == TRUE) {
 					toast = Toast.makeText(Arena.this, msg.obj + " has entered the lobby", Toast.LENGTH_SHORT/3);
 					toast.show();
@@ -214,7 +215,7 @@ public class Arena extends Activity {
 						
 					}
 					loginObj = otherUsers;
-				}*/
+				}
 				break;
 			}
 		}
@@ -313,7 +314,7 @@ public class Arena extends Activity {
 	}*/
 	
 	public void goToArena(){
-		//toIgnore = true;
+		toIgnore = true;
 		Log.i("Arena", "going to arena");
 		setContentView(R.layout.arena_layout);
 		if (mArenaView != null && mArenaView.engineThread == null) {
