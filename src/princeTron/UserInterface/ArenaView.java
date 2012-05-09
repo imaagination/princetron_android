@@ -293,12 +293,12 @@ public class ArenaView extends TileView {
 				Log.i("ArenaView", "engine thread is null!");
 				return;
 			}
-			engineThread.update();
 			Iterable<Player> players = engineThread.getPlayers();
 			clearTiles();
 			updateWalls();
 			updateSnake(players);
 			invalidate();
+			engineThread.update();
 			return;
 		}
 		catch (Exception e) {

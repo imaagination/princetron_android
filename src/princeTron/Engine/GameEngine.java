@@ -100,7 +100,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		return null;
 	}
 
-	public ArrayList<Player> getPlayers() {
+	public synchronized ArrayList<Player> getPlayers() {
 		ArrayList<Player> toReturn = new ArrayList<Player>();
 		for (Integer i : players.keySet()) {
 			toReturn.add(players.get(i));
@@ -201,6 +201,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
 			Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
 			Log.i("GameEngine", "\n\n\n");
+			Log.i("GameEngine", "Player " + p.getId() + " last 5: " + p.lastFive());
 			while (p.numTics > time) {
 				p.stepBackward(1);
 			}
@@ -219,6 +220,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
 			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
 			Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
+			Log.i("GameEngine", "Player " + p.getId() + " last 5: " + p.lastFive());
 		}
 		Log.i("GameEngine", "numTics: " + numTics);
 		//player.stepBackward(numTics - time);

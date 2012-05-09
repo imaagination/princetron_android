@@ -134,8 +134,8 @@ public class TileView extends View {
      * 
      */
     public void clearTiles() {
-        for (int x = 0; x < mXTileCount; x++) {
-            for (int y = 0; y < mYTileCount; y++) {
+        for (int x = 0; x < 100; x++) {
+            for (int y = 0; y < 100; y++) {
                 setTile(0, x, y);
             }
         }
