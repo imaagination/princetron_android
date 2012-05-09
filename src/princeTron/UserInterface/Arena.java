@@ -40,6 +40,7 @@ public class Arena extends Activity {
 	private GameEngineThread engine;
 	// for the callback to start the game
 	private StartHandler handler;
+	private boolean toIgnore = false;
 
 	class StartHandler extends Handler {
 		
@@ -173,6 +174,7 @@ public class Arena extends Activity {
 				engine.userCrash((Coordinate) msg.obj, msg.arg1);
 				break;
 			case LOBBY_UPDATE:
+				if (toIgnore) return;
 				if (msg.arg1 == TRUE) {
 					toast = Toast.makeText(Arena.this, msg.obj + " has entered the lobby", Toast.LENGTH_SHORT/3);
 					toast.show();
@@ -181,7 +183,12 @@ public class Arena extends Activity {
 						otherUsers[i] = ((String[]) loginObj)[i];
 					}
 					otherUsers[otherUsers.length - 1] = (String) msg.obj;
-					logIn(otherUsers);
+					try {
+						logIn(otherUsers);
+					}
+					catch (Exception e) {
+						
+					}
 					loginObj = otherUsers;
 				}
 				else {
@@ -200,6 +207,13 @@ public class Arena extends Activity {
 							j++;
 						}
 					}
+					try {
+						logIn(otherUsers);
+					}
+					catch (Exception e) {
+						
+					}
+					loginObj = otherUsers;
 				}
 			}
 		}
@@ -298,6 +312,7 @@ public class Arena extends Activity {
 	}*/
 	
 	public void goToArena(){
+		toIgnore = true;
 		Log.i("Arena", "going to arena");
 		setContentView(R.layout.arena_layout);
 		if (mArenaView != null && mArenaView.engineThread == null) {

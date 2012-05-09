@@ -98,22 +98,28 @@ public class ArenaView extends TileView {
 
 	class RefreshHandler extends Handler {
 		
-		private long timeToUpdate;
+		private long[] timesToUpdate;
+		private int count;
 		
 		public RefreshHandler() {
-			timeToUpdate = System.currentTimeMillis();
+			timesToUpdate = new long[5000];
+			long startTime = System.currentTimeMillis();
+			for (int i = 0; i < 5000; i++) {
+				timesToUpdate[i] = startTime + 100*i;
+			}
+			count = 1;
 		}
 		
 		@Override
 		public void handleMessage(Message msg) {
 			//Log.i("ArenaView", "ticked!");
 			if (!(ArenaView.this.mMode == LOSE || ArenaView.this.mMode == WIN) ) {
-				if (System.currentTimeMillis() >= timeToUpdate) {
+				if (System.currentTimeMillis() >= timesToUpdate[count]) {
 					ArenaView.this.update();
-					timeToUpdate += 100;
+					count++;
 				}
 				//ArenaView.this.update();
-				sleep(2);
+				sleep(10);
 			}
 			else {
 				Log.i("ArenaView", "in mode LOSE");
@@ -248,8 +254,8 @@ public class ArenaView extends TileView {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-			//initArenaView();
-			//update();
+			initArenaView();
+			update();
 			//timer.start();
 			mRedrawHandler.sleep(10);
 			return;
