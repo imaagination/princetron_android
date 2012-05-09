@@ -11,6 +11,9 @@ import android.os.Message;
 import android.util.Log;
 
 public class GameEngine extends princeTron.Network.NetworkGame {
+	
+	private static final int TRUE = 1;
+	private static final int FALSE = 0;
 	// array of players' turns. Indexed by player id
 	private HashMap<Integer, Player> players = new HashMap<Integer, Player>();
 	// number of tics since game started
@@ -50,6 +53,14 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		Message msg = handler.obtainMessage(princeTron.UserInterface.Arena.LOGGED_IN);
 		Log.i("GameEngine", ""+msg);
 		msg.obj = otherUsers;
+		msg.sendToTarget();
+	}
+	
+	public void passLobbyUpdate(String name, boolean hasEntered) {
+		Message msg = handler.obtainMessage(princeTron.UserInterface.Arena.LOBBY_UPDATE);
+		msg.obj = name;
+		if (hasEntered) msg.arg1 = TRUE;
+		else msg.arg1 = FALSE;
 		msg.sendToTarget();
 	}
 	

@@ -127,10 +127,12 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							}
 							game.passLogin(users);
 						}
-						/*else if (j.has("lobbyUpdate")) {
+						else if (j.has("lobbyUpdate")) {
 							JSONObject lobbyUpdate = j.getJSONObject("lobbyUpdate");
-							boolean hasEntered 
-						}*/
+							boolean hasEntered = lobbyUpdate.getBoolean("entered");
+							String name = lobbyUpdate.getString("user");
+							game.passLobbyUpdate(name, hasEntered);
+						}
 					}
 					catch (JSONException e)
 					{

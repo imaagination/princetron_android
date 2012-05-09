@@ -22,6 +22,9 @@ import android.view.View;
 
 public class Arena extends Activity {
 	
+	private static final int TRUE = 1;
+	private static final int FALSE = 0;
+	
 	public static final int IN_LOBBY = 0;
 	public static final int INVITED = 1;
 	public static final int INVITATION_ACCEPTED = 2;
@@ -32,6 +35,7 @@ public class Arena extends Activity {
 	public static final int WIN = 7;
 	public static final int LOSE = 8;
 	public static final int CRASHED = 9;
+	public static final int LOBBY_UPDATE = 10;
 
 	private GameEngineThread engine;
 	// for the callback to start the game
@@ -168,6 +172,35 @@ public class Arena extends Activity {
 			case CRASHED:
 				engine.userCrash((Coordinate) msg.obj, msg.arg1);
 				break;
+			case LOBBY_UPDATE:
+				if (msg.arg1 == TRUE) {
+					toast = Toast.makeText(Arena.this, msg.obj + " has entered the lobby", Toast.LENGTH_SHORT/3);
+					toast.show();
+					String[] otherUsers = new String[((String[])loginObj).length + 1];
+					for (int i = 0; i < otherUsers.length - 1; i++) {
+						otherUsers[i] = ((String[]) loginObj)[i];
+					}
+					otherUsers[otherUsers.length - 1] = (String) msg.obj;
+					logIn(otherUsers);
+					loginObj = otherUsers;
+				}
+				else {
+					toast = Toast.makeText(Arena.this, msg.obj + " has left the lobby", Toast.LENGTH_SHORT/3);
+					toast.show();
+					String[] otherUsers = new String[((String[])loginObj).length - 1];
+					int i = 0;
+					int j = 0;
+					while (i < otherUsers.length) {
+						if (((String[])loginObj)[j].equals(msg.obj)) {
+							j++;
+						}
+						else {
+							otherUsers[i] = ((String[])loginObj)[j];
+							i++;
+							j++;
+						}
+					}
+				}
 			}
 		}
 	}
