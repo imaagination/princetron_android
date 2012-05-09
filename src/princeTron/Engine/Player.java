@@ -37,10 +37,10 @@ public class Player {
 	}
 
 	public synchronized void turn(boolean isLeft, int time) {
-		if (turns.containsKey(time)) {
+		/*if (turns.containsKey(time)) {
 			turns.put(time+1, isLeft);
 			return;
-		}
+		}*/
 		turns.put(time, isLeft);
 	}
 
@@ -143,11 +143,11 @@ public class Player {
 				case GameEngine.NORTH:
 					if (isLeft) {
 						//Log.i("Player", "NORTH to WEST");
-						direction = GameEngine.EAST;
+						direction = GameEngine.WEST;
 					}
 					else {
 						//Log.i("Player", "NORTH to EAST");
-						direction = GameEngine.WEST;
+						direction = GameEngine.EAST;
 					}
 					break;
 				case GameEngine.EAST:

@@ -22,11 +22,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 	private GameEngine engine;
 	private princeTron.Engine.GameNetwork network;
 	
-	private Coordinate p;
-	private int time;
-	
 	private boolean toRun = true;
-	private boolean toUpdate = false;
 	
 	public GameEngineThread (Handler handler) {
 		network = new princeTron.Network.NetworkIP();
@@ -42,26 +38,9 @@ public class GameEngineThread extends Thread implements Parcelable {
 		while (toRun) {
 			try {
 				sleep(5);
-				if (toUpdate) {
-					Coordinate c = engine.update(true);
-					if (c != null) {
-						network.userCrash(c, engine.numTics);
-					}
-					else if (p != null) {
-						network.userCrash(p, time);
-						p = null;
-					}
-					toUpdate = false;
-				}
 			}
 			catch (Exception e) {
-				if (toUpdate) {
-					Coordinate c = engine.update(true);
-					if (c != null) {
-						network.userCrash(c, engine.numTics);
-					}
-					toUpdate = false;
-				}
+				
 			}
 		}
 		System.out.println("GameEngineThread is ending");
@@ -81,8 +60,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 	}
 	
 	public synchronized void userCrash(Coordinate p, int time) {
-		this.p = p;
-		this.time = time;
+		
 	}
 	
 	public synchronized void turn(boolean isLeft) {
@@ -98,7 +76,10 @@ public class GameEngineThread extends Thread implements Parcelable {
 	
 	public synchronized void update() {
 		//Log.i("GameEngineThread", "in update()");
-		toUpdate = true;
+		Coordinate c = engine.update(true);
+		if (c != null) {
+			network.userCrash(c, engine.numTics);
+		}
 	}
 	
 	public synchronized ArrayList<Player> getPlayers() {
