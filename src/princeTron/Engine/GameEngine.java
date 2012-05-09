@@ -1,14 +1,17 @@
 package princeTron.Engine;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
+import princeTron.Network.NetworkIP;
 import princeTron.UserInterface.Arena;
 import princeTron.UserInterface.ArenaView;
-import android.os.Message;
 import android.util.Log;
 
-public class GameEngine extends princeTron.Network.NetworkGame {
+public class GameEngine {
     private ArenaView arenaView;
+    private Arena arena;
+    private NetworkIP net;
+    private GameEngineThread geThread;
     private int timestep;
     private int[][] gameboard;
     private Player[] players;
@@ -23,144 +26,219 @@ public class GameEngine extends princeTron.Network.NetworkGame {
     public static final int WEST = 3;
     public static final long INTERVAL = 100;
 
-    public GameEngine(int[] playersX, int[] playersY, int[] playersDir, int myId) {
-	this.myId = myId;
-	players = new Player[playersX.length];
-	
-	for (int i = 0; i < playersX.length; i++) {
-	    players[i] = new Player(playersX[i], playersY[i], playersDir[i], i);
-	    playerTurns[i] = new HashMap<Integer, Boolean>();
-     	}
-	
-
-	gameboard = new int[X_SCALE][Y_SCALE];
-	for (int i = 0; i < X_SCALE; i++) {
-	    for (int j = 0; j < Y_SCALE; j++) {
-		gameboard[i][j] = -1;
-	    }
-	}
+    public GameEngine(Arena arena, NetworkIP net) {
+    	this.arena = arena;
+    	this.net = net;
+    	net.setGameEngine(this);
+    	resetGameboard();
     }
     
-    public void setArenaView(ArenaView arena) {
-	arenaView = arena;
+    public void resetGameboard() {
+		gameboard = new int[X_SCALE][Y_SCALE];
+		for (int i = 0; i < X_SCALE; i++) {
+		    for (int j = 0; j < Y_SCALE; j++) {
+			gameboard[i][j] = -1;
+		    }
+		}
+    	if (arenaView != null) arenaView.setGameboard(gameboard);
     }
-
-	
-    public void update() {
-	numTics++;
-	stepForward();
-	
+    
+    public void setNetwork(NetworkIP net) {
+    	this.net = net;
+    }
+    
+    public void setArenaView(ArenaView arenaView) {
+    	this.arenaView = arenaView;
+    	if (arenaView != null) arenaView.setGameboard(gameboard);
+    }
+    
+    public synchronized void advance(int goalStep) {
+    	while (timestep < goalStep) {
+    		stepForward(timestep);
+    		timestep++;
+    	}
+    	// Hack due to double buffering
+    	//arenaView.drawBoard();
+    	//arenaView.drawBoard();
     }
 
     public void stepForward(int time)
-    {
+    {	
+		Log.d("GameEngine", "Stepping forward at time " + time + " (" + players[0].x + ", " + players[0].y + ")");
+		for (int i = 0; i < players.length; i++) {
+			Player player = players[i];
+			
+		    if (!player.active)
+			continue;
+		    
+		    switch (player.dir) {
+			    case NORTH : player.y++; break;
+			    case SOUTH : player.y--; break;
+			    case EAST : player.x++; break;
+			    case WEST : player.x--; break;
+		    }
 	
-	for (Player player : players) {
-	    if (!player.active)
-		continue;
-	    
-	    switch (player.direction()) {
-	    case NORTH : players.y++; break;
-	    case SOUTH : players.y--; break;
-	    case EAST : players.x++; break;
-	    case WEST : players.x--; break;
-	    }
-
-	    if (playerTurns[i].contains(time)) {
-		    turnPlayer(player, playerTurns[i].get(time));
-	    }
-	   
-	    if (player.id == myId) {
-		if (player.x < 0 || player.x >= X_SCALE || player.y < 0 ||
-		    player.y >= Y_SCALE || gameboard[player.x][player.y] != -1) {
-		    player.active = False;
-		    sendCollision();
+		    if (playerTurns[i].containsKey(time)) {
+			    turn(player, playerTurns[i].get(time));
+		    }
+		    
+		    if (player.id == myId) {
+				if (player.x < 0 || player.x >= X_SCALE || player.y < 0 ||
+				    player.y >= Y_SCALE || gameboard[player.x][player.y] != -1) {
+					    player.active = false;
+					    net.sendCollision(timestep);
+				}
+		    }
+		    
+		    if (player.x >= 0 && player.x < X_SCALE && player.y >= 0 && 
+		    		player.y < Y_SCALE) {
+		    	gameboard[player.x][player.y] = i;
+		    	// Hack because I can't figure out double buffering of SurfaceView
+		    	arenaView.fillSquare(player.x, player.y, i);
+		    	arenaView.fillSquare(player.x, player.y, i);
+		    } 
 		}
-	    }
-
-	    if (player.x >= 0 && player.x < X_SCALE && player.y >= 0 && 
-		player.y < Y_SCALE) {
-		gameboard[player.x][player.y] = i;
-	    } 
-	}
     }
-
-    public Iterable<Player> getPlayers() {
-	return players;
+    
+    public void stepBack(int time) {
+    	Log.d("GameEngine", "Stepping backward at time " + time + " (" + players[0].x + ", " + players[0].y + ")");
+    	
+		for (int i = 0; i < players.length; i++) {
+			Player player = players[i];
+			
+		    if (!player.active)	continue;
+		    
+		    // Unturn players
+		    if (playerTurns[i].containsKey(time)) {
+			    unTurn(player, playerTurns[i].get(time));
+		    }
+		    
+		    // Clear game board
+		    if (player.x >= 0 && player.x < X_SCALE && player.y >= 0 && 
+		    		player.y < Y_SCALE) {
+		    	gameboard[player.x][player.y] = -1;
+		    } 
+		    
+		    // Hack due to double buffering
+		    arenaView.fillSquare(player.x, player.y, -1);
+		    arenaView.fillSquare(player.x, player.y, -1);
+		    
+		    switch (player.dir) {
+			    case NORTH : player.y--; break;
+			    case SOUTH : player.y++; break;
+			    case EAST : player.x--; break;
+			    case WEST : player.x++; break;
+		    }
+		}
     }
     
     // called by the UI when the player turns. 
-    public void turn(boolean isLeft) {
-	turn(players[myId], isLeft);
+    public synchronized void turn(boolean isLeft) {
+    	turn(players[myId], isLeft);
+    	net.sendTurn(timestep, isLeft);
     }
     
     public void turn(Player player, boolean isLeft) {
-	if (isLeft) {
-	    switch (player.dir) {
-	    case NORTH: player.dir = WEST; break;
-	    case SOUTH: player.dir = EAST; break;
-	    case EAST: player.dir = NORTH; break;
-	    case WEST: player.dir = SOUTH; break;
-	    }
-	}
-	else {
-	    switch (player.dir) {
-	    case NORTH: player.dir = EAST; break;
-	    case SOUTH: player.dir = WEST; break;
-	    case EAST: player.dir = SOUTH; break;
-	    case WEST: player.dir = NORTH; break;
-	    } 
-	}
+		if (isLeft) {
+		    switch (player.dir) {
+			    case NORTH: player.dir = WEST; break;
+			    case SOUTH: player.dir = EAST; break;
+			    case EAST: player.dir = NORTH; break;
+			    case WEST: player.dir = SOUTH; break;
+		    }
+		}
+		else {
+		    switch (player.dir) {
+			    case NORTH: player.dir = EAST; break;
+			    case SOUTH: player.dir = WEST; break;
+			    case EAST: player.dir = SOUTH; break;
+			    case WEST: player.dir = NORTH; break;
+		    } 
+		}
     }
 
     public void unTurn(Player player, boolean isLeft) {
-	if (isLeft) {
-	    switch (player.dir) {
-	    case NORTH: player.dir = EAST; break;
-	    case SOUTH: player.dir = WEST; break;
-	    case EAST: player.dir = SOUTH; break;
-	    case WEST: player.dir = NORTH; break;
-	    }
-	}
-	else {
-	    switch (player.dir) {
-	    case NORTH: player.dir = WEST; break;
-	    case SOUTH: player.dir = EAST; break;
-	    case EAST: player.dir = NORTH; break;
-	    case WEST: player.dir = SOUTH; break;
-	    }
-	}
-    }
-
-    public ArrayList<Player> getTrails() {
-	return players;
+		if (isLeft) {
+		    switch (player.dir) {
+			    case NORTH: player.dir = EAST; break;
+			    case SOUTH: player.dir = WEST; break;
+			    case EAST: player.dir = SOUTH; break;
+			    case WEST: player.dir = NORTH; break;
+		    }
+		}
+		else {
+		    switch (player.dir) {
+			    case NORTH: player.dir = WEST; break;
+			    case SOUTH: player.dir = EAST; break;
+			    case EAST: player.dir = NORTH; break;
+			    case WEST: player.dir = SOUTH; break;
+		    }
+		}
     }
     
-    public boolean isReady() {
-	return isReady;
+    // Callbacks from network
+    public void enterArena(int[] playersX, int[] playersY, int[] playersDir, int myId) {
+		this.myId = myId;
+		players = new Player[playersX.length];
+		playerTurns = new HashMap[playersX.length];
+		
+		for (int i = 0; i < playersX.length; i++) {
+		    players[i] = new Player(playersX[i], playersY[i], playersDir[i], i);
+		    playerTurns[i] = new HashMap<Integer, Boolean>();
+	    }
+		
+		arenaView.status = ArenaView.READY;
+    	// Hack due to double buffering of SurfaceView
+    	arenaView.drawBoard();
+    	arenaView.drawBoard();
+    	geThread = new GameEngineThread(this);
+    	geThread.start();
+    }
+    
+    public void logIn(String user) {
+    	net.logIn(user);
+    }
+    
+    public void newLobby(String[] users) {
+    	//arena.newLobby(users);
+    }
+    
+    public void sendInvites(String[] invites) {
+    	net.sendInvites(invites);
+    }
+    
+    public void invitationReceived(String user) {
+    	
     }
     
     public void startGame() {
-	Message msg = handler.obtainMessage(Arena.PLAYING);
-	msg.sendToTarget();
-	Thread.yield();
+    	arenaView.status = ArenaView.PLAYING;
+    	geThread.callBack();
     }
 	
     public void endGame() {
-	Message msg = handler.obtainMessage(Arena.IN_LOBBY);
-	msg.sendToTarget();
+    	geThread.stopExecution();
+    	try{geThread.join();}catch(Exception e){}
+    	//arena.finish();
     }
     
+    public void gameResult(int playerId, boolean isWin) {
+    }
     
-    @Override
-	public void opponentTurn(int playerId, int time, boolean isLeft) {
-	currentTime = numTics;
-	for (int i = 0; i < currentTime + 1 - time; i++)
-	    stepBack(currentTime - i);
-	
-	player_turns[playerId].add(time, isLeft);
-	
-	for (int i = 0; i < currentTime + 1 - time; i++)
-	    stepForward(time + i);
+	public synchronized void opponentTurn(int playerId, int time, boolean isLeft) {
+		int curTime = timestep;
+		for (int i = 0; i < curTime + 1 - time; i++) {
+			stepBack(curTime - i - 1);
+		}
+		
+		playerTurns[playerId].put(time, isLeft);
+		
+		for (int i = 0; i < curTime + 1 - time; i++) {
+		    stepForward(time + i - 1);
+		}
+		
+		// Hack due to double buffering
+		//arenaView.drawBoard();
+		//arenaView.drawBoard();
     }
 }

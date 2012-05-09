@@ -30,27 +30,48 @@ containing a value of this type.
     }
     public static final class id {
         public static final int arena=0x7f050000;
-        public static final int frameLayout1=0x7f050008;
-        public static final int linearLayout1=0x7f050002;
-        public static final int linearLayout2=0x7f050004;
-        public static final int newgamebutton=0x7f050003;
-        public static final int profilebutton=0x7f050007;
-        public static final int recordsbutton=0x7f050006;
-        public static final int statsbutton=0x7f050005;
+        public static final int button1=0x7f050009;
+        public static final int imageView1=0x7f050011;
+        public static final int invitee_edit_text=0x7f05000a;
+        public static final int invitee_header=0x7f05000b;
+        public static final int invitee_list=0x7f05000e;
+        public static final int leaderbutton=0x7f050006;
+        public static final int linearLayout1=0x7f050008;
+        public static final int linearLayout2=0x7f05000d;
+        public static final int logged_in_players=0x7f05000f;
+        public static final int playnowbutton=0x7f050003;
+        public static final int profilebutton=0x7f050004;
+        public static final int ready_button=0x7f050007;
+        public static final int scrollView1=0x7f05000c;
+        public static final int statsrecordsbutton=0x7f050005;
         public static final int text=0x7f050001;
+        public static final int textView1=0x7f050010;
+        public static final int welcomePrompt=0x7f050002;
     }
     public static final class layout {
         public static final int arena_layout=0x7f030000;
         public static final int homescreen=0x7f030001;
+        public static final int leaderboard=0x7f030002;
+        public static final int lobby_layout=0x7f030003;
+        public static final int waitingroom=0x7f030004;
     }
     public static final class string {
+        public static final int _leaderboard=0x7f04000c;
+        public static final int _new_game=0x7f040006;
+        public static final int _playfriend=0x7f040009;
+        public static final int _profile=0x7f04000a;
+        public static final int _statsrecords=0x7f040008;
+        public static final int add_invitee=0x7f04000e;
         public static final int app_name=0x7f040001;
         public static final int hello=0x7f040000;
+        public static final int invitee_header=0x7f04000f;
         public static final int mode_lose_prefix=0x7f040003;
         public static final int mode_lose_suffix=0x7f040004;
         public static final int mode_ready=0x7f040002;
-        public static final int snake_layout_text_text=0x7f040005;
-        public static final int waiting_string=0x7f040006;
+        public static final int none=0x7f04000d;
+        public static final int ready_button_text=0x7f04000b;
+        public static final int snake_layout_text_text=0x7f040007;
+        public static final int waiting_string=0x7f040005;
     }
     public static final class styleable {
         /** Attributes that can be used with a TileView.

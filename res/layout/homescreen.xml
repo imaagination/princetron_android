@@ -10,7 +10,8 @@
         android:id="@+id/welcomePrompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:editable="true" />
+        android:editable="true" >
+    </TextView>
 
     <Button
         android:id="@+id/playnowbutton"
@@ -38,8 +39,6 @@
         android:text="@string/_statsrecords"
         android:textColor="#800000" >
     </Button>
-
-
 
     <Button
         android:id="@+id/leaderbutton"

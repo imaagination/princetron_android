@@ -9,11 +9,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormatSymbols;
 
-import org.apache.http.client.ClientProtocolException;
-
 import json.org.json.JSONArray;
 import json.org.json.JSONException;
 import json.org.json.JSONObject;
+
+import org.apache.http.client.ClientProtocolException;
+
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -47,10 +48,10 @@ public class Leaderboard extends ListActivity{
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
+				/*
 				try {
 					String userName = ((TextView) view).getText().toString().substring(2);
-					int[] profile = Profile.DownloadProfile(userName);
+					int[] profile = Profile.DownloadProfile(userName); 
 					
 					String month = new DateFormatSymbols().getMonths()[profile[1]];
 					
@@ -82,7 +83,7 @@ public class Leaderboard extends ListActivity{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+				*/
 				// When clicked, show a toast with the TextView text
 //				Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
 //						Toast.LENGTH_SHORT).show();

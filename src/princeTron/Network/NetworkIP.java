@@ -18,22 +18,21 @@ export CLASSPATH=/Users/andykaier/Documents/cos333/princetron_android/src/prince
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import org.java_websocket.*;
-import org.java_websocket.drafts.*;
-import org.java_websocket.handshake.*;
-
-import json.org.json.*;
-
-import princeTron.Engine.Coordinate;
-import android.util.Log;
 import java.util.Collection;
 
+import json.org.json.JSONArray;
+import json.org.json.JSONException;
+import json.org.json.JSONObject;
 
+import org.java_websocket.WebSocketClient;
+import org.java_websocket.drafts.Draft_17;
+import org.java_websocket.handshake.ServerHandshake;
 
-import princeTron.Engine.*;
+import princeTron.Engine.Coordinate;
+import princeTron.Engine.GameEngine;
+import android.util.Log;
 
-public class NetworkIP extends princeTron.Engine.GameNetwork
+public class NetworkIP 
 {
 
 	private GameEngine game;
@@ -59,21 +58,24 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							// parses the json, passes the data to the engine
 							JSONObject info = j.getJSONObject("enterArena");
 							JSONArray opponentsArray = info.getJSONArray("players");
-							Coordinate[] starts = new Coordinate[opponentsArray.length()];
-							int[] dirs = new int[opponentsArray.length()];
+							int numOp = opponentsArray.length();
+							int[] xStarts = new int[numOp];
+							int[] yStarts = new int[numOp];
+							int[] dirStarts = new int[numOp];
+							int myId;
 							for (int i = 0; i < opponentsArray.length(); i++) {
 								JSONObject opponent = opponentsArray.getJSONObject(i);
-								starts[i] = new Coordinate(opponent.getInt("xStart"), opponent.getInt("yStart"));
-								String dir = opponent.getString("dirStart");
-								dir = dir.toLowerCase();
-								if (dir.equals("north")) dirs[i] = GameEngine.NORTH;
-								if (dir.equals("east")) dirs[i] = GameEngine.EAST;
-								if (dir.equals("south")) dirs[i] = GameEngine.SOUTH;
-								if (dir.equals("west")) dirs[i] = GameEngine.WEST;
-								Log.i("NetworkIP", "id = " + i + "\tdir = " + dir);
+								xStarts[i] = opponent.getInt("xStart");
+								yStarts[i] = opponent.getInt("yStart");
+								String d = opponent.getString("dirStart");
+								if (d.equals("north")) dirStarts[i] = GameEngine.NORTH;
+								if (d.equals("east")) dirStarts[i] = GameEngine.EAST;
+								if (d.equals("south")) dirStarts[i] = GameEngine.SOUTH;
+								if (d.equals("west")) dirStarts[i] = GameEngine.WEST;
+								Log.i("NetworkIP", "id = " + i + "\tdir = " + d);
 							}
-							int myId = info.getInt("playerId");
-							game.passEnterArena(starts, dirs, myId);
+							myId = info.getInt("playerId");
+							game.enterArena(xStarts, yStarts, dirStarts, myId);
 						}
 						else if (j.has("startGame")) {
 							game.startGame();
@@ -101,7 +103,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							JSONObject invite = j.getJSONObject("invitation");
 							String user = invite.getString("user");
 							Log.i("NetworkIP", "got invitation from " + user);
-							game.passInvitation(user);
+							game.invitationReceived(user);
 						}
 						else if (j.has("endGame"))
 						{
@@ -120,7 +122,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 									users[i] = "";
 								}
 							}
-							game.passLogin(users);
+							game.newLobby(users);
 						}
 					}
 					catch (JSONException e)
@@ -157,16 +159,13 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			
 		}
 	}
-	
-	public boolean clientIsNull() {
-		return client == null;
-	}
 
-	// pass GameEngine to GameNetwork so network can call back to GameEngine
-	public void setGameEngine (princeTron.Engine.GameEngine engine)
+	// Set game engine
+	public void setGameEngine (GameEngine engine)
 	{
 		game = engine;
-
+	}
+	/*
 		try 
 		{
 			JSONObject j = new JSONObject();
@@ -194,17 +193,15 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			e.printStackTrace();
 		}
 		
-	}
+	}*/
 
 	// informs the Network that the user has turned                                   
-	public void userTurn(princeTron.Engine.Coordinate position, int time, boolean isLeft)  
+	public void sendTurn(int time, boolean isLeft)  
 	{
 		try
 		{
 			JSONObject j = new JSONObject();
 			JSONObject turn = new JSONObject();
-			turn.put("xPos", position.x);
-			turn.put("yPos", position.y);
 			turn.put("timestamp", time);
 			turn.put("isLeft", isLeft);
 			j.put("turn", turn);
@@ -219,24 +216,12 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			System.out.println("JSON Error Turn");
 		}
 		catch (Exception e) {
-			try {
-				JSONObject j = new JSONObject();
-				JSONObject turn = new JSONObject();
-				turn.put("xPos", position.x);
-				turn.put("yPos", position.y);
-				turn.put("timestamp", time);
-				turn.put("isLeft", isLeft);
-				j.put("turn", turn);
-				client.send(j.toString());
-			}
-			catch (Exception e2) {
-				e2.printStackTrace();
-			}
+			e.printStackTrace();
 		}
 	}
 
 	// informs the Network that the user has crashed
-	public void userCrash(Coordinate location, int time) 
+	public void sendCollision(int time) 
 	{
 		try
 		{
@@ -304,14 +289,15 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 		}
 	}
 	
-	public void readyToPlay(Collection<String> invitations) {
+	public void sendInvites (String[] userInvites) {
 		JSONObject j = new JSONObject();
 		JSONObject invites = new JSONObject();
 		try {
-			if (invitations != null) {
-				invites.put("invitations", invitations);
+			if (userInvites != null) {
+				invites.put("invitations", userInvites);
 			}
 			j.put("readyToPlay", invites);
+			Log.d("NetworkIP", "Sending " + j.toString());
 			client.send(j.toString());
 		}
 		catch (JSONException jex) {
@@ -336,14 +322,4 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			e.printStackTrace();
 		}
 	}
-
-	public static void main(String[] args)
-	{
-		//NetworkIP n = new NetworkIP();
-		//	n.startGame(5);
-		//n.turn(new Coordinate(0,0), 17, true);
-		//n.collision(new Coordinate(0,0));
-	}
-
-
 }
