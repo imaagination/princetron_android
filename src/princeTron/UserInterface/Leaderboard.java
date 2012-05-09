@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -84,9 +85,12 @@ public class Leaderboard extends ListActivity{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			for (String line; (line = reader.readLine()) != null;) {
-				builder.append(line.trim());
-			}
+			if(reader != null)
+				for (String line; (line = reader.readLine()) != null;) {
+					builder.append(line.trim());
+				}
+			else
+				Toast.makeText(this, "Sorry, the leaderboard is currently Down", Toast.LENGTH_LONG);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -188,7 +192,7 @@ public class Leaderboard extends ListActivity{
 						try {
 							profile = Profile.DownloadProfile(userName);
 
-							String month = new DateFormatSymbols().getMonths()[profile[1]];
+							String month = new DateFormatSymbols().getMonths()[profile[1]-1];
 
 							String info =
 									"User Rank: " + profile[4] + "\n" +
@@ -201,6 +205,8 @@ public class Leaderboard extends ListActivity{
 
 							((TextView)popupWindow.getContentView().findViewById(R.id.Tv1)).setText(userName);							
 							((TextView)popupWindow.getContentView().findViewById(R.id.Tv2)).setText(info);
+							
+							popupWindow.setBackgroundDrawable(new BitmapDrawable());
 
 							// RelativeLayout01 is Main Activity Root Layout
 							popupWindow.showAtLocation(findViewById(R.id.RelativeLayout01), Gravity.CENTER, 0,0);
@@ -280,6 +286,7 @@ public class Leaderboard extends ListActivity{
 
 	public void closeDialog(View v) {
 		popupWindow.dismiss();
+		
 	}
 
 

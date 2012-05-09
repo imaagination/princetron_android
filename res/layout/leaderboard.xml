@@ -3,5 +3,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:padding="10dp"
-    android:textSize="16sp" >
+    android:textSize="25sp" >
+
+
+    <ListView
+        android:id="@+id/listView"
+        android:cacheColorHint="@android:color/transparent"
+        android:listSelector="@android:color/transparent" >
+    </ListView>
+
 </TextView>

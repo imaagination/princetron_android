@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:background="#000000"
+    android:background="#151B8D"
     android:orientation="vertical"
     android:weightSum="1" >
 
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_weight=".20"
         android:text="@string/_new_game"
-        android:textColor="#800000" >
+        android:textColor="#8C8615" >
     </Button>
 
     <Button
@@ -27,17 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_weight=".20"
         android:text="@string/_profile"
-        android:textColor="#800000" >
+        android:textColor="#8C8615" >
     </Button>
 
-    <Button
-        android:id="@+id/statsrecordsbutton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight=".20"
-        android:text="@string/_statsrecords"
-        android:textColor="#800000" >
-    </Button>
 
 
 
@@ -47,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_weight=".20"
         android:text="@string/_leaderboard"
-        android:textColor="#800000" >
+        android:textColor="#8C8615" >
     </Button>
 
 </LinearLayout>
