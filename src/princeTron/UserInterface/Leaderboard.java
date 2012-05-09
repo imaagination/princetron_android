@@ -32,14 +32,18 @@ import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Leaderboard extends ListActivity{
-	private TextView tv;
 	private EfficientAdapter adap;
 	private static String[] data;
 	private String leaderLink = "http://www.princetron.com/leaderboard/";
+	private PopupWindow popupWindow;
+
+
+
 
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,17 +51,14 @@ public class Leaderboard extends ListActivity{
 		requestWindowFeature(Window.FEATURE_NO_TITLE); 
 		setContentView(R.layout.leaders);
 
-
 		try {
 			data = DownloadLeaders();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 
-
 		adap = new EfficientAdapter(this);
 		setListAdapter(adap);
-
 	}
 
 
@@ -77,7 +78,7 @@ public class Leaderboard extends ListActivity{
 		try {
 			try {
 				reader = new BufferedReader(new InputStreamReader(
-						url.openStream(), "UTF-8"));
+						url.openStream(), "UTF-8"), 8);
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -106,14 +107,23 @@ public class Leaderboard extends ListActivity{
 		JSONArray arr = j.getJSONArray("users");
 		String[] top10 = new String[10];
 
-		for(int i = 0; i < 10; i++)
-			top10[i] = (i + 1) + ".) " + arr.get(i).toString();
+
+		top10[0] = "1.) " + arr.get(0).toString();
+		top10[1] = "2.) " + arr.get(1).toString();
+		top10[2] = "3.) " + arr.get(2).toString();
+		top10[3] = "4.) " + arr.get(3).toString();
+		top10[4] = "5.) " + arr.get(4).toString();
+		top10[5] = "6.) " + arr.get(5).toString();
+		top10[6] = "7.) " + arr.get(6).toString();
+		top10[7] = "8.) " + arr.get(7).toString();
+		top10[8] = "9.) " + arr.get(8).toString();
+		top10[9] = "10.) "+ arr.get(9).toString();
 
 		return top10;
 	}
 
 
-	public static class EfficientAdapter extends BaseAdapter implements Filterable {
+	public class EfficientAdapter extends BaseAdapter implements Filterable {
 		private LayoutInflater mInflater;
 		private Bitmap mIcon1;
 		private Context context;
@@ -128,48 +138,43 @@ public class Leaderboard extends ListActivity{
 		 * Make a view to hold each row.
 		 */
 		public View getView(final int position, View convertView, ViewGroup parent) {
-			// A ViewHolder keeps references to children views to avoid
-			// unneccessary calls to findViewById() on each row.
 			ViewHolder holder;
 
-			// When convertView is not null, we can reuse it directly, there is
-			// no need
-			// to reinflate it. We only inflate a new View when the convertView
-			// supplied
-			// by ListView is null.
 			if (convertView == null) {
 				convertView = mInflater.inflate(R.layout.adaptor_content, null);
 
-				// Creates a ViewHolder and store references to the two children
-				// views
-				// we want to bind data to.
 				holder = new ViewHolder();
 				holder.textLine = (TextView) convertView.findViewById(R.id.textLine);
 				holder.textLine.setTextColor(Color.WHITE);
 				holder.iconLine = (ImageView) convertView.findViewById(R.id.iconLine);
 				holder.buttonLine = (Button) convertView.findViewById(R.id.buttonLine);
 
-				//				holder.setTextColor(Color.BLUE);
 
 
 
 
 				convertView.setOnClickListener(new OnClickListener() {
 					private int pos = position;
-
 					@Override
-					public void onClick(View v) {
-
-						//						Toast.makeText(context, "Click-" + String.valueOf(pos), Toast.LENGTH_SHORT).show();    
+					public void onClick(View v) {    
 					}
 				});
 
 				holder.buttonLine.setOnClickListener(new OnClickListener() {
 					private int pos = position;
 
+
+
 					@Override
 					public void onClick(View v) {
-						
+
+
+						LayoutInflater inflater = (LayoutInflater) 
+								EfficientAdapter.this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
+						popupWindow = new PopupWindow(inflater.inflate(R.layout.dialog,null, false),300,225,true);
+
+
+
 						String userName = data[pos].toString();
 						char check = userName.charAt(1);
 
@@ -177,7 +182,7 @@ public class Leaderboard extends ListActivity{
 							userName = userName.substring(4);
 						else
 							userName = userName.substring(5);
-						
+
 
 						int[] profile;
 						try {
@@ -185,20 +190,20 @@ public class Leaderboard extends ListActivity{
 
 							String month = new DateFormatSymbols().getMonths()[profile[1]];
 
-							String info = "User Name: " + userName + "\n" +
-									"Date Joined: " + month + " " + Profile.Ordinal(profile[0])+ 
-									", " + profile[5] + "\n" +
+							String info =
 									"User Rank: " + profile[4] + "\n" +
-									"Wins: " + profile[2] + "\n" +
-									"Losses: " + profile[3];
+											"Wins: " + profile[2] + "\n" +
+											"Losses: " + profile[3] + "\n" +
+											"Date Joined: " + month + " " + Profile.Ordinal(profile[0]) + 
+											", " + profile[5] + "\n"
+											;
 
 
-							Toast toast = Toast.makeText(context, info,
-									Toast.LENGTH_LONG);
-							toast.setGravity(Gravity.CENTER, 0, 0);
-							toast.show();
+							((TextView)popupWindow.getContentView().findViewById(R.id.Tv1)).setText(userName);							
+							((TextView)popupWindow.getContentView().findViewById(R.id.Tv2)).setText(info);
 
-
+							// RelativeLayout01 is Main Activity Root Layout
+							popupWindow.showAtLocation(findViewById(R.id.RelativeLayout01), Gravity.CENTER, 0,0);
 
 
 						} catch (ClientProtocolException e) {
@@ -242,7 +247,7 @@ public class Leaderboard extends ListActivity{
 			return convertView;
 		}
 
-		static class ViewHolder {
+		class ViewHolder {
 			TextView textLine;
 			ImageView iconLine;
 			Button buttonLine;
@@ -268,10 +273,13 @@ public class Leaderboard extends ListActivity{
 
 		@Override
 		public Object getItem(int position) {
-			// TODO Auto-generated method stub
 			return data[position];
 		}
 
+	}
+
+	public void closeDialog(View v) {
+		popupWindow.dismiss();
 	}
 
 
