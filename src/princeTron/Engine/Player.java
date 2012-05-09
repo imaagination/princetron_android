@@ -143,11 +143,11 @@ public class Player {
 				case GameEngine.NORTH:
 					if (isLeft) {
 						//Log.i("Player", "NORTH to WEST");
-						direction = GameEngine.WEST;
+						direction = GameEngine.EAST;
 					}
 					else {
 						//Log.i("Player", "NORTH to EAST");
-						direction = GameEngine.EAST;
+						direction = GameEngine.WEST;
 					}
 					break;
 				case GameEngine.EAST:

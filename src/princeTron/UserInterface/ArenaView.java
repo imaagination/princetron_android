@@ -62,7 +62,7 @@ public class ArenaView extends TileView {
 	 * set ourselves as a target and we can use the sleep()
 	 * function to cause an update/invalidate to occur at a later date.
 	 */
-	private RefreshHandler mRedrawHandler = new RefreshHandler();
+	private RefreshHandler mRedrawHandler;
 	//private TicThread timer = new TicThread(100);
 	
 	class TicThread extends Thread {
@@ -232,6 +232,7 @@ public class ArenaView extends TileView {
 			}
 			initArenaView();
 			//timer.start();
+			mRedrawHandler = new RefreshHandler();
 			mRedrawHandler.sleep(10);
 			return;
 		}

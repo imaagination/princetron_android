@@ -77,6 +77,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		Log.i("GameEngine", "myId: " + myId);
 		Message msg = handler.obtainMessage(Arena.IN_ARENA);
 		msg.sendToTarget();
+		Thread.yield();
 	}
 
 	// steps all the snakes forwards, returns true if there was a collision
