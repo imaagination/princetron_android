@@ -100,8 +100,12 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		return null;
 	}
 
-	public Iterable<Player> getPlayers() {
-		return players.values();
+	public ArrayList<Player> getPlayers() {
+		ArrayList<Player> toReturn = new ArrayList<Player>();
+		for (Integer i : players.keySet()) {
+			toReturn.add(players.get(i));
+		}
+		return toReturn;
 	}
 
 	// called by the UI when the player turns. argument is true if 
@@ -171,35 +175,49 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		Player player = players.get(playerId);
 		player.turn(isLeft, time);
 		players.put(playerId, player);
-		int diff = numTics - time;
-		if (diff < 0) return;
+		int oldNumTics = numTics;
+		if (time > numTics) return;
+		/*visitedMap = new HashMap<Integer, ArrayList<Integer>>();
 		for (Integer i : players.keySet()) {
 			Player p = players.get(i);
-			Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
-			Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
+			p.erase();
+			players.put(i, p);
+		}
+		numTics = 0;
+		while (numTics < oldNumTics) {
+			Coordinate c = update(true);
+			if (c != null) {
+				Message msg = handler.obtainMessage(princeTron.UserInterface.Arena.CRASHED);
+				msg.obj = c;
+				msg.arg1 = numTics;
+				msg.sendToTarget();
+				Player p = players.get(myId);
+				p.stop();
+			}
+		}*/
+		for (Integer i : players.keySet()) {
+			Player p = players.get(i);
+			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
+			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
 			Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
 			Log.i("GameEngine", "\n\n\n");
-			p.stepBackward(diff);
-			Log.i("GameEngine", "\n\n\n");
-			Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
-			Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
+			while (p.numTics > time) {
+				p.stepBackward(1);
+			}
+			//Log.i("GameEngine", "\n\n\n");
+			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
+			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
 			Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
 			Log.i("GameEngine", "\n\n\n");
-			/*for (Coordinate c : removed) {
-				ArrayList<Integer> yList = visitedMap.get(c.x);
-				if (yList == null) yList = new ArrayList<Integer>();
-				yList.remove(c.y);
-				visitedMap.put(c.x, yList);
-			}*/
 			players.put(i, p);
 		}
 		numTics = time;
-		for (int i = 0; i < diff; i++) {
+		for (; numTics < oldNumTics; ) {
 			update(false);
 		}
 		for (Player p : players.values()) {
-			Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
-			Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
+			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
+			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
 			Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
 		}
 		Log.i("GameEngine", "numTics: " + numTics);

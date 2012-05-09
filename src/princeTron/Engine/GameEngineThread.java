@@ -5,6 +5,8 @@ import android.os.Parcel;
 import android.os.Handler;
 
 import android.util.Log;
+
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameEngineThread extends Thread implements Parcelable {
@@ -24,6 +26,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 	private int time;
 	
 	private boolean toRun = true;
+	private boolean toUpdate = false;
 	
 	public GameEngineThread (Handler handler) {
 		network = new princeTron.Network.NetworkIP();
@@ -38,16 +41,27 @@ public class GameEngineThread extends Thread implements Parcelable {
 	public void run() {
 		while (toRun) {
 			try {
-				sleep(10);
-				if (p != null) {
-					Log.i("GameEngineThread", "crashing");
-					network.userCrash(p, time);
-					p = null;
+				sleep(5);
+				if (toUpdate) {
+					Coordinate c = engine.update(true);
+					if (c != null) {
+						network.userCrash(c, engine.numTics);
+					}
+					else if (p != null) {
+						network.userCrash(p, time);
+						p = null;
+					}
+					toUpdate = false;
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
-				p = null;
+				if (toUpdate) {
+					Coordinate c = engine.update(true);
+					if (c != null) {
+						network.userCrash(c, engine.numTics);
+					}
+					toUpdate = false;
+				}
 			}
 		}
 		System.out.println("GameEngineThread is ending");
@@ -66,7 +80,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 		return network.logIn(accountName);
 	}
 	
-	private synchronized void userCrash(Coordinate p, int time) {
+	public synchronized void userCrash(Coordinate p, int time) {
 		this.p = p;
 		this.time = time;
 	}
@@ -84,16 +98,17 @@ public class GameEngineThread extends Thread implements Parcelable {
 	
 	public synchronized void update() {
 		//Log.i("GameEngineThread", "in update()");
-		Coordinate crashLoc = engine.update(true);
-		if (crashLoc != null) {
-			//Log.i("GET", "crashLoc wasn't null!");
-			userCrash(crashLoc, engine.numTics);
-		}
+		toUpdate = true;
 	}
 	
-	public synchronized Iterable<Player> getPlayers() {
+	public synchronized ArrayList<Player> getPlayers() {
 		//Log.i("GET", "getting players!");
-		return engine.getPlayers();
+		try {
+			return (ArrayList<Player>) engine.getPlayers().clone();
+		}
+		catch (Exception e) {
+			return engine.getPlayers();
+		}
 	}
 	
 	public synchronized boolean isReady() {

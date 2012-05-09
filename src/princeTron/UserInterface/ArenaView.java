@@ -249,9 +249,9 @@ public class ArenaView extends TileView {
 				e.printStackTrace();
 			}
 			//initArenaView();
-			update();
+			//update();
 			//timer.start();
-			mRedrawHandler.sleep(2);
+			mRedrawHandler.sleep(10);
 			return;
 		}
 

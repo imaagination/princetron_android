@@ -31,6 +31,7 @@ public class Arena extends Activity {
 	public static final int LOGGED_IN = 6;
 	public static final int WIN = 7;
 	public static final int LOSE = 8;
+	public static final int CRASHED = 9;
 
 	private GameEngineThread engine;
 	// for the callback to start the game
@@ -163,6 +164,9 @@ public class Arena extends Activity {
 				break;
 			case LOSE:
 				mArenaView.setMode(ArenaView.LOSE);
+				break;
+			case CRASHED:
+				engine.userCrash((Coordinate) msg.obj, msg.arg1);
 				break;
 			}
 		}
