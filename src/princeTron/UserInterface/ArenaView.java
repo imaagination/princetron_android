@@ -16,6 +16,8 @@ public class ArenaView extends SurfaceView implements SurfaceHolder.Callback {
 	private GameEngine engine;
 	private boolean surfaceReady;
 	private int[][] gameboard;
+	private String billboardContents;
+	private int winnerId;
 	private int xSize;
 	private int ySize;
 	public int status;
@@ -30,6 +32,7 @@ public class ArenaView extends SurfaceView implements SurfaceHolder.Callback {
 	public static final int WAITING = 1;
 	public static final int READY = 2;
 	public static final int PLAYING = 3;
+	public static final int FINISHED = 4;
 	
 	public ArenaView(Context context, AttributeSet as) {
 		this(context);
@@ -44,6 +47,7 @@ public class ArenaView extends SurfaceView implements SurfaceHolder.Callback {
 		setFocusable(true);
 		surfaceReady = false;
 		status = WAITING;
+		billboardContents = "";
 	}
 	
 	public void setGameboard(int[][] newGameBoard) {
@@ -63,7 +67,7 @@ public class ArenaView extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		surfaceReady = true;
-		renderArena();
+		renderBillboard();
 	}
 		 
 	@Override
@@ -86,32 +90,38 @@ public class ArenaView extends SurfaceView implements SurfaceHolder.Callback {
 		else if (id >= 0 && id <= 4) return pallette[id + 1];
 		return pallette[0];
 	}
+	
+	public void setWinner(int winner) {
+		winnerId = winner;
+	}
 		 
-	public void renderArena() {
+	public void renderBillboard() {
 		Log.d("ArenaView", "Rendering arena in state " + status);
 		if (!surfaceReady) return;
-		Canvas canvas;
-		Paint textPaint = pallette[2]; 
-		textPaint.setTextSize(60); 
 		
 		switch (status) {
 		case WAITING: 
-			canvas = getHolder().lockCanvas();
-			canvas.drawColor(Color.BLACK);
-			canvas.drawText("Waiting for opponents...", 50, 500, textPaint);
-			getHolder().unlockCanvasAndPost(canvas);
+			billboardContents = "Waiting for opponents...";
 			break;
 		case READY:
-			canvas = getHolder().lockCanvas();
-			canvas.drawColor(Color.BLACK);
-			canvas.drawText("Starting!", 50, 500, textPaint);
-			getHolder().unlockCanvasAndPost(canvas);
+			billboardContents = "Starting!";
 			break;
 		case PLAYING:
-			if (gameboard == null) break;
-			drawBoard();
+			billboardContents = "Playing";
+			break;
+		case FINISHED:
+			billboardContents = "Player " + winnerId + " wins!";
 			break;
 		}
+		
+		Paint textPaint = pallette[2]; 
+		Paint blackPaint = new Paint();
+		blackPaint.setColor(Color.BLACK);
+		textPaint.setTextSize(60); 
+		Canvas canvas = getHolder().lockCanvas();
+		canvas.drawRect(50, 500, 600, 560, blackPaint);
+		canvas.drawText(billboardContents, 50, 500, textPaint);
+		getHolder().unlockCanvasAndPost(canvas);
 	}
 	
 	public void drawBoard() {

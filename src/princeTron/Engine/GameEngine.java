@@ -219,10 +219,13 @@ public class GameEngine {
     public void endGame() {
     	geThread.stopExecution();
     	try{geThread.join();}catch(Exception e){}
-    	//arena.finish();
+    	arenaView.renderBillboard();
+    	try{Thread.sleep(1000);}catch(Exception e){}
+    	arena.finish();
     }
     
     public void gameResult(int playerId, boolean isWin) {
+    	if (isWin) arenaView.setWinner(playerId);
     }
     
 	public synchronized void opponentTurn(int playerId, int time, boolean isLeft) {
