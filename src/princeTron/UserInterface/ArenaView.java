@@ -1,14 +1,12 @@
 package princeTron.UserInterface;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import princeTron.Engine.*;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -67,6 +65,7 @@ public class ArenaView extends TileView {
 	 * function to cause an update/invalidate to occur at a later date.
 	 */
 	private RefreshHandler mRedrawHandler;
+	private Vibrator vibe;
 	//private TicThread timer = new TicThread(100);
 	
 	class TicThread extends Thread {
@@ -140,10 +139,6 @@ public class ArenaView extends TileView {
 			Log.i("ArenaView", ""+System.currentTimeMillis());
 		}
 	};
-
-	
-	HashSet<MotionEvent> seenEvents;
-	HashSet<View> seenViews;
 	
 	/**
 	 * Constructs a ArenaView based on inflation from XML
@@ -152,8 +147,7 @@ public class ArenaView extends TileView {
 	 */
 	public ArenaView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		seenEvents = new HashSet<MotionEvent>();
-		seenViews = new HashSet<View>();
+		vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		Log.i("ArenaView", "IN CONSTRUCTOR!");
 		initArenaView();
 		this.mContext = context;
@@ -176,6 +170,7 @@ public class ArenaView extends TileView {
 				{
 				case MotionEvent.ACTION_DOWN:
 				{
+					vibe.vibrate(50);
 					x = event.getX();    
 					if (x >= width/2.0) { //right side of screen (favored bc has = sign)
 						Log.i("turn direction", "right");
