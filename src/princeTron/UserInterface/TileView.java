@@ -171,12 +171,12 @@ public class TileView extends View {
 
     private int mapX(int x) {
     	double proportion = x/100.0;
-    	return (int) Math.floor(proportion*mXTileCount);
+    	return (int) Math.round(proportion*mXTileCount);
     }
     
     private int mapY(int y) {
     	double proportion = y/100.0;
-    	return (mYTileCount - (int) Math.floor(proportion*mYTileCount) - 1);
+    	return (mYTileCount - (int) Math.round(proportion*mYTileCount) - 1);
     }
 
     @Override

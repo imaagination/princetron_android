@@ -112,7 +112,7 @@ public class Player {
 			Log.i("Player", "No direction!");
 			return;
 		}
-		Log.i("Player " + id, "newPoint: "+newPoint);
+		//Log.i("Player " + id, "newPoint: "+newPoint);
 		playerTrail.add(newPoint);
 		numTics++;
 	}

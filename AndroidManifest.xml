@@ -13,7 +13,7 @@
     <application
         android:icon="@drawable/troncycle"
         android:label="@string/app_name"
-        android:theme="@style/Theme.NoBackground" >
+        >
         <activity
             android:name=".PrinceTron"
             android:configChanges="orientation|keyboardHidden"

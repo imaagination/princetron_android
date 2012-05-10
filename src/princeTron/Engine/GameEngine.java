@@ -182,8 +182,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 
 	@Override
 	public synchronized void opponentTurn(int playerId, int time, boolean isLeft) {
-		Log.i("GameEngine", "time: " + time);
-		Log.i("GameEngine", "numTics: " + numTics);
+		//Log.i("GameEngine", "time: " + time);
+		//Log.i("GameEngine", "numTics: " + numTics);
 //		Player player = players.get(playerId);
 //		player.turn(isLeft, time);
 //		players.put(playerId, player);
@@ -216,17 +216,17 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			Player p = players.get(i);
 			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
 			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
-			Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
-			Log.i("GameEngine", "\n\n\n");
-			Log.i("GameEngine", "Player " + p.getId() + " last 5: " + p.lastFive());
+			//Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
+			//Log.i("GameEngine", "\n\n\n");
+			//Log.i("GameEngine", "Player " + p.getId() + " last 5: " + p.lastFive());
 			while (p.numTics > time) {
 				p.stepBackward(1);
 			}
 			//Log.i("GameEngine", "\n\n\n");
 			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
 			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
-			Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
-			Log.i("GameEngine", "\n\n\n");
+			//Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
+			//Log.i("GameEngine", "\n\n\n");
 			players.put(i, p);
 		}
 		Player player = players.get(playerId);
@@ -239,10 +239,10 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		for (Player p : players.values()) {
 			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
 			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
-			Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
-			Log.i("GameEngine", "Player " + p.getId() + " last 5: " + p.lastFive());
+			//Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
+			//Log.i("GameEngine", "Player " + p.getId() + " last 5: " + p.lastFive());
 		}
-		Log.i("GameEngine", "numTics: " + numTics);
+		//Log.i("GameEngine", "numTics: " + numTics);
 		//player.stepBackward(numTics - time);
 		/*int count = 0;
 		Player player = null;
