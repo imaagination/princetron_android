@@ -55,7 +55,7 @@ public class Arena extends Activity {
 				e.printStackTrace();
 			}
 			try {
-				ArrayAdapter<String> items = new ArrayAdapter<String>(Arena.this, R.layout.leaderboard, others);
+				ArrayAdapter<String> items = new ArrayAdapter<String>(Arena.this, R.layout.invite_item, others);
 				logged_in_list.setAdapter(items);
 			}
 			catch (Exception e) {

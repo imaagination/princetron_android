@@ -99,10 +99,16 @@ public class TileView extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        mXTileCount = (int) Math.floor(w / mTileSize);
+        /*mXTileCount = (int) Math.floor(w / mTileSize);
         mYTileCount = (int) Math.floor(h / mTileSize);
         mXTileCount = Math.min(mXTileCount, mYTileCount);
-        mYTileCount = mXTileCount;
+        mYTileCount = mXTileCount;*/
+    	
+    	mXTileCount = 100;
+    	mYTileCount = 100;
+    	
+    	int min = Math.min(w, h);
+    	mTileSize = (int) Math.floor(min/100);
 
         mXOffset = ((w - (mTileSize * mXTileCount)) / 2);
         mYOffset = ((h - (mTileSize * mYTileCount)) / 2);
