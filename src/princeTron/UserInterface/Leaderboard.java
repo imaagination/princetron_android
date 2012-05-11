@@ -17,22 +17,14 @@ import org.apache.http.client.ClientProtocolException;
 
 import android.app.ListActivity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.ImageView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,13 +35,11 @@ public class Leaderboard extends ListActivity{
 	private PopupWindow popupWindow;
 
 
-
-
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE); 
-		setContentView(R.layout.leaders);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.leaderboard);
 
 		try {
 			data = DownloadLeaders();
@@ -57,10 +47,65 @@ public class Leaderboard extends ListActivity{
 			e.printStackTrace();
 		}
 
-		setListAdapter(new EfficientAdapter(this));
+		
+		setListAdapter(new ArrayAdapter<String>(
+		this,
+		android.R.layout.simple_expandable_list_item_1,
+		data));
 	}
 
 
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+
+		LayoutInflater inflater = (LayoutInflater) 
+				this.getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
+		popupWindow = new PopupWindow(inflater.inflate(R.layout.dialog,null, false),300,140,true);
+
+		String userName = data[position].toString();
+		char check = userName.charAt(1);
+
+		if(check == '.'){
+			userName = userName.substring(4);
+		}
+		else{
+			userName = userName.substring(5);
+		}
+
+		try {
+			int[] profile = Profile.DownloadProfile(userName);
+
+			String month = new DateFormatSymbols().getMonths()[profile[1]-1];
+
+			String info =
+					"User Rank: " + profile[4] + "\n" +
+							"Wins: " + profile[2] + "\n" +
+							"Losses: " + profile[3] + "\n" +
+							"Date Joined: " + month + " " + Profile.Ordinal(profile[0]) + 
+							", " + profile[5] + "\n";
+
+			((TextView)popupWindow.getContentView().findViewById(R.id.Tv1)).setText(userName);							
+			((TextView)popupWindow.getContentView().findViewById(R.id.Tv2)).setText(info);
+
+			popupWindow.setBackgroundDrawable(new BitmapDrawable());
+			popupWindow.showAtLocation(findViewById(R.id.RelativeLayout01), Gravity.CENTER, 0,0);
+
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 
 
@@ -123,160 +168,5 @@ public class Leaderboard extends ListActivity{
 
 		return top10;
 	}
-
-
-	public class EfficientAdapter extends BaseAdapter implements Filterable {
-		private LayoutInflater mInflater;
-		private Bitmap mIcon1;
-		private Context context;
-
-		public EfficientAdapter(Context context) {
-			// Cache the LayoutInflate to avoid asking for a new one each time.
-			mInflater = LayoutInflater.from(context);
-			this.context = context;
-		}
-
-		/**
-		 * Make a view to hold each row.
-		 */
-		public View getView(final int position, View convertView, ViewGroup parent) {
-			ViewHolder holder;
-
-			if (convertView == null) {
-				convertView = mInflater.inflate(R.layout.adaptor_content, null);
-
-				holder = new ViewHolder();
-				holder.textLine = (TextView) convertView.findViewById(R.id.textLine);
-				holder.textLine.setTextColor(Color.WHITE);
-				holder.iconLine = (ImageView) convertView.findViewById(R.id.iconLine);
-				holder.buttonLine = (Button) convertView.findViewById(R.id.buttonLine);
-
-
-
-
-
-				convertView.setOnClickListener(new OnClickListener() {
-					private int pos = position;
-					@Override
-					public void onClick(View v) {    
-					}
-				});
-
-				holder.buttonLine.setOnClickListener(new OnClickListener() {
-					private int pos = position;
-
-
-
-					@Override
-					public void onClick(View v) {
-
-
-						LayoutInflater inflater = (LayoutInflater) 
-								EfficientAdapter.this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
-						popupWindow = new PopupWindow(inflater.inflate(R.layout.dialog,null, false),300,140,true);
-
-
-
-						String userName = data[pos].toString();
-						char check = userName.charAt(1);
-
-						if(check == '.')
-							userName = userName.substring(4);
-						else
-							userName = userName.substring(5);
-
-
-						try {
-							int[] profile = Profile.DownloadProfile(userName);
-
-							String month = new DateFormatSymbols().getMonths()[profile[1]-1];
-
-							String info =
-									"User Rank: " + profile[4] + "\n" +
-											"Wins: " + profile[2] + "\n" +
-											"Losses: " + profile[3] + "\n" +
-											"Date Joined: " + month + " " + Profile.Ordinal(profile[0]) + 
-											", " + profile[5] + "\n"
-											;
-
-
-							((TextView)popupWindow.getContentView().findViewById(R.id.Tv1)).setText(userName);							
-							((TextView)popupWindow.getContentView().findViewById(R.id.Tv2)).setText(info);
-
-							popupWindow.setBackgroundDrawable(new BitmapDrawable());
-
-							// RelativeLayout01 is Main Activity Root Layout
-							popupWindow.showAtLocation(findViewById(R.id.RelativeLayout01), Gravity.CENTER, 0,0);
-
-
-						} catch (ClientProtocolException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (URISyntaxException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				});
-
-
-
-				convertView.setTag(holder);
-			} else {
-				// Get the ViewHolder back to get fast access to the TextView
-				// and the ImageView.
-				holder = (ViewHolder) convertView.getTag();
-			}
-
-			// Bind the data efficiently with the holder.
-			holder.iconLine.setImageBitmap(mIcon1);
-			holder.textLine.setText(data[position]);
-
-			return convertView;
-		}
-
-		class ViewHolder {
-			TextView textLine;
-			ImageView iconLine;
-			Button buttonLine;
-		}
-
-		@Override
-		public Filter getFilter() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return data.length;
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return data[position];
-		}
-
-	}
-
-	public void closeDialog(View v) {
-		popupWindow.dismiss();
-
-	}
-
-
 
 }

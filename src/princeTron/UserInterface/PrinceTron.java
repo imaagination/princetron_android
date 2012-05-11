@@ -54,9 +54,10 @@ public class PrinceTron extends Activity {
 		if(accounts.length != 0){
 			userName = accounts[0].name;
 			userName = userName.substring(0, userName.length() - 10); //get rid of @gmail.com
-			tv.setText("\"Hello, " + userName + "\"");
 		}else
-			tv.setText("Hello.");
+			userName = "_____androidEmulator_____";
+			
+			tv.setText("\"Hello, " + userName + "\"");
 	}
 	
 	public void goToGame(View v){
