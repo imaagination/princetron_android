@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
         android:editable="true" />
 
     <LinearLayout
@@ -17,29 +18,33 @@
         android:layout_weight="1"
         android:orientation="horizontal" >
 
-        <TextView
+        <Button
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="#151B8D"
+            android:background="#FFA500"
             android:gravity="center_horizontal"
-            android:text="New Game" />
+            android:text="New Game"
+            android:onClick="goToGame" />
 
-        <TextView
+        <Button
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="#8C8615"
+            android:background="#000000"
             android:gravity="center_horizontal"
-            android:text="My Profile" />
+            android:textColor="#FFA500"
+            android:text="My Profile"
+            android:onClick="goToProfile" />
 
-        <TextView
+        <Button
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="#151B8D"
+            android:background="#FFA500"
             android:gravity="center_horizontal"
-            android:text="LeaderBoard" />
+            android:text="LeaderBoard"
+            android:onClick="goToLeaderBoard" />
     </LinearLayout>
 
     <LinearLayout

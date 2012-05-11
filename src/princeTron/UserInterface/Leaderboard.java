@@ -38,7 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Leaderboard extends ListActivity{
-	private EfficientAdapter adap;
 	private static String[] data;
 	private String leaderLink = "http://www.princetron.com/leaderboard/";
 	private PopupWindow popupWindow;
@@ -58,8 +57,7 @@ public class Leaderboard extends ListActivity{
 			e.printStackTrace();
 		}
 
-		adap = new EfficientAdapter(this);
-		setListAdapter(adap);
+		setListAdapter(new EfficientAdapter(this));
 	}
 
 
@@ -90,7 +88,7 @@ public class Leaderboard extends ListActivity{
 					builder.append(line.trim());
 				}
 			else
-				Toast.makeText(this, "Sorry, the leaderboard is currently Down", Toast.LENGTH_LONG);
+				Toast.makeText(this, "Sorry, the leaderboard is currently Down", Toast.LENGTH_LONG).show();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -175,7 +173,7 @@ public class Leaderboard extends ListActivity{
 
 						LayoutInflater inflater = (LayoutInflater) 
 								EfficientAdapter.this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
-						popupWindow = new PopupWindow(inflater.inflate(R.layout.dialog,null, false),300,225,true);
+						popupWindow = new PopupWindow(inflater.inflate(R.layout.dialog,null, false),300,140,true);
 
 
 
@@ -188,9 +186,8 @@ public class Leaderboard extends ListActivity{
 							userName = userName.substring(5);
 
 
-						int[] profile;
 						try {
-							profile = Profile.DownloadProfile(userName);
+							int[] profile = Profile.DownloadProfile(userName);
 
 							String month = new DateFormatSymbols().getMonths()[profile[1]-1];
 
@@ -205,7 +202,7 @@ public class Leaderboard extends ListActivity{
 
 							((TextView)popupWindow.getContentView().findViewById(R.id.Tv1)).setText(userName);							
 							((TextView)popupWindow.getContentView().findViewById(R.id.Tv2)).setText(info);
-							
+
 							popupWindow.setBackgroundDrawable(new BitmapDrawable());
 
 							// RelativeLayout01 is Main Activity Root Layout
@@ -235,15 +232,6 @@ public class Leaderboard extends ListActivity{
 				// Get the ViewHolder back to get fast access to the TextView
 				// and the ImageView.
 				holder = (ViewHolder) convertView.getTag();
-			}
-
-			// Get flag name and id
-			String filename = "flag_" + String.valueOf(position);
-			int id = context.getResources().getIdentifier(filename, "drawable", context.getString(R.string.package_str));
-
-			// Icons bound to the rows.
-			if (id != 0x0) {
-				mIcon1 = BitmapFactory.decodeResource(context.getResources(), id);
 			}
 
 			// Bind the data efficiently with the holder.
@@ -286,7 +274,7 @@ public class Leaderboard extends ListActivity{
 
 	public void closeDialog(View v) {
 		popupWindow.dismiss();
-		
+
 	}
 
 

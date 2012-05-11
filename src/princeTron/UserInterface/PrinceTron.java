@@ -49,13 +49,14 @@ public class PrinceTron extends Activity {
 		//set content view
 		setContentView(R.layout.welcome);
 		TextView tv = (TextView) findViewById(R.id.welcomeP);
+		
 
 		if(accounts.length != 0){
 			userName = accounts[0].name;
 			userName = userName.substring(0, userName.length() - 10); //get rid of @gmail.com
-			tv.setText("Hello, " + userName + ". What would you like to do?");
+			tv.setText("\"Hello, " + userName + "\"");
 		}else
-			tv.setText("Hello." + " What would you like to do?");
+			tv.setText("Hello.");
 	}
 	
 	public void goToGame(View v){
