@@ -43,7 +43,7 @@ public class Arena extends Activity {
 	private GameEngineThread engine;
 	// for the callback to start the game
 	private StartHandler handler;
-	private boolean toIgnore = false;
+	private boolean toIgnore;
 
 	class StartHandler extends Handler {
 		
@@ -135,6 +135,7 @@ public class Arena extends Activity {
 				break;
 			case Arena.INVITED:
 				// tbd
+				if (toIgnore) break;
 				if (mArenaView != null && mArenaView.engineThread == null) {
 					Log.i("Arena", "engineThread is null3");
 				}
@@ -251,6 +252,7 @@ public class Arena extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
+			toIgnore = false;
 			//ListView logged_in_list = (ListView) findViewById(android.R.id.list);
 			mArenaView = (ArenaView) findViewById(R.id.arena);
 			handler = new StartHandler();
