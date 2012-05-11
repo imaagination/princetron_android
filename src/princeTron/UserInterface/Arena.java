@@ -228,7 +228,7 @@ public class Arena extends Activity {
 				break;
 			case PLAYER_CRASH:
 				try {
-					MediaPlayer mp = MediaPlayer.create(Arena.this, R.raw.metalcrash);
+					/*MediaPlayer mp = MediaPlayer.create(Arena.this, R.raw.metalcrash);
 					mp.setVolume(0.1f, 0.1f);
 					mp.start();
 					mp.setOnCompletionListener(new OnCompletionListener() {
@@ -237,7 +237,7 @@ public class Arena extends Activity {
 							mp.release();
 						}
 
-					});
+					});*/
 				}
 				catch (Exception e) {}
 			}

@@ -68,6 +68,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// the player id's are with respect to the initial X values, 
 	// and then Y values to break a tie
 	public void passEnterArena(Coordinate[] starts, int[] dirs, String[] names, int myId) {
+		visitedMap = new HashMap<Integer, ArrayList<Integer>>();
+		players = new HashMap<Integer, Player>();
 		Log.i("GameEngine", ""+starts.length);
 		for (int i = 0; i < starts.length; i++) {
 				Player p = new Player(starts[i], dirs[i], i, names[i]);

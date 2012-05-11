@@ -209,6 +209,14 @@ public class ArenaView extends TileView {
 
 	public void setGameEngine(GameEngineThread engineThread) {
 		this.engineThread = engineThread;
+		try {
+			if (!engineThread.isAlive()) {
+				engineThread.start();
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -262,7 +270,7 @@ public class ArenaView extends TileView {
 				str += "\nYou Lose!";
 				if (toPlay) {
 					toPlay = false;
-					MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
+					/*MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
 					mp.start();
 					mp.setOnCompletionListener(new OnCompletionListener() {
 
@@ -270,7 +278,7 @@ public class ArenaView extends TileView {
 							mp.release();
 						}
 
-					});
+					});*/
 				}
 			}
 			else {
