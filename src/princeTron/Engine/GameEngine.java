@@ -21,7 +21,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	private boolean isReady = false;
 	private int myId = -1;
 	// for collision detection - the proper way is mysteriously not working
-	private HashMap<Integer, ArrayList<Integer>> visitedMap = new HashMap<Integer, ArrayList<Integer>>();
+	private HashMap<Integer, ArrayList<Integer>> visitedMap;
 
 	private Handler handler;
 

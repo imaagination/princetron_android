@@ -115,11 +115,11 @@ public class Arena extends Activity {
 						public void onClick(DialogInterface dialog, int id) {
 							// figure out how to do shutdown properly
 							//finish();
-							//Intent intent = getIntent();
-							//finish();
-							//startActivity(intent);
-							setContentView(R.layout.lobby_layout);
-							logIn(loginObj);
+							Intent intent = getIntent();
+							finish();
+							startActivity(intent);
+							//setContentView(R.layout.lobby_layout);
+							//logIn(loginObj);
 						}
 					})
 					.setNegativeButton("No", new DialogInterface.OnClickListener() {
