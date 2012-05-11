@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="#151B8D" >
+    android:background="#000000" >
 
     <TextView
         android:id="@+id/Tv1"
@@ -11,8 +11,8 @@
         android:background="#696969"
         android:editable="true"
         android:gravity="center"
-        android:textColor="#FFFFFF"
-        android:textSize="25px" />
+        android:textColor="#000000"
+        android:textSize="19dp" />
 
     <TextView
         android:id="@+id/Tv2"
@@ -22,16 +22,7 @@
         android:layout_centerHorizontal="true"
         android:editable="true"
         android:gravity="center"
-        android:textColor="#FFFFFF"
-        android:textSize="20px" />
-
-    <Button
-        android:id="@+id/Btn1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/Tv2"
-        android:onClick="closeDialog"
-        android:text="Close" />
+        android:textColor="#FFA500"
+        android:textSize="14dp" />
 
 </RelativeLayout>

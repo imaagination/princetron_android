@@ -31,9 +31,6 @@ public class Profile extends Activity{
 		setContentView(R.layout.profile_layout);
 		TextView tv = (TextView) findViewById(R.id.profileText);
 
-		//		TextView tv = new TextView(this);
-		//		setContentView(tv);
-
 
 		Bundle extras = getIntent().getExtras(); 
 		if(extras !=null){
