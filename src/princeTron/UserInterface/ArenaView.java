@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.util.Log;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 
 /**
  * ArenaView: implementation of a simple game of Tron
@@ -147,6 +149,7 @@ public class ArenaView extends TileView {
 	 */
 	public ArenaView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		myId = 0;
 		vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		Log.i("ArenaView", "IN CONSTRUCTOR!");
 		initArenaView();
@@ -197,7 +200,7 @@ public class ArenaView extends TileView {
 		Log.i("ArenaView", "initializing arena view!");
 		resetTiles(7);
 		loadTile(RED_STAR, r.getDrawable(R.drawable.orange));
-		loadTile(YELLOW_STAR, r.getDrawable(R.drawable.yellowstar));
+		loadTile(YELLOW_STAR, r.getDrawable(R.drawable.yellow));
 		loadTile(GREEN_STAR, r.getDrawable(R.drawable.outline));
 		loadTile(BLUE_SQUARE, r.getDrawable(R.drawable.blue));
 		loadTile(PURPLE_SQUARE, r.getDrawable(R.drawable.purple));
@@ -218,13 +221,14 @@ public class ArenaView extends TileView {
 		mStatusText = newView;
 	}
 
+	public boolean toPlay = true;
+	
 	/**
 	 * Updates the current mode of the application (RUNNING or LOSE or the like)
 	 * as well as sets the visibility of textview for notification
 	 * 
 	 * @param newMode
 	 */
-	// THIS STUFF MIGHT GET CHANGED
 	public void setMode(int newMode) {
 		Log.i("setMode", ""+mMode + "\t" + newMode);
 		int oldMode = mMode;
@@ -240,6 +244,7 @@ public class ArenaView extends TileView {
 			}
 			initArenaView();
 			//timer.start();
+			toPlay = true;
 			mRedrawHandler = new RefreshHandler();
 			mRedrawHandler.sleep(10);
 			return;
@@ -255,6 +260,18 @@ public class ArenaView extends TileView {
 			str = "Game Over";
 			if (newMode == LOSE) {
 				str += "\nYou Lose!";
+				if (toPlay) {
+					toPlay = false;
+					MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
+					mp.start();
+					mp.setOnCompletionListener(new OnCompletionListener() {
+
+						public void onCompletion(MediaPlayer mp) {
+							mp.release();
+						}
+
+					});
+				}
 			}
 			else {
 				str += "\nYou Win!";
@@ -296,15 +313,17 @@ public class ArenaView extends TileView {
 	/**
 	 * Draws some walls.
 	 */
-	// THIS WILL BE MOVED
+	
+	public int myId;
+	
 	private void updateWalls() {
 		for (int x = 0; x < 99; x++) {
-			setTile(GREEN_STAR, x, 0);
-			setTile(GREEN_STAR, x, 99);
+			setTile(myId + 1, x, 0);
+			setTile(myId + 1, x, 99);
 		}
 		for (int y = 1; y < 99; y++) {
-			setTile(GREEN_STAR, 0, y);
-			setTile(GREEN_STAR, 99, y);
+			setTile(myId + 1, 0, y);
+			setTile(myId + 1, 99, y);
 		}
 	}
 

@@ -63,6 +63,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							JSONArray opponentsArray = info.getJSONArray("players");
 							Coordinate[] starts = new Coordinate[opponentsArray.length()];
 							int[] dirs = new int[opponentsArray.length()];
+							String[] names = new String[opponentsArray.length()];
 							for (int i = 0; i < opponentsArray.length(); i++) {
 								JSONObject opponent = opponentsArray.getJSONObject(i);
 								starts[i] = new Coordinate(opponent.getInt("xStart"), opponent.getInt("yStart"));
@@ -73,9 +74,10 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 								if (dir.equals("south")) dirs[i] = GameEngine.SOUTH;
 								if (dir.equals("west")) dirs[i] = GameEngine.WEST;
 								Log.i("NetworkIP", "id = " + i + "\tdir = " + dir);
+								names[i] = opponent.getString("user");
 							}
 							int myId = info.getInt("playerId");
-							game.passEnterArena(starts, dirs, myId);
+							game.passEnterArena(starts, dirs, names, myId);
 						}
 						else if (j.has("startGame")) {
 							game.startGame();

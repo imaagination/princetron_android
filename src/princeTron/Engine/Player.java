@@ -10,23 +10,22 @@ public class Player {
 
 	//a list of Coordinates that define a players trail
 	private ArrayList<Coordinate> playerTrail = new ArrayList<Coordinate>();
-	private Coordinate startingPoint;
-	private int startingDirection;
 	private int direction;
 	private int id;
 	public int numTics;
 	public static int static_id = 0;
 	private boolean hasStopped = false;
+	public boolean hasLost = false;
+	public String name;
 	private HashMap<Integer, Boolean> turns = new HashMap<Integer, Boolean>();
 
-	public Player(Coordinate coord, int direction, int id){
-		startingPoint = coord;
-		startingDirection = direction;
+	public Player(Coordinate coord, int direction, int id, String name){
 		turns = new HashMap<Integer, Boolean>();
 		playerTrail = new ArrayList<Coordinate>();
 		playerTrail.add(coord);
 		this.direction = direction;
 		this.id = id;
+		this.name = name;
 		//this.nextDirection = direction;
 	}
 

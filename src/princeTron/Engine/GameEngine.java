@@ -67,15 +67,16 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// initializes the game, and the informs the UI
 	// the player id's are with respect to the initial X values, 
 	// and then Y values to break a tie
-	public void passEnterArena(Coordinate[] starts, int[] dirs, int myId) {
+	public void passEnterArena(Coordinate[] starts, int[] dirs, String[] names, int myId) {
 		Log.i("GameEngine", ""+starts.length);
 		for (int i = 0; i < starts.length; i++) {
-				Player p = new Player(starts[i], dirs[i], i);
+				Player p = new Player(starts[i], dirs[i], i, names[i]);
 				players.put(i, p);
 		}
 		this.myId = myId;
 		Log.i("GameEngine", "myId: " + myId);
 		Message msg = handler.obtainMessage(Arena.IN_ARENA);
+		msg.arg1 = myId;
 		msg.sendToTarget();
 		Thread.yield();
 	}
@@ -156,6 +157,16 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	
 	public void endGame() {
 		Message msg = handler.obtainMessage(Arena.IN_LOBBY);
+		String report = "";
+		for (Player p : players.values()) {
+			if (!p.hasLost) {
+				report += p.name + " wins! :)\n";
+			}
+			else {
+				report += p.name + " loses :(\n";
+			}
+		}
+		msg.obj = report;
 		msg.sendToTarget();
 	}
 
@@ -164,7 +175,13 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		for (Player player : players.values()) {
 			Log.i("GameEngine", "player " + player.getId() + "loc: " + player.currentPoint());
 			if (player.getId() == playerId) {
+				if (!isWin) {
+					player.hasLost = true;
+				}
 				player.stop();
+				Message msg = handler.obtainMessage(Arena.PLAYER_CRASH);
+				msg.obj = player.name;
+				msg.sendToTarget();
 			}
 		}
 		if (playerId == myId) {

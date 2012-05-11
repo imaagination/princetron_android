@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.widget.ListView;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,6 +38,7 @@ public class Arena extends Activity {
 	public static final int LOSE = 8;
 	public static final int CRASHED = 9;
 	public static final int LOBBY_UPDATE = 10;
+	public static final int PLAYER_CRASH = 11;
 
 	private GameEngineThread engine;
 	// for the callback to start the game
@@ -99,22 +102,24 @@ public class Arena extends Activity {
 				break;
 			case Arena.IN_LOBBY:
 				toIgnore = false;
+				mArenaView.toPlay = false;
 				try {
 					if (mArenaView != null && mArenaView.engineThread == null) {
 						Log.i("Arena", "engineThread is null");
 					}
 					builder = new AlertDialog.Builder(Arena.this);
-					builder.setMessage("Do you want to go back to the lobby?")
+					String report = (String) msg.obj;
+					builder.setMessage(report + "Do you want to go back to the lobby?")
 					.setCancelable(false)
 					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							// figure out how to do shutdown properly
 							//finish();
-							Intent intent = getIntent();
-							finish();
-							startActivity(intent);
-							//setContentView(R.layout.lobby_layout);
-							//logIn(loginObj);
+							//Intent intent = getIntent();
+							//finish();
+							//startActivity(intent);
+							setContentView(R.layout.lobby_layout);
+							logIn(loginObj);
 						}
 					})
 					.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -157,7 +162,8 @@ public class Arena extends Activity {
 				if (mArenaView != null && mArenaView.engineThread == null) {
 					Log.i("Arena", "engineThread is null4");
 				}
-				Toast toast = Toast.makeText(Arena.this, "About to play...", Toast.LENGTH_SHORT/4);
+				mArenaView.myId = msg.arg1;
+				Toast toast = Toast.makeText(Arena.this, "About to play...", (int) Math.floor(Toast.LENGTH_SHORT/8));
 				toast.show();
 				break;
 			case Arena.INVITATIONS_PENDING:
@@ -175,10 +181,11 @@ public class Arena extends Activity {
 				engine.userCrash((Coordinate) msg.obj, msg.arg1);
 				break;
 			case LOBBY_UPDATE:
-				if (toIgnore) return;
 				if (msg.arg1 == TRUE) {
-					toast = Toast.makeText(Arena.this, msg.obj + " has entered the lobby", Toast.LENGTH_SHORT/3);
-					toast.show();
+					if (!toIgnore) {
+						toast = Toast.makeText(Arena.this, msg.obj + " has entered the lobby", Toast.LENGTH_SHORT/3);
+						toast.show();
+					}
 					String[] otherUsers = new String[((String[])loginObj).length + 1];
 					for (int i = 0; i < otherUsers.length - 1; i++) {
 						otherUsers[i] = ((String[]) loginObj)[i];
@@ -193,8 +200,10 @@ public class Arena extends Activity {
 					loginObj = otherUsers;
 				}
 				else {
-					toast = Toast.makeText(Arena.this, msg.obj + " has left the lobby", Toast.LENGTH_SHORT/3);
-					toast.show();
+					if (!toIgnore) {
+						toast = Toast.makeText(Arena.this, msg.obj + " has left the lobby", Toast.LENGTH_SHORT/3);
+						toast.show();
+					}
 					String[] otherUsers = new String[((String[])loginObj).length - 1];
 					int i = 0;
 					int j = 0;
@@ -217,6 +226,20 @@ public class Arena extends Activity {
 					loginObj = otherUsers;
 				}
 				break;
+			case PLAYER_CRASH:
+				try {
+					MediaPlayer mp = MediaPlayer.create(Arena.this, R.raw.metalcrash);
+					mp.setVolume(0.1f, 0.1f);
+					mp.start();
+					mp.setOnCompletionListener(new OnCompletionListener() {
+
+						public void onCompletion(MediaPlayer mp) {
+							mp.release();
+						}
+
+					});
+				}
+				catch (Exception e) {}
 			}
 		}
 	}
