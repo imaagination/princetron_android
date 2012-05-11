@@ -54,7 +54,7 @@ public class Profile extends Activity{
 
 
 
-		String month = new DateFormatSymbols().getMonths()[profile[1]];
+		String month = new DateFormatSymbols().getMonths()[profile[1]-1];
 
 		tv.setText(
 				"Date Joined: " + month + " " + Ordinal(profile[0])+ ", " + profile[5] + "\n" +
