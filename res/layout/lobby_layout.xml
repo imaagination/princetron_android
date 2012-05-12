@@ -2,11 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFA500"
     android:orientation="vertical" >
 
     <Button
         android:id="@+id/ready_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="readyToPlay"
         android:text="@string/ready_button_text" />
@@ -38,6 +39,7 @@
         android:id="@+id/invitee_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#000000"
         android:text="@string/invitee_header" />
 
     <ScrollView
@@ -54,6 +56,7 @@
                 android:id="@+id/invitee_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#000000"
                 android:text="@string/none" />
 
         </LinearLayout>
@@ -63,7 +66,9 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="1.54" >
+        android:layout_weight="1.54"
+        android:divider="#FFA500"
+        android:dividerHeight="1dp" >
     </ListView>
 
 </LinearLayout>

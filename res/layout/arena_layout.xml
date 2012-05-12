@@ -17,12 +17,14 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#FFA500"
         android:orientation="vertical"> 
     
         <princeTron.UserInterface.ArenaView
          android:id="@+id/arena"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#000000"
                 tileSize="24"
                 />
 
