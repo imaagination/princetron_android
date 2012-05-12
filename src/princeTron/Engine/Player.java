@@ -128,13 +128,12 @@ public class Player {
 			//lastPoint = playerTrail.get(playerTrail.size() - 1);
 			ArrayList<Coordinate> points = new ArrayList<Coordinate>();
 			int j;
+			toReturn.add(currentPoint());
 			for (j = 0; j < playerTrail.size() - 1; j++) {
 				points.add(playerTrail.get(j));
 			}
 			Log.i("Player " + id, "removed: " + playerTrail.get(j));
 			playerTrail = points;
-			//Log.i("Player " + id, "lastPoint: "+lastPoint);
-			toReturn.add(currentPoint());
 			numTics--;
 			if (turns.containsKey(numTics)) {
 				Log.i("Player", "turned back!");

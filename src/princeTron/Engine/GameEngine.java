@@ -97,6 +97,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 					yList = new ArrayList<Integer>();
 				}
 				if (player.getId() == myId && yList.contains(current.y)) {
+					Log.i("GameEngine", "Crash location: "+current);
 					Log.i("GameEngine", "crash!");
 					if (toReturn) return current; // collision
 				}
@@ -105,6 +106,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 				}
 				if ((player.getId() == myId) && (current.x > 100 || current.y > 100 
 						|| current.x < 0 || current.y < 0)) {
+					Log.i("GameEngine", "off the edge!");
+					Log.i("GameEngine", "Crash location: "+current);
 					if (toReturn) return current; // off the edge
 				}
 				visitedMap.put(current.x, yList);
@@ -131,18 +134,42 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		player.turn(isLeft, numTics);
 		players.put(myId, player);
 		Log.i("GameEngine", "finishing turn in gameEngine");
-		/*
-		if (myId == -1) return;
-		Player player = players.get(myId);
-		Log.i("player id", ""+player.getId());
-		int direction = 0;
-		if (isLeft) direction = -1;
-		else direction = 1;
-		Log.i("old player direction", ""+player.getDirection());
-		int newDirection = (player.getDirection() + direction)%4;
-		if (newDirection == -1) newDirection = 3; // stupid mod op in java
-		player.setDirection(newDirection);
-		Log.i("new player direction", ""+player.getDirection());*/
+	}
+	
+	@Override
+	public synchronized Coordinate opponentTurn(int playerId, int time, boolean isLeft) {
+		int oldNumTics = numTics;
+		if (time > numTics) {
+			Player player = players.get(playerId);
+			player.turn(isLeft, time);
+			players.put(playerId, player);
+			return null;
+		}
+		for (Integer i : players.keySet()) {
+			Player p = players.get(i);
+			while (p.numTics > time) {
+				ArrayList<Coordinate> removed = p.stepBackward(1);
+				for (Coordinate c : removed) {
+					ArrayList<Integer> yList = visitedMap.get(c.x);
+					if (yList == null) yList = new ArrayList<Integer>();
+					yList.remove((Integer) c.y);
+					visitedMap.put(c.x, yList);
+				}
+			}
+			players.put(i, p);
+		}
+		Player player = players.get(playerId);
+		player.turn(isLeft, time);
+		players.put(playerId, player);
+		numTics = time;
+		Coordinate toReturn = null;
+		for (; numTics < oldNumTics; ) {
+			Coordinate c = update(true);
+			if (c != null) {
+				toReturn = c;
+			}
+		}
+		return toReturn;
 	}
 
 	public Iterable<Player> getTrails() {
@@ -174,7 +201,6 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		msg.sendToTarget();
 	}
 
-	// TODO: Include a "WIN" condition
 	public void gameResult(int playerId, boolean isWin) {
 		for (Player player : players.values()) {
 			Log.i("GameEngine", "player " + player.getId() + "loc: " + player.currentPoint());
@@ -188,100 +214,5 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 				msg.sendToTarget();
 			}
 		}
-		if (playerId == myId) {
-			Log.i("GameEngine", "id was equal!");
-			if (isWin) {
-				Message msg = handler.obtainMessage(Arena.WIN);
-				msg.sendToTarget();
-			}
-			else {
-				Message msg = handler.obtainMessage(Arena.LOSE);
-				msg.sendToTarget();
-			}
-		}
-	}
-
-	@Override
-	public synchronized void opponentTurn(int playerId, int time, boolean isLeft) {
-		//Log.i("GameEngine", "time: " + time);
-		//Log.i("GameEngine", "numTics: " + numTics);
-//		Player player = players.get(playerId);
-//		player.turn(isLeft, time);
-//		players.put(playerId, player);
-		int oldNumTics = numTics;
-		if (time > numTics) {
-			Player player = players.get(playerId);
-			player.turn(isLeft, time);
-			players.put(playerId, player);
-			return;
-		}
-		/*visitedMap = new HashMap<Integer, ArrayList<Integer>>();
-		for (Integer i : players.keySet()) {
-			Player p = players.get(i);
-			p.erase();
-			players.put(i, p);
-		}
-		numTics = 0;
-		while (numTics < oldNumTics) {
-			Coordinate c = update(true);
-			if (c != null) {
-				Message msg = handler.obtainMessage(princeTron.UserInterface.Arena.CRASHED);
-				msg.obj = c;
-				msg.arg1 = numTics;
-				msg.sendToTarget();
-				Player p = players.get(myId);
-				p.stop();
-			}
-		}*/
-		for (Integer i : players.keySet()) {
-			Player p = players.get(i);
-			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
-			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
-			//Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
-			//Log.i("GameEngine", "\n\n\n");
-			//Log.i("GameEngine", "Player " + p.getId() + " last 5: " + p.lastFive());
-			while (p.numTics > time) {
-				p.stepBackward(1);
-			}
-			//Log.i("GameEngine", "\n\n\n");
-			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
-			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
-			//Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
-			//Log.i("GameEngine", "\n\n\n");
-			players.put(i, p);
-		}
-		Player player = players.get(playerId);
-		player.turn(isLeft, time);
-		players.put(playerId, player);
-		numTics = time;
-		for (; numTics < oldNumTics; ) {
-			update(false);
-		}
-		for (Player p : players.values()) {
-			//Log.i("GameEngine", "Current point for " + p.getId() + ": " + p.currentPoint());
-			//Log.i("GameEngine", "Num tics for " + p.getId() + ": " + p.numTics);
-			//Log.i("GameEngine", "Number of points for " + p.getId() + ": " + ((ArrayList<Coordinate>)p.getPoints()).size());
-			//Log.i("GameEngine", "Player " + p.getId() + " last 5: " + p.lastFive());
-		}
-		//Log.i("GameEngine", "numTics: " + numTics);
-		//player.stepBackward(numTics - time);
-		/*int count = 0;
-		Player player = null;
-		for (Player p : players) {
-			if (p.getId() == playerId) {player = p; break;}
-		}
-		while (count < (numTics - time - 1)) {
-			player.stepBackward(1);
-			count++;
-		}
-		int direction = 0;
-		if (isLeft) direction = -1;
-		else direction = 1;
-		int newDirection = (player.getDirection() + direction)%4;
-		if (newDirection == -1) newDirection = 3; // stupid mod op in java
-		player.setDirection(newDirection);
-		for (int i = 0; i < count; i++) {
-			player.stepForward(1);
-		}*/
 	}
 }
