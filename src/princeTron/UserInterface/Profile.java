@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Profile extends Activity{
 	/** Called when the activity is first created. */
@@ -54,7 +55,7 @@ public class Profile extends Activity{
 
 
 
-		String month = new DateFormatSymbols().getMonths()[profile[1]];
+		String month = new DateFormatSymbols().getMonths()[profile[1]-1];
 
 		tv.setText(
 				"Date Joined: " + month + " " + Ordinal(profile[0])+ ", " + profile[5] + "\n" +
@@ -116,8 +117,9 @@ public class Profile extends Activity{
 			buf.close();
 			ips.close();
 			
-			//is there a better way to do this?
-			String input = sb.toString().replace("&quot;", "\"");
+			
+			String input = sb.toString();
+//			Toast.makeText(this, input, Toast.LENGTH_SHORT).show();
 			JSONObject j = new JSONObject(input);
 
 			values[0] = j.getInt("joined_day");
@@ -162,8 +164,7 @@ public class Profile extends Activity{
 			ips.close();
 
 			
-			//is there a better way to do this?
-			String input = sb.toString().replace("&quot;", "\"");
+			String input = sb.toString();
 			JSONObject j = new JSONObject(input);
 
 			values[0] = j.getInt("joined_day");
