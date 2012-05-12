@@ -10,7 +10,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import java.util.Arrays;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -50,6 +50,7 @@ public class Arena extends Activity {
 		private void logIn(Object msgobj) {
 			Log.i("Arena", "in LOGGED_IN");
 			String[] others = (String[]) msgobj;
+			Arrays.sort(others);
 			ListView logged_in_list = (ListView) findViewById(android.R.id.list);
 			try {
 				//logged_in_list = getListView();
@@ -113,13 +114,17 @@ public class Arena extends Activity {
 					.setCancelable(false)
 					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							// figure out how to do shutdown properly
-							//finish();
 							Intent intent = getIntent();
 							finish();
 							startActivity(intent);
-							//setContentView(R.layout.lobby_layout);
-							//logIn(loginObj);
+							/*mArenaView.setOnTouchListener(new OnTouchListener() {
+								public boolean onTouch(View view, MotionEvent event) {
+									Log.i("Arena", "In my touch listener!");
+									return true;
+								}
+							});
+							setContentView(R.layout.lobby_layout);
+							logIn(loginObj);*/
 						}
 					})
 					.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -184,8 +189,8 @@ public class Arena extends Activity {
 			case LOBBY_UPDATE:
 				if (msg.arg1 == TRUE) {
 					if (!toIgnore) {
-						toast = Toast.makeText(Arena.this, msg.obj + " has entered the lobby", Toast.LENGTH_SHORT/3);
-						toast.show();
+						//toast = Toast.makeText(Arena.this, msg.obj + " has entered the lobby", Toast.LENGTH_SHORT/3);
+						//toast.show();
 					}
 					String[] otherUsers = new String[((String[])loginObj).length + 1];
 					for (int i = 0; i < otherUsers.length - 1; i++) {
@@ -202,8 +207,8 @@ public class Arena extends Activity {
 				}
 				else {
 					if (!toIgnore) {
-						toast = Toast.makeText(Arena.this, msg.obj + " has left the lobby", Toast.LENGTH_SHORT/3);
-						toast.show();
+						//toast = Toast.makeText(Arena.this, msg.obj + " has left the lobby", Toast.LENGTH_SHORT/3);
+						//toast.show();
 					}
 					String[] otherUsers = new String[((String[])loginObj).length - 1];
 					int i = 0;
@@ -229,7 +234,7 @@ public class Arena extends Activity {
 				break;
 			case PLAYER_CRASH:
 				try {
-					/*MediaPlayer mp = MediaPlayer.create(Arena.this, R.raw.metalcrash);
+					MediaPlayer mp = MediaPlayer.create(Arena.this, R.raw.metalcrash);
 					mp.setVolume(0.1f, 0.1f);
 					mp.start();
 					mp.setOnCompletionListener(new OnCompletionListener() {
@@ -238,7 +243,7 @@ public class Arena extends Activity {
 							mp.release();
 						}
 
-					});*/
+					});
 				}
 				catch (Exception e) {}
 			}
@@ -251,6 +256,17 @@ public class Arena extends Activity {
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		try {
+			MediaPlayer mp = MediaPlayer.create(this, R.raw.metalcrash);
+			mp.setLooping(true);
+			mp.setVolume(0.0f, 0.0f);
+			mp.start();
+			mp.setOnCompletionListener(new OnCompletionListener() {
+
+				public void onCompletion(MediaPlayer mp) {
+					mp.release();
+				}
+
+			});
 			super.onCreate(savedInstanceState);
 			toIgnore = false;
 			//ListView logged_in_list = (ListView) findViewById(android.R.id.list);
@@ -358,8 +374,11 @@ public class Arena extends Activity {
 		mArenaView.setMode(ArenaView.READY);
 	}
 	
+	private boolean firstTime = true;
+	
 	public void startGame() {
 		mArenaView = (ArenaView) findViewById(R.id.arena);
+		mArenaView.setOnTouchListener(mArenaView);
 		if (mArenaView != null && mArenaView.engineThread == null) {
 			Log.i("Arena", "engineThread is null6");
 			mArenaView.setGameEngine(engine);

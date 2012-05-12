@@ -63,10 +63,12 @@ public class GameEngineThread extends Thread implements Parcelable {
 		
 	}
 	
-	public synchronized void turn(boolean isLeft) {
+	public void turn(boolean isLeft) {
+		Log.i("GameEngineThread", "in turn()");
 		int time = engine.numTics;
 		engine.turn(isLeft);
 		network.userTurn(time, isLeft);
+		Log.i("GameEngineThread", "ending turn()");
 	}
 	
 	public void cancel() {

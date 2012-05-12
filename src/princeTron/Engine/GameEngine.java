@@ -126,9 +126,11 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// called by the UI when the player turns. argument is true if 
 	// left turn, false otherwise
 	public synchronized void turn(boolean isLeft) {
+		Log.i("GameEngine", "turning in gameEngine");
 		Player player = players.get(myId);
 		player.turn(isLeft, numTics);
 		players.put(myId, player);
+		Log.i("GameEngine", "finishing turn in gameEngine");
 		/*
 		if (myId == -1) return;
 		Player player = players.get(myId);

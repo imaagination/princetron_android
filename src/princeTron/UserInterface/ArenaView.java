@@ -1,5 +1,7 @@
 package princeTron.UserInterface;
 
+import java.util.HashSet;
+
 import princeTron.Engine.*;
 
 import android.content.Context;
@@ -15,11 +17,12 @@ import android.widget.TextView;
 import android.util.Log;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.view.View.OnTouchListener;
 
 /**
  * ArenaView: implementation of a simple game of Tron
  */
-public class ArenaView extends TileView {
+public class ArenaView extends TileView implements OnTouchListener {
 
 	/**
 	 * Current mode of application: READY to run, RUNNING, or you have already
@@ -147,6 +150,40 @@ public class ArenaView extends TileView {
 	 * @param context
 	 * @param attrs
 	 */
+	
+	public boolean onTouch(View v, MotionEvent event){
+		if (engineThread == null) return true;
+		Log.i("ArenaView 116", "in onTouch");
+		float x;       
+		if (mMode == NOT_READY) {
+			Log.i("ArenaView", "not ready to play yet!");
+		}
+
+		Log.i("ArenaView 137", "handling action");
+
+		switch (event.getAction())
+		{
+		case MotionEvent.ACTION_DOWN:
+		{
+			vibe.vibrate(50);
+			x = event.getX();    
+			if (x >= width/2.0) { //right side of screen (favored bc has = sign)
+				Log.i("turn direction", "right");
+				engineThread.turn(false);
+				return (true);
+			}
+
+			if (x < width/2.0) { //left side of screen
+				Log.i("turn direction", "left");
+				engineThread.turn(true);
+				return (true);
+			}					
+			break;
+		}
+		}
+		return true;
+	}
+
 	public ArenaView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		myId = 0;
@@ -157,41 +194,46 @@ public class ArenaView extends TileView {
 		mMode = 0;
 		wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
 		width = wm.getDefaultDisplay().getWidth(); // deprecated
+		//this.setOnTouchListener(listener);
 		// THIS HAS BEEN MOVED
-		this.setOnTouchListener(new OnTouchListener(){
-			public boolean onTouch(View v, MotionEvent event){
-				if (engineThread == null) return true;
-				Log.i("ArenaView 116", "in onTouch");
-				float x;       
-				if (mMode == NOT_READY) {
-					Log.i("ArenaView", "not ready to play yet!");
-				}
-
-				Log.i("ArenaView 137", "handling action");
-				
-				switch (event.getAction())
-				{
-				case MotionEvent.ACTION_DOWN:
-				{
-					vibe.vibrate(50);
-					x = event.getX();    
-					if (x >= width/2.0) { //right side of screen (favored bc has = sign)
-						Log.i("turn direction", "right");
-						engineThread.turn(false);
-						return (true);
+		/*if (toSet) {
+			toSet = false;
+			listener = new OnTouchListener(){
+				public boolean onTouch(View v, MotionEvent event){
+					if (engineThread == null) return true;
+					Log.i("ArenaView 116", "in onTouch");
+					float x;       
+					if (mMode == NOT_READY) {
+						Log.i("ArenaView", "not ready to play yet!");
 					}
 
-					if (x < width/2.0) { //left side of screen
-						Log.i("turn direction", "left");
-						engineThread.turn(true);
-						return (true);
-					}					
-					break;
+					Log.i("ArenaView 137", "handling action");
+
+					switch (event.getAction())
+					{
+					case MotionEvent.ACTION_DOWN:
+					{
+						vibe.vibrate(50);
+						x = event.getX();    
+						if (x >= width/2.0) { //right side of screen (favored bc has = sign)
+							Log.i("turn direction", "right");
+							engineThread.turn(false);
+							return (true);
+						}
+
+						if (x < width/2.0) { //left side of screen
+							Log.i("turn direction", "left");
+							engineThread.turn(true);
+							return (true);
+						}					
+						break;
+					}
+					}
+					return true;
 				}
-				}
-				return true;
-			}
-		});
+			};
+			this.setOnTouchListener(listener);
+		}*/
 	}
 
 	public void initArenaView() {
@@ -270,7 +312,7 @@ public class ArenaView extends TileView {
 				str += "\nYou Lose!";
 				if (toPlay) {
 					toPlay = false;
-					/*MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
+					MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
 					mp.start();
 					mp.setOnCompletionListener(new OnCompletionListener() {
 
@@ -278,7 +320,7 @@ public class ArenaView extends TileView {
 							mp.release();
 						}
 
-					});*/
+					});
 				}
 			}
 			else {

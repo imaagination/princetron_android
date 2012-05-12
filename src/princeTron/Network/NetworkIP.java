@@ -214,12 +214,14 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	{
 		try
 		{
+			Log.i("NetworkIP", "starting userTurn()");
 			JSONObject j = new JSONObject();
 			JSONObject turn = new JSONObject();
 			turn.put("timestamp", time);
 			turn.put("isLeft", isLeft);
 			j.put("turn", turn);
 			client.send(j.toString());
+			Log.i("NetworkIP", "ending userTurn()");
 		}
 		catch ( InterruptedException ex )
 		{
