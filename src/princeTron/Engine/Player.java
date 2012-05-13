@@ -46,6 +46,9 @@ public class Player {
 	public synchronized void stepForward() {
 		//Log.i("Player", "Number of points = " + playerTrail.size());
 		//Log.i("Player", ""+direction);
+		if (hasStopped) {
+			return;
+		}
 		if (turns.containsKey(numTics)) {
 			boolean isLeft = turns.get(numTics);
 			switch (direction) {
@@ -221,6 +224,10 @@ public class Player {
 		hasStopped = true;
 	}
 
+	public void start() {
+		hasStopped = false;
+	}
+	
 	public boolean hasStopped() {
 		return hasStopped;
 	}

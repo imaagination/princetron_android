@@ -2,7 +2,9 @@ package princeTron.Engine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
+import princeTron.Network.NetworkIP;
 import princeTron.UserInterface.Arena;
 
 import android.os.Handler;
@@ -21,8 +23,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	private boolean isReady = false;
 	private int myId = -1;
 	// for collision detection - the proper way is mysteriously not working
-	private HashMap<Integer, ArrayList<Integer>> visitedMap;
-
+	private HashSet<Coordinate> visited;
+	private NetworkIP network;
 	private Handler handler;
 
 	public static final int X_SCALE = 100;
@@ -33,10 +35,10 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public static final int WEST = 3;
 	public static final long mMoveDelay = 100;
 
-	public GameEngine(Handler handler) {
-		visitedMap = new HashMap<Integer, ArrayList<Integer>>();
+	public GameEngine(Handler handler, NetworkIP network) {
 		this.handler = handler;
-		visitedMap = new HashMap<Integer, ArrayList<Integer>>();
+		this.network = network;
+		visited = new HashSet<Coordinate>();
 		players = new HashMap<Integer, Player>();
 		numTics = 0;
 		myId = -1;
@@ -57,6 +59,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	}
 	
 	public void passLobbyUpdate(String name, boolean hasEntered) {
+		Log.i("GameEngine", "passing update");
 		Message msg = handler.obtainMessage(princeTron.UserInterface.Arena.LOBBY_UPDATE);
 		msg.obj = name;
 		if (hasEntered) msg.arg1 = TRUE;
@@ -68,7 +71,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// the player id's are with respect to the initial X values, 
 	// and then Y values to break a tie
 	public void passEnterArena(Coordinate[] starts, int[] dirs, String[] names, int myId) {
-		visitedMap = new HashMap<Integer, ArrayList<Integer>>();
+		visited = new HashSet<Coordinate>();
 		players = new HashMap<Integer, Player>();
 		Log.i("GameEngine", ""+starts.length);
 		for (int i = 0; i < starts.length; i++) {
@@ -87,75 +90,66 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	
 	// steps all the snakes forwards, returns true if there was a collision
 	// on the local snake
-	public synchronized Coordinate update(boolean toReturn) {
-		//Log.i("GameEngine", "visited: " + visitedMap.size());
+	public void update(boolean toReturn) {
 		for (Integer i : players.keySet()) {
 			Player player = players.get(i);
 			if (!player.hasStopped()) {
 				player.stepForward();
 				Coordinate current = player.currentPoint();
-				ArrayList<Integer> yList = visitedMap.get(current.x);
-				if (yList == null) {
-					yList = new ArrayList<Integer>();
+				if (toReturn && visited.contains(current)) {
+					if (player.getId() == myId) {
+						Log.i("GameEngine", "crash!");
+						network.userCrash(current, player.numTics);
+						player.stop();
+					}
+					else {
+						player.stop();
+					}
 				}
-				if (player.getId() == myId && yList.contains(current.y)) {
-					Log.i("GameEngine", "Crash location: "+current);
-					Log.i("GameEngine", "crash!");
-					if (toReturn) return current; // collision
+				else if (current.x >= 100 || current.x < 0 || current.y >= 100 || current.y < 0) {
+					if (player.getId() == myId) {
+						Log.i("GameEngine", "crash!");
+						network.userCrash(current, player.numTics);
+						player.stop();
+					}
 				}
-				else {
-					yList.add(current.y);
-				}
-				if ((player.getId() == myId) && (current.x > 100 || current.y > 100 
-						|| current.x < 0 || current.y < 0)) {
-					Log.i("GameEngine", "off the edge!");
-					Log.i("GameEngine", "Crash location: "+current);
-					if (toReturn) return current; // off the edge
-				}
-				visitedMap.put(current.x, yList);
+				visited.add(current);
 			}
 			players.put(i, player);
 		}
 		numTics++;
-		return null;
 	}
 
-	public synchronized ArrayList<Player> getPlayers() {
-		ArrayList<Player> toReturn = new ArrayList<Player>();
-		for (Integer i : players.keySet()) {
-			toReturn.add(players.get(i));
-		}
-		return toReturn;
+	public Iterable<Player> getPlayers() {
+		return players.values();
 	}
 
 	// called by the UI when the player turns. argument is true if 
 	// left turn, false otherwise
-	public synchronized void turn(boolean isLeft) {
+	public void turn(boolean isLeft) {
 		Log.i("GameEngine", "turning in gameEngine");
 		Player player = players.get(myId);
 		player.turn(isLeft, numTics);
 		players.put(myId, player);
+		network.userTurn(player.numTics, isLeft);
 		Log.i("GameEngine", "finishing turn in gameEngine");
 	}
 	
 	@Override
-	public synchronized Coordinate opponentTurn(int playerId, int time, boolean isLeft) {
+	public void opponentTurn(int playerId, int time, boolean isLeft) {
 		int oldNumTics = numTics;
 		if (time > numTics) {
 			Player player = players.get(playerId);
 			player.turn(isLeft, time);
 			players.put(playerId, player);
-			return null;
 		}
 		for (Integer i : players.keySet()) {
 			Player p = players.get(i);
+			p.start();
 			while (p.numTics > time) {
 				ArrayList<Coordinate> removed = p.stepBackward(1);
 				for (Coordinate c : removed) {
-					ArrayList<Integer> yList = visitedMap.get(c.x);
-					if (yList == null) yList = new ArrayList<Integer>();
-					yList.remove((Integer) c.y);
-					visitedMap.put(c.x, yList);
+					visited.remove(c);
 				}
 			}
 			players.put(i, p);
@@ -164,14 +158,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		player.turn(isLeft, time);
 		players.put(playerId, player);
 		numTics = time;
-		Coordinate toReturn = null;
-		for (; numTics < oldNumTics; ) {
-			Coordinate c = update(true);
-			if (c != null) {
-				toReturn = c;
-			}
+		while (numTics < oldNumTics) {
+			update(true);
 		}
-		return toReturn;
 	}
 
 	public Iterable<Player> getTrails() {

@@ -89,10 +89,7 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 							int timestamp = ot.getInt("timestamp");
 							boolean isLeft = ot.getBoolean("isLeft");
 							int playerId = ot.getInt("playerId");
-							Coordinate c = game.opponentTurn(playerId, timestamp, isLeft);
-							if (c != null) {
-								userCrash(c, game.numTics);
-							}
+							game.opponentTurn(playerId, timestamp, isLeft);
 							System.out.println("Turn Occured");
 						}
 						else if (j.has("gameResult")) {
@@ -130,7 +127,9 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 									e.printStackTrace();
 								}
 							}
+							Log.i("NetworkIP", "about to passLogin");
 							game.passLogin(users);
+							Log.i("NetworkIP", "passed login");
 						}
 						else if (j.has("lobbyUpdate")) {
 							JSONObject lobbyUpdate = j.getJSONObject("lobbyUpdate");
@@ -182,6 +181,9 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 	public void setGameEngine (princeTron.Engine.GameEngine engine)
 	{
 		game = engine;
+	}
+	
+	public void connect() {
 
 		try 
 		{
@@ -191,12 +193,6 @@ public class NetworkIP extends princeTron.Engine.GameNetwork
 			Log.i("NetworkIP", "about to send 'connect' message");
 			client.send(toSend);     
 			Log.i("NetworkIP", "sent 'connect' message");
-			//JSONObject rtp = new JSONObject();
-			//rtp.put("readyToPlay", true);
-			//String r = rtp.toString();
-			//Thread.sleep(1000);
-			//client.send(r);
-			//Log.i("NetworkIP", "sent rtp");
 		}
 		catch ( InterruptedException ex) 
 		{
