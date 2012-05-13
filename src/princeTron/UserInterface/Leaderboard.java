@@ -48,6 +48,7 @@ public class Leaderboard extends ListActivity{
 			data = DownloadLeaders();
 		} catch (JSONException e) {
 			e.printStackTrace();
+			if (data == null) data = new String[0];
 		}
 
 		

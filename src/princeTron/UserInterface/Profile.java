@@ -67,6 +67,7 @@ public class Profile extends Activity{
 		String info = "";
 		try {
 			info = setProfileString(profile);
+			if (info == null) info = "No connectivity with the server. Please try again.";
 		}
 		catch (Exception e) {
 			info = "The Server is down. Please try again.";
@@ -83,13 +84,18 @@ public class Profile extends Activity{
 	 * @return
 	 */
 	public static String setProfileString(int[] profile){
-		String month = new DateFormatSymbols().getMonths()[profile[1]-1];
-		String info = "Date Joined: " + month + " " + Ordinal(profile[0])+ ", " + profile[5] + "\n" +
-				"User Rank: " + profile[4] + "\n" +
-				"Wins: " + profile[2] + "\n" +
-				"Losses: " + profile[3];
-		
-		return info;
+		try {
+			String month = new DateFormatSymbols().getMonths()[profile[1]-1];
+			String info = "Date Joined: " + month + " " + Ordinal(profile[0])+ ", " + profile[5] + "\n" +
+					"User Rank: " + profile[4] + "\n" +
+					"Wins: " + profile[2] + "\n" +
+					"Losses: " + profile[3];
+
+			return info;
+		}
+		catch (Exception e) {
+			return null;
+		}
 	}
 
 
