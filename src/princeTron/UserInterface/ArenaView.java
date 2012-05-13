@@ -1,6 +1,5 @@
 package princeTron.UserInterface;
 
-import java.util.HashSet;
 
 import princeTron.Engine.*;
 
@@ -13,7 +12,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 import android.util.Log;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -54,10 +52,6 @@ public class ArenaView extends TileView implements OnTouchListener {
 	 */
 	//	private long mLastMove;
 
-	/**
-	 * mStatusText: text shows to the user in some run states
-	 */
-	private TextView mStatusText;
 
 
 	private Context mContext;
@@ -261,15 +255,6 @@ public class ArenaView extends TileView implements OnTouchListener {
 		}
 	}
 
-	/**
-	 * Sets the TextView that will be used to give information (such as "Game
-	 * Over" to the user.
-	 * 
-	 * @param newView
-	 */
-	public void setTextView(TextView newView) {
-		mStatusText = newView;
-	}
 
 	public boolean toPlay = true;
 	
@@ -301,15 +286,15 @@ public class ArenaView extends TileView implements OnTouchListener {
 		}
 
 		Resources res = getContext().getResources();
-		String str = "";
+//		String str = "";
 		if (newMode == READY) {
 			Log.i("setMode", "in newMode==READY");
-			str = res.getText(R.string.mode_ready).toString();
+//			str = res.getText(R.string.mode_ready).toString();
 		}
 		if (newMode == LOSE || newMode == WIN) {
-			str = "Game Over";
+//			str = "Game Over";
 			if (newMode == LOSE) {
-				str += "\nYou Lose!";
+//				str += "\nYou Lose!";
 				if (toPlay) {
 					toPlay = false;
 					MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
@@ -324,7 +309,7 @@ public class ArenaView extends TileView implements OnTouchListener {
 				}
 			}
 			else {
-				str += "\nYou Win!";
+//				str += "\nYou Win!";
 			}
 			mRedrawHandler.cancel();
 			//timer.cancel();

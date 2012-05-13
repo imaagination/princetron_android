@@ -23,6 +23,7 @@ import android.util.Log;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.Window;
 
 public class Arena extends Activity {
 
@@ -54,8 +55,10 @@ public class Arena extends Activity {
 		private void logIn(Object msgobj) {
 			Log.i("Arena", "in LOGGED_IN");
 			String[] others = (String[]) msgobj;
+			
 			Arrays.sort(others);
 			ListView logged_in_list = (ListView) findViewById(android.R.id.list);
+			
 			try {
 				//logged_in_list = getListView();
 			}
@@ -65,6 +68,7 @@ public class Arena extends Activity {
 			try {
 				ArrayAdapter<String> items = new ArrayAdapter<String>(Arena.this, R.layout.invite_item, others);
 				logged_in_list.setAdapter(items);
+				
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -274,6 +278,7 @@ public class Arena extends Activity {
 
 			});
 			super.onCreate(savedInstanceState);
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
 			here = new HashSet<String>();
 			toIgnore = false;
 			//ListView logged_in_list = (ListView) findViewById(android.R.id.list);
