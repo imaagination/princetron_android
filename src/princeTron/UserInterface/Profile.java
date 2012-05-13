@@ -64,7 +64,13 @@ public class Profile extends Activity{
 
 
 
-		String info = setProfileString(profile);
+		String info = "";
+		try {
+			info = setProfileString(profile);
+		}
+		catch (Exception e) {
+			info = "The Server is down. Please try again.";
+		}
 		tv.setText(info);
 
 
