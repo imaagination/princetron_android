@@ -1,10 +1,10 @@
 package princeTron.UserInterface;
 
 /* Activity that controls the actual gameplay. Owns two layouts - lobby and arena.
- * Workflow:	(1) onCreate - instantiates components, connects network manager
- * 				(2) either responds to an invitation (via Handler) or sends (via readyToPlay)
- * 				(3) goToArena() called. Inflats XML view
- * 				(4) startGame() called. Timer starts ticking, etc. C
+ * Workflow: (1) onCreate - instantiates components, connects network manager
+ *     (2) either responds to an invitation (via Handler) or sends (via readyToPlay)
+ *     (3) goToArena() called. Inflats XML view
+ *     (4) startGame() called. Timer starts ticking, etc. C
  */
 
 
@@ -29,6 +29,7 @@ import android.util.Log;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.Window;
 
 public class Arena extends Activity {
 
@@ -60,22 +61,24 @@ public class Arena extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
-			toIgnore = false;
-			//ListView logged_in_list = (ListView) findViewById(android.R.id.list);
+			toIgnore = false; // for ignoring invites while playing
 			mArenaView = (ArenaView) findViewById(R.id.arena);
 			handler = new StartHandler();
 			invitees = new ArrayList<String>();
 			accountName = getIntent().getStringExtra("userName");
+			// initialize components
 			network = new NetworkIP();
 			network.connect();
 			engine = new GameEngine(handler, network);
 			network.setGameEngine(engine);
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
 			try {
 				setContentView(R.layout.lobby_layout);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+			// so that when the user changes the volume, it affects the sound fx
 			MediaPlayer mp = MediaPlayer.create(this, R.raw.metalcrash);
 			mp.setLooping(true);
 			mp.setVolume(0.0f, 0.0f);
@@ -236,13 +239,13 @@ public class Arena extends Activity {
 							finish();
 							startActivity(intent);
 							/*mArenaView.setOnTouchListener(new OnTouchListener() {
-								public boolean onTouch(View view, MotionEvent event) {
-									Log.i("Arena", "In my touch listener!");
-									return true;
-								}
-							});
-							setContentView(R.layout.lobby_layout);
-							logIn(loginObj);*/
+        public boolean onTouch(View view, MotionEvent event) {
+         Log.i("Arena", "In my touch listener!");
+         return true;
+        }
+       });
+       setContentView(R.layout.lobby_layout);
+       logIn(loginObj);*/
 						}
 					})
 					.setNegativeButton("No", new DialogInterface.OnClickListener() {

@@ -45,6 +45,7 @@ public class ArenaView extends TileView implements OnTouchListener {
 	private static final int GREEN_SQUARE = 5;
 	private static final int PURPLE_SQUARE = 6;
 
+
 	private Context mContext;
 	private int width;
 	private WindowManager wm;
@@ -230,9 +231,10 @@ public class ArenaView extends TileView implements OnTouchListener {
 			mRedrawHandler.sleep(10);
 			return;
 		}
-		
+
 		if (newMode == READY) {
 			Log.i("setMode", "in newMode==READY");
+
 		}
 		if (newMode == LOSE || newMode == WIN) {
 			// sound effect on crash!
@@ -248,8 +250,6 @@ public class ArenaView extends TileView implements OnTouchListener {
 
 				});
 			}
-			
-			// stop ticking
 			mRedrawHandler.cancel();
 		}
 	}

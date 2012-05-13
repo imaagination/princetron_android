@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.DateFormatSymbols;
 
 import json.org.json.JSONArray;
 import json.org.json.JSONException;

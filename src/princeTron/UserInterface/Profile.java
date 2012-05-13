@@ -19,10 +19,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.Window;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 
