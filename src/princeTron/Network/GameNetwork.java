@@ -1,7 +1,5 @@
 package princeTron.Network;
 
-import android.graphics.Point;
-
 public abstract class GameNetwork
 {
     public abstract void startGame(int wait_time, int numPlayers); 

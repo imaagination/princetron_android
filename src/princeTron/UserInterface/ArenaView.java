@@ -1,7 +1,5 @@
 package princeTron.UserInterface;
 
-import java.util.HashSet;
-
 import princeTron.Engine.*;
 
 import android.content.Context;
@@ -13,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 import android.util.Log;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -36,7 +33,7 @@ public class ArenaView extends TileView implements OnTouchListener {
 	public static final int LOSE = 3;
 	public static final int WIN = 4;
 
-	public princeTron.Engine.GameEngineThread engineThread;
+	public princeTron.Engine.GameEngine engine;
 
 	/**
 	 * Labels for the drawables that will be loaded into the TileView class
@@ -47,18 +44,6 @@ public class ArenaView extends TileView implements OnTouchListener {
 	private static final int BLUE_SQUARE = 4;
 	private static final int GREEN_SQUARE = 5;
 	private static final int PURPLE_SQUARE = 6;
-
-	/**
-	 * mLastMove: tracks the absolute time when the snake last moved, and is used
-	 * to determine if a move should be made based on mMoveDelay.
-	 */
-	//	private long mLastMove;
-
-	/**
-	 * mStatusText: text shows to the user in some run states
-	 */
-	private TextView mStatusText;
-
 
 	private Context mContext;
 	private int width;
@@ -104,16 +89,22 @@ public class ArenaView extends TileView implements OnTouchListener {
 		}
 	}
 
+	// handles timing
 	class RefreshHandler extends Handler {
 		
+		private static final int NUM_INTERVALS = 5000;
+		private static final long INTERVAL = 100;
+		
+		private long startTime;
 		private long[] timesToUpdate;
 		private int count;
 		
 		public RefreshHandler() {
-			timesToUpdate = new long[5000];
-			long startTime = System.currentTimeMillis();
-			for (int i = 0; i < 5000; i++) {
-				timesToUpdate[i] = startTime + 100*i;
+			// set up the intervals.
+			timesToUpdate = new long[NUM_INTERVALS];
+			startTime = System.currentTimeMillis();
+			for (int i = 0; i < NUM_INTERVALS; i++) {
+				timesToUpdate[i] = startTime + INTERVAL*i;
 			}
 			count = 1;
 		}
@@ -125,6 +116,14 @@ public class ArenaView extends TileView implements OnTouchListener {
 				if (System.currentTimeMillis() >= timesToUpdate[count]) {
 					ArenaView.this.update();
 					count++;
+					if (count >= timesToUpdate.length) {
+						// reset intervals
+						startTime += NUM_INTERVALS*INTERVAL;
+						for (int i = 0; i < NUM_INTERVALS; i++) {
+							timesToUpdate[i] = startTime + INTERVAL*i;
+						}
+						count = 0;
+					}
 				}
 				sleep(10);
 			}
@@ -145,14 +144,10 @@ public class ArenaView extends TileView implements OnTouchListener {
 		}
 	};
 	
-	/**
-	 * Constructs a ArenaView based on inflation from XML
-	 * @param context
-	 * @param attrs
-	 */
 	
+	// handle touch events
 	public boolean onTouch(View v, MotionEvent event){
-		if (engineThread == null) return true;
+		if (engine == null) return true;
 		Log.i("ArenaView 116", "in onTouch");
 		float x;       
 		if (mMode == NOT_READY) {
@@ -169,13 +164,13 @@ public class ArenaView extends TileView implements OnTouchListener {
 			x = event.getX();    
 			if (x >= width/2.0) { //right side of screen (favored bc has = sign)
 				Log.i("turn direction", "right");
-				engineThread.turn(false);
+				engine.turn(false);
 				return (true);
 			}
 
 			if (x < width/2.0) { //left side of screen
 				Log.i("turn direction", "left");
-				engineThread.turn(true);
+				engine.turn(true);
 				return (true);
 			}					
 			break;
@@ -194,46 +189,6 @@ public class ArenaView extends TileView implements OnTouchListener {
 		mMode = 0;
 		wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
 		width = wm.getDefaultDisplay().getWidth(); // deprecated
-		//this.setOnTouchListener(listener);
-		// THIS HAS BEEN MOVED
-		/*if (toSet) {
-			toSet = false;
-			listener = new OnTouchListener(){
-				public boolean onTouch(View v, MotionEvent event){
-					if (engineThread == null) return true;
-					Log.i("ArenaView 116", "in onTouch");
-					float x;       
-					if (mMode == NOT_READY) {
-						Log.i("ArenaView", "not ready to play yet!");
-					}
-
-					Log.i("ArenaView 137", "handling action");
-
-					switch (event.getAction())
-					{
-					case MotionEvent.ACTION_DOWN:
-					{
-						vibe.vibrate(50);
-						x = event.getX();    
-						if (x >= width/2.0) { //right side of screen (favored bc has = sign)
-							Log.i("turn direction", "right");
-							engineThread.turn(false);
-							return (true);
-						}
-
-						if (x < width/2.0) { //left side of screen
-							Log.i("turn direction", "left");
-							engineThread.turn(true);
-							return (true);
-						}					
-						break;
-					}
-					}
-					return true;
-				}
-			};
-			this.setOnTouchListener(listener);
-		}*/
 	}
 
 	public void initArenaView() {
@@ -249,28 +204,11 @@ public class ArenaView extends TileView implements OnTouchListener {
 		loadTile(GREEN_SQUARE, r.getDrawable(R.drawable.green));
 	}
 
-	public void setGameEngine(GameEngineThread engineThread) {
-		this.engineThread = engineThread;
-		try {
-			if (!engineThread.isAlive()) {
-				engineThread.start();
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void setGameEngine(GameEngine engine) {
+		this.engine = engine;
 	}
 
-	/**
-	 * Sets the TextView that will be used to give information (such as "Game
-	 * Over" to the user.
-	 * 
-	 * @param newView
-	 */
-	public void setTextView(TextView newView) {
-		mStatusText = newView;
-	}
-
+	// avoid double-sound effect
 	public boolean toPlay = true;
 	
 	/**
@@ -285,51 +223,34 @@ public class ArenaView extends TileView implements OnTouchListener {
 		mMode = newMode;
 
 		if (newMode == RUNNING && oldMode != RUNNING) {
-			Log.i("setMode", "newMode==RUNNING && oldMode != RUNNING");
-			try {
-				//mStatusText.setVisibility(View.INVISIBLE);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			// handle initialization, start timer
 			initArenaView();
-			//timer.start();
 			toPlay = true;
 			mRedrawHandler = new RefreshHandler();
 			mRedrawHandler.sleep(10);
 			return;
 		}
-
-		Resources res = getContext().getResources();
-		String str = "";
+		
 		if (newMode == READY) {
 			Log.i("setMode", "in newMode==READY");
-			str = res.getText(R.string.mode_ready).toString();
 		}
 		if (newMode == LOSE || newMode == WIN) {
-			str = "Game Over";
-			if (newMode == LOSE) {
-				str += "\nYou Lose!";
-				if (toPlay) {
-					toPlay = false;
-					MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
-					mp.start();
-					mp.setOnCompletionListener(new OnCompletionListener() {
+			// sound effect on crash!
+			if (toPlay) {
+				toPlay = false;
+				MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
+				mp.start();
+				mp.setOnCompletionListener(new OnCompletionListener() {
 
-						public void onCompletion(MediaPlayer mp) {
-							mp.release();
-						}
+					public void onCompletion(MediaPlayer mp) {
+						mp.release();
+					}
 
-					});
-				}
+				});
 			}
-			else {
-				str += "\nYou Win!";
-			}
+			
+			// stop ticking
 			mRedrawHandler.cancel();
-			//timer.cancel();
-			Log.i("ArenaView 326", "in newMode==LOSE");
-			return;
 		}
 	}
 
@@ -342,18 +263,17 @@ public class ArenaView extends TileView implements OnTouchListener {
 	 */
 	public void update() {
 		try {
-			//Log.i("ArenaView", "updating!");
-			if (engineThread == null) {
+			// update the game. called from ticking handler
+			if (engine == null) {
 				Log.i("ArenaView", "engine thread is null!");
 				return;
 			}
-			Iterable<Player> players = engineThread.getPlayers();
+			Iterable<Player> players = engine.getPlayers();
 			clearTiles();
 			updateWalls();
 			updateSnake(players);
 			invalidate();
-			engineThread.update();
-			return;
+			engine.update(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -364,43 +284,28 @@ public class ArenaView extends TileView implements OnTouchListener {
 	 * Draws some walls.
 	 */
 	
+	// set by engine
 	public int myId;
 	
+	// draw the walls. 100 is the board size
 	private void updateWalls() {
-		for (int x = 0; x < 99; x++) {
+		for (int x = 0; x < 100; x++) {
 			setTile(myId + 1, x, 0);
 			setTile(myId + 1, x, 99);
 		}
-		for (int y = 1; y < 99; y++) {
+		for (int y = 1; y < 100; y++) {
 			setTile(myId + 1, 0, y);
 			setTile(myId + 1, 99, y);
 		}
 	}
 
 
-	/**
-	 * Figure out which way the player is going, see if he's run into anything 
-	 * If he's not going to die, we then add to the front and to increase the trail. 
-	 */
-	// THIS WILL BE MOVED MOSTLY - SEE BELOW
+	// draw paths
 	private void updateSnake(Iterable<Player> players) {
 		for (Player player : players) {
-			//Log.i("playerid", ""+player.getId());
-			/*ArrayList<Coordinate> tempPoints = new ArrayList<Coordinate>();
-			boolean cloned = true;
-			for (Coordinate p : player.getPoints()) {
-				Coordinate c = (Coordinate) p.clone();
-				if (c != null) {
-					tempPoints.add((Coordinate) p.clone());
-				}
-				else {
-					cloned = false;
-				}
-			}
-			if (!cloned) tempPoints = (ArrayList<Coordinate>) player.getPoints();*/
 			for (Coordinate p : player.getPoints()) {
 				try {
-					//Log.i("x, y", p.x + ", " + p.y);
+					// ids are 0-index, colors are 1-indexed
 					setTile(player.getId() + 1, p.x, p.y);
 				}
 				catch (Exception e) {

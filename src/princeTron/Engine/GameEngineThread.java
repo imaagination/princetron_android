@@ -1,17 +1,10 @@
 package princeTron.Engine;
 
-import android.os.Parcelable;
-import android.os.Parcel;
-import android.os.Handler;
+// THIS CLASS HAS BEEN REMOVED FROM USAGE
 
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-public class GameEngineThread extends Thread implements Parcelable {
+public class GameEngineThread extends Thread{
 	
-	public int describeContents() {
+	/*public int describeContents() {
 		return 0;
 	}
 	
@@ -78,10 +71,6 @@ public class GameEngineThread extends Thread implements Parcelable {
 	
 	public synchronized void update() {
 		//Log.i("GameEngineThread", "in update()");
-		Coordinate c = engine.update(true);
-		if (c != null) {
-			network.userCrash(c, engine.numTics);
-		}
 	}
 	
 	public synchronized ArrayList<Player> getPlayers() {
@@ -92,6 +81,7 @@ public class GameEngineThread extends Thread implements Parcelable {
 		catch (Exception e) {
 			return engine.getPlayers();
 		}
+		return null;
 	}
 	
 	public synchronized boolean isReady() {
@@ -100,6 +90,6 @@ public class GameEngineThread extends Thread implements Parcelable {
 	
 	public synchronized void disconnect() {
 		network.disconnect();
-	}
+	}*/
 
 }

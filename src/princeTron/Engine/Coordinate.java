@@ -6,7 +6,7 @@ package princeTron.Engine;
  * easy to build.
  * 
  */
-public class Coordinate implements Cloneable {
+public class Coordinate {
 	public int x;
 	public int y;
 
@@ -15,9 +15,17 @@ public class Coordinate implements Cloneable {
 		y = newY;
 	}
 
-	public boolean equals(Coordinate other) {
-		
-		return true;//return (x == other.x && y == other.y);
+	@Override
+	public boolean equals(Object oThat) {
+		if (this == oThat) return true;
+		if (!(oThat instanceof Coordinate)) return false;
+		Coordinate that = (Coordinate) oThat;
+		return this.x == that.x && this.y == that.y;
+	}
+	
+	@Override
+	public int hashCode() {
+		return 41*(41 + x) + y;
 	}
 
 	@Override
