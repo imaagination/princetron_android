@@ -20,14 +20,25 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+
+/**
+ * Activity for downloading and displaying a users profile.
+ * Also has a public methos used by Leaderboard.java
+ * to get a specific player's profile and make it readable.
+ */
 public class Profile extends Activity{
-	/** Called when the activity is first created. */
+
 	private String userName;
+	
+	/** Called when the activity is first created. */	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		setContentView(R.layout.profile_layout);
 		TextView tv = (TextView) findViewById(R.id.profileText);
@@ -55,16 +66,26 @@ public class Profile extends Activity{
 
 
 
+		String info = setProfileString(profile);
+		tv.setText(info);
+
+
+
+	}
+	
+	/**
+	 * Method converts an array of ints to human-readable information
+	 * @param profile
+	 * @return
+	 */
+	public static String setProfileString(int[] profile){
 		String month = new DateFormatSymbols().getMonths()[profile[1]-1];
-
-		tv.setText(
-				"Date Joined: " + month + " " + Ordinal(profile[0])+ ", " + profile[5] + "\n" +
-						"User Rank: " + profile[4] + "\n" +
-						"Wins: " + profile[2] + "\n" +
-						"Losses: " + profile[3]);
-
-
-
+		String info = "Date Joined: " + month + " " + Ordinal(profile[0])+ ", " + profile[5] + "\n" +
+				"User Rank: " + profile[4] + "\n" +
+				"Wins: " + profile[2] + "\n" +
+				"Losses: " + profile[3];
+		
+		return info;
 	}
 
 
@@ -89,10 +110,9 @@ public class Profile extends Activity{
 	}
 
 
-	private int[] DownloadProfile() throws URISyntaxException, ClientProtocolException, IOException, JSONException {
+	private int[] DownloadProfile() throws 
+	URISyntaxException, ClientProtocolException, IOException, JSONException {
 
-		if (userName == null)
-			userName = "Peter";
 		String uri = "http://www.princetron.com/u/" + userName;
 		int[] values = new int[6];
 
@@ -119,7 +139,6 @@ public class Profile extends Activity{
 			
 			
 			String input = sb.toString();
-//			Toast.makeText(this, input, Toast.LENGTH_SHORT).show();
 			JSONObject j = new JSONObject(input);
 
 			values[0] = j.getInt("joined_day");
@@ -136,10 +155,9 @@ public class Profile extends Activity{
 	}
 
 
-	public static int[] DownloadProfile(String userName) throws URISyntaxException, ClientProtocolException, IOException, JSONException {
+	public static int[] DownloadProfile(String userName) 
+			throws URISyntaxException, ClientProtocolException, IOException, JSONException {
 
-		if (userName == null)
-			userName = "Peter";
 		String uri = "http://www.princetron.com/u/" + userName;
 		int[] values = new int[6];
 

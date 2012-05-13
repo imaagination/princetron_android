@@ -21,34 +21,33 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
+import android.view.Window;
 import android.widget.TextView;
 import android.util.Log;
 
 /**
- * Tron: a simple game that everyone can enjoy.
+ * PrinceTron: a simple game that everyone can enjoy.
  */
 public class PrinceTron extends Activity {
-
-	/**
-	 * Called when Activity is first created. Turns off the title bar, sets up
-	 * the content views, and fires up the ArenaView.
-	 */
 	private String userName;
 	
+	/**
+	 * Called when Activity is first created. Turns off the title bar and sets up
+	 * the content views.
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		//get the google account associated with this phone
 		AccountManager am = AccountManager.get(this);
 		Account[] accounts = am.getAccountsByType("com.google");
 		
 		//set content view
-		setContentView(R.layout.welcome);
-		TextView tv = (TextView) findViewById(R.id.welcomeP);
+		setContentView(R.layout.princetron_layout);
+		TextView tv = (TextView) findViewById(R.id.hello);
 		
 
 		if(accounts.length != 0){
@@ -64,6 +63,7 @@ public class PrinceTron extends Activity {
 		Log.i("PrinceTron", "starting Arena");
 		Intent myIntent = new Intent(v.getContext(),
 				Arena.class);
+		//pass along username to next activity
 		myIntent.putExtra("userName", userName);
 		startActivityForResult(myIntent, 0);
 	}
@@ -72,6 +72,7 @@ public class PrinceTron extends Activity {
 		Log.i("PrinceTron", "going to Profile");
 		Intent myIntent = new Intent(v.getContext(),
 				Profile.class);
+		//pass along username to next activity
 		myIntent.putExtra("userName", userName);
 		startActivityForResult(myIntent, 0);
 	}
@@ -80,7 +81,6 @@ public class PrinceTron extends Activity {
 		Log.i("PrinceTron", "going to LeaderBoard");
 		Intent myIntent = new Intent(v.getContext(),
 				Leaderboard.class);
-		myIntent.putExtra("userName", userName);
 		startActivityForResult(myIntent, 0);	
 	}
 

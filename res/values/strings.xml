@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, PrinceTronActivity!</string>
     <string name="app_name">PrinceTron</string>
-    <string name="mode_ready">PrinceTron\nPress Up To Play</string>
-    <string name="mode_lose_prefix">Game Over\nScore: </string>
-    <string name="mode_lose_suffix">\nPress Up To Play</string>
-    <string name="waiting_string">Waiting for other players. Please be patient.</string>
     <string name="_new_game">New Game</string>
     <string name="snake_layout_text_text"></string>
-    <string name="_statsrecords">Stats &amp; Records</string>
-    <string name="_playfriend">Play Against Friend</string>
-    <string name="_profile">Profile</string>
+    <string name="_profile">My Profile</string>
     <string name="ready_button_text">Invite To Game</string>
-    <string name="_leaderboard">See Leaderboard</string>
+    <string name="_leaderboard">LeaderBoard</string>
     <string name="none">None</string>
     <string name="add_invitee">Add Invitee</string>
+    <string name="mode_ready">PrinceTron\nPress Up To Play</string>
     <string name="invitee_header">Invite List:</string>
-    <string name="package_str">com.codemobiles.android.demo.customlistview</string>
 
 </resources>

@@ -29,6 +29,10 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * This activity displays the global PrinceTron 
+ * leaderboard.
+ */
 public class Leaderboard extends ListActivity{
 	private static String[] data;
 	private String leaderLink = "http://www.princetron.com/leaderboard/";
@@ -39,7 +43,7 @@ public class Leaderboard extends ListActivity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.leaderboard);
+		setContentView(R.layout.leaderboard_layout);
 
 		try {
 			data = DownloadLeaders();
@@ -48,13 +52,16 @@ public class Leaderboard extends ListActivity{
 		}
 
 		
-		setListAdapter(new ArrayAdapter<String>(
-		this,
+		setListAdapter(new ArrayAdapter<String>( this,
 		android.R.layout.simple_expandable_list_item_1,
 		data));
 	}
 
 
+	/**
+	 * This method allows the user to click and get more information
+	 * about a particular player.
+	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
@@ -64,8 +71,9 @@ public class Leaderboard extends ListActivity{
 		popupWindow = new PopupWindow(inflater.inflate(R.layout.dialog,null, false),300,140,true);
 
 		String userName = data[position].toString();
+		
+		//hack for 10th person on list 
 		char check = userName.charAt(1);
-
 		if(check == '.'){
 			userName = userName.substring(4);
 		}
@@ -75,16 +83,11 @@ public class Leaderboard extends ListActivity{
 
 		try {
 			int[] profile = Profile.DownloadProfile(userName);
+			String info = Profile.setProfileString(profile);
 
-			String month = new DateFormatSymbols().getMonths()[profile[1]-1];
 
-			String info =
-					"User Rank: " + profile[4] + "\n" +
-							"Wins: " + profile[2] + "\n" +
-							"Losses: " + profile[3] + "\n" +
-							"Date Joined: " + month + " " + Profile.Ordinal(profile[0]) + 
-							", " + profile[5] + "\n";
-
+			
+			//pop up window and make easy to close window
 			((TextView)popupWindow.getContentView().findViewById(R.id.Tv1)).setText(userName);							
 			((TextView)popupWindow.getContentView().findViewById(R.id.Tv2)).setText(info);
 
@@ -147,13 +150,12 @@ public class Leaderboard extends ListActivity{
 		}
 
 
-		//is there a better way?
-		String input = builder.toString().replace("&quot;", "\"");
+		//this string is the fetched json message
+		String input = builder.toString();
 
 		JSONObject j = new JSONObject(input);
 		JSONArray arr = j.getJSONArray("users");
 		String[] top10 = new String[10];
-
 
 		top10[0] = "1.) " + arr.get(0).toString();
 		top10[1] = "2.) " + arr.get(1).toString();

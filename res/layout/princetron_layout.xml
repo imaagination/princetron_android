@@ -5,12 +5,12 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/welcomeP"
+        android:id="@+id/hello"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:editable="true" />
+        android:editable="true"
+        android:gravity="center_horizontal" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -24,8 +24,8 @@
             android:layout_weight="1"
             android:background="#FFA500"
             android:gravity="center_horizontal"
-            android:text="New Game"
-            android:onClick="goToGame" />
+            android:onClick="goToGame"
+            android:text="@string/_new_game" />
 
         <Button
             android:layout_width="fill_parent"
@@ -33,9 +33,9 @@
             android:layout_weight="1"
             android:background="#000000"
             android:gravity="center_horizontal"
-            android:textColor="#FFA500"
-            android:text="My Profile"
-            android:onClick="goToProfile" />
+            android:onClick="goToProfile"
+            android:text="@string/_profile"
+            android:textColor="#FFA500" />
 
         <Button
             android:layout_width="fill_parent"
@@ -43,8 +43,8 @@
             android:layout_weight="1"
             android:background="#FFA500"
             android:gravity="center_horizontal"
-            android:text="LeaderBoard"
-            android:onClick="goToLeaderBoard" />
+            android:onClick="goToLeaderBoard"
+            android:text="@string/_leaderboard" />
     </LinearLayout>
 
     <LinearLayout
@@ -59,9 +59,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/troncar"
+            android:contentDescription="@string/_new_game"
             android:onClick="goToGame" />
-                
-                
 
         <ImageButton
             android:id="@+id/imageButton2"
@@ -69,7 +68,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/profile"
-            android:onClick="goToProfile"/>
+            android:contentDescription="@string/_profile"
+            android:onClick="goToProfile" />
 
         <ImageButton
             android:id="@+id/imageButton3"
@@ -77,6 +77,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/trophy"
+            android:contentDescription="@string/_leaderboard"
             android:onClick="goToLeaderBoard" />
     </LinearLayout>
 

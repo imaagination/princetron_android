@@ -1,6 +1,8 @@
 package princeTron.UserInterface;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,10 +25,10 @@ import android.os.Message;
 import android.view.View;
 
 public class Arena extends Activity {
-	
+
 	private static final int TRUE = 1;
 	private static final int FALSE = 0;
-	
+
 	public static final int IN_LOBBY = 0;
 	public static final int INVITED = 1;
 	public static final int INVITATION_ACCEPTED = 2;
@@ -43,10 +45,12 @@ public class Arena extends Activity {
 	private GameEngineThread engine;
 	// for the callback to start the game
 	private StartHandler handler;
+	private HashSet<String> here;
 	private boolean toIgnore;
+	private String accountName = "";
+	private ArenaView mArenaView;
 
 	class StartHandler extends Handler {
-		
 		private void logIn(Object msgobj) {
 			Log.i("Arena", "in LOGGED_IN");
 			String[] others = (String[]) msgobj;
@@ -66,18 +70,23 @@ public class Arena extends Activity {
 				e.printStackTrace();
 			}
 			logged_in_list.setOnItemClickListener(new OnItemClickListener() {
-				
+
 				boolean firsttime = true;
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
-					// When clicked, show a toast with the TextView text
 					try {
 						String text = (String) ((TextView) view).getText();
-						Arena.this.invitees.add(text);
-						TextView tv = (TextView) findViewById(R.id.invitee_list);
-						String names = tv.getText().toString();
-						if (firsttime) {tv.setText(text); firsttime = false;}
-						else tv.setText(text + "\n" + names);
+						
+						//only invite players once and can't invite yourself
+						if(!here.contains(text) && !text.equals(accountName)){
+							here.add(text);
+							Arena.this.invitees.add(text);
+
+							TextView tv = (TextView) findViewById(R.id.invitee_list);
+							String names = tv.getText().toString();
+							if (firsttime) {tv.setText(text); firsttime = false;}
+							else tv.setText(text + "\n" + names);
+						}
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -85,9 +94,9 @@ public class Arena extends Activity {
 				}
 			});
 		}
-		
+
 		private Object loginObj;
-		
+
 		@Override
 		public void handleMessage(Message msg) {
 			Log.i("Arena", "" + msg.what);
@@ -146,17 +155,17 @@ public class Arena extends Activity {
 				}
 				builder = new AlertDialog.Builder(Arena.this);
 				builder.setMessage("Do you want to accept the invitation from " + (String) msg.obj + "?")
-				       .setCancelable(false)
-				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				                Arena.this.engine.acceptInvitation();
-				           }
-				       })
-				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				                
-				           }
-				       });
+				.setCancelable(false)
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						Arena.this.engine.acceptInvitation();
+					}
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+
+					}
+				});
 				builder.show();
 				//Arena.this.engine.acceptInvitation();
 				break;
@@ -201,7 +210,7 @@ public class Arena extends Activity {
 						logIn(otherUsers);
 					}
 					catch (Exception e) {
-						
+
 					}
 					loginObj = otherUsers;
 				}
@@ -227,7 +236,7 @@ public class Arena extends Activity {
 						logIn(otherUsers);
 					}
 					catch (Exception e) {
-						
+
 					}
 					loginObj = otherUsers;
 				}
@@ -250,9 +259,6 @@ public class Arena extends Activity {
 		}
 	}
 
-	private String accountName = "";
-	private ArenaView mArenaView;
-	
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		try {
@@ -268,6 +274,7 @@ public class Arena extends Activity {
 
 			});
 			super.onCreate(savedInstanceState);
+			here = new HashSet<String>();
 			toIgnore = false;
 			//ListView logged_in_list = (ListView) findViewById(android.R.id.list);
 			mArenaView = (ArenaView) findViewById(R.id.arena);
@@ -289,7 +296,7 @@ public class Arena extends Activity {
 			super.onCreate(savedInstanceState);
 		}
 	}
-	
+
 	public void onResume() {
 		super.onResume();
 		mArenaView = (ArenaView) findViewById(R.id.arena);
@@ -309,7 +316,7 @@ public class Arena extends Activity {
 			toast.show();
 		}
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -319,17 +326,17 @@ public class Arena extends Activity {
 			engine.cancel();
 		}
 		catch (Exception e) {
-			
+
 		}
 	}
-	
+
 	@Override
 	public void onStop() {
 		super.onStop();
 		engine.disconnect();
 		engine.cancel();
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -338,22 +345,13 @@ public class Arena extends Activity {
 	}
 
 	ArrayList<String> invitees;
-	
+
 	public void readyToPlay(View view) {
 		//if (invitees.size() == 0) invitees.add("amy.ousterhout@gmail.com");
 		engine.readyToPlay(invitees);
 	}
-	
-	/*public void addInvitee(View view) {
-		EditText et = (EditText) findViewById(R.id.invitee_edit_text);
-		String email = et.getText().toString();
-		TextView tv = (TextView) findViewById(R.id.invitee_list);
-		String text = tv.getText().toString();
-		if (text.equals("None")) tv.setText(email);	
-		else tv.setText(text + "\n" + email);
-		invitees.add(email);
-	}*/
-	
+
+
 	public void goToArena(){
 		toIgnore = true;
 		Log.i("Arena", "going to arena");
@@ -370,12 +368,9 @@ public class Arena extends Activity {
 			mArenaView.setGameEngine(engine);
 		}
 		mArenaView.setGameEngine(engine);
-		//mArenaView.setTextView((TextView) findViewById(R.id.text));
 		mArenaView.setMode(ArenaView.READY);
 	}
-	
-	private boolean firstTime = true;
-	
+
 	public void startGame() {
 		mArenaView = (ArenaView) findViewById(R.id.arena);
 		mArenaView.setOnTouchListener(mArenaView);
@@ -387,7 +382,6 @@ public class Arena extends Activity {
 			mArenaView.setMode(ArenaView.RUNNING);
 		}
 		catch (Exception e) {
-			//mArenaView.setMode(ArenaView.RUNNING);
 		}
 	}
 }
