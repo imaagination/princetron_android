@@ -57,74 +57,26 @@ public class ArenaView extends TileView implements OnTouchListener {
 	 */
 	private RefreshHandler mRedrawHandler;
 	private Vibrator vibe;
-	//private TicThread timer = new TicThread(100);
-	
-	class TicThread extends Thread {
-		
-		private long interval;
-		private boolean toRun = false;
-		
-		public TicThread(int interval) {
-			this.interval = interval;
-		}
-		
-		public void run() {
-			while (toRun) {
-				try {
-					sleep(interval);
-					Message msg = mRedrawHandler.obtainMessage();
-					msg.sendToTarget();
-					yield();
-				}
-				catch (Exception e) {
-					Message msg = mRedrawHandler.obtainMessage();
-					msg.sendToTarget();
-					yield();
-				}
-			}
-		}
-		
-		public void cancel() {
-			toRun = false;
-			interrupt();
-		}
-	}
 
 	// handles timing
 	class RefreshHandler extends Handler {
 		
-		private static final int NUM_INTERVALS = 5000;
-		private static final long INTERVAL = 100;
+		private static final int INTERVAL = 100;
 		
 		private long startTime;
-		private long[] timesToUpdate;
-		private int count;
 		
-		public RefreshHandler() {
-			// set up the intervals.
-			timesToUpdate = new long[NUM_INTERVALS];
+		public void initialize() {
 			startTime = System.currentTimeMillis();
-			for (int i = 0; i < NUM_INTERVALS; i++) {
-				timesToUpdate[i] = startTime + INTERVAL*i;
-			}
-			count = 1;
+			sleep(10);
 		}
 		
 		@Override
 		public void handleMessage(Message msg) {
 			//Log.i("ArenaView", "ticked!");
 			if (!(ArenaView.this.mMode == LOSE || ArenaView.this.mMode == WIN) ) {
-				if (System.currentTimeMillis() >= timesToUpdate[count]) {
+				if (System.currentTimeMillis() >= startTime) {
 					ArenaView.this.update();
-					count++;
-					if (count >= timesToUpdate.length) {
-						// reset intervals
-						startTime += NUM_INTERVALS*INTERVAL;
-						for (int i = 0; i < NUM_INTERVALS; i++) {
-							timesToUpdate[i] = startTime + INTERVAL*i;
-						}
-						count = 0;
-					}
+					startTime += INTERVAL;
 				}
 				sleep(10);
 			}
@@ -190,6 +142,7 @@ public class ArenaView extends TileView implements OnTouchListener {
 		mMode = 0;
 		wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
 		width = wm.getDefaultDisplay().getWidth(); // deprecated
+		mRedrawHandler = new RefreshHandler();
 	}
 
 	public void initArenaView() {
@@ -227,8 +180,8 @@ public class ArenaView extends TileView implements OnTouchListener {
 			// handle initialization, start timer
 			initArenaView();
 			toPlay = true;
-			mRedrawHandler = new RefreshHandler();
-			mRedrawHandler.sleep(10);
+			mRedrawHandler.initialize();
+			update();
 			return;
 		}
 

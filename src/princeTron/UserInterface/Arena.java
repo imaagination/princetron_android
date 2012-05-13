@@ -61,6 +61,12 @@ public class Arena extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
+			try {
+				setContentView(R.layout.lobby_layout);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 			toIgnore = false; // for ignoring invites while playing
 			mArenaView = (ArenaView) findViewById(R.id.arena);
 			handler = new StartHandler();
@@ -72,12 +78,6 @@ public class Arena extends Activity {
 			engine = new GameEngine(handler, network);
 			network.setGameEngine(engine);
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
-			try {
-				setContentView(R.layout.lobby_layout);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
 			// so that when the user changes the volume, it affects the sound fx
 			MediaPlayer mp = MediaPlayer.create(this, R.raw.metalcrash);
 			mp.setLooping(true);
@@ -151,10 +151,10 @@ public class Arena extends Activity {
 			engine = new GameEngine(handler, network);
 		}
 		mArenaView.setGameEngine(engine);
-		mArenaView.setMode(ArenaView.READY);
 	}
 
 	public void startGame() {
+		mArenaView.setMode(ArenaView.READY);
 		mArenaView = (ArenaView) findViewById(R.id.arena);
 		// tells Arena to listen for left/right touches
 		mArenaView.setOnTouchListener(mArenaView);
@@ -174,37 +174,42 @@ public class Arena extends Activity {
 	class StartHandler extends Handler {
 
 		private void handleLogIn(Object msgobj) {
-			Log.i("Arena", "in LOGGED_IN");
-			String[] others = (String[]) msgobj;
-			Arrays.sort(others);
-			ListView logged_in_list = (ListView) findViewById(android.R.id.list);
 			try {
-				ArrayAdapter<String> items = new ArrayAdapter<String>(Arena.this, R.layout.invite_item, others);
-				logged_in_list.setAdapter(items);
+				Log.i("Arena", "in LOGGED_IN");
+				String[] others = (String[]) msgobj;
+				Arrays.sort(others);
+				ListView logged_in_list = (ListView) findViewById(android.R.id.list);
+				try {
+					ArrayAdapter<String> items = new ArrayAdapter<String>(Arena.this, R.layout.invite_item, others);
+					logged_in_list.setAdapter(items);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				logged_in_list.setOnItemClickListener(new OnItemClickListener() {
+
+					boolean firsttime = true;
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						// add an invitee
+						String text = (String) ((TextView) view).getText();
+						try {
+							if(!invitees.contains(text) && !text.equals(accountName)){
+								Arena.this.invitees.add(text);
+								TextView tv = (TextView) findViewById(R.id.invitee_list);
+								String names = tv.getText().toString();
+								if (firsttime) {tv.setText(text); firsttime = false;}
+								else tv.setText(text + "\n" + names);}
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-			logged_in_list.setOnItemClickListener(new OnItemClickListener() {
-
-				boolean firsttime = true;
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					// add an invitee
-					String text = (String) ((TextView) view).getText();
-					try {
-						if(!invitees.contains(text) && !text.equals(accountName)){
-							Arena.this.invitees.add(text);
-							TextView tv = (TextView) findViewById(R.id.invitee_list);
-							String names = tv.getText().toString();
-							if (firsttime) {tv.setText(text); firsttime = false;}
-							else tv.setText(text + "\n" + names);}
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
 		}
 
 		private Object loginObj;
@@ -238,14 +243,6 @@ public class Arena extends Activity {
 							Intent intent = getIntent();
 							finish();
 							startActivity(intent);
-							/*mArenaView.setOnTouchListener(new OnTouchListener() {
-        public boolean onTouch(View view, MotionEvent event) {
-         Log.i("Arena", "In my touch listener!");
-         return true;
-        }
-       });
-       setContentView(R.layout.lobby_layout);
-       logIn(loginObj);*/
 						}
 					})
 					.setNegativeButton("No", new DialogInterface.OnClickListener() {
