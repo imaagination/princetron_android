@@ -83,6 +83,8 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		Thread.yield();
 	}
 
+	// check that the new branch worked
+	
 	// steps all the snakes forwards, returns true if there was a collision
 	// on the local snake
 	public synchronized Coordinate update(boolean toReturn) {
