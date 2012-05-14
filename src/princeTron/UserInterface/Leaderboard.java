@@ -16,8 +16,10 @@ import org.apache.http.client.ClientProtocolException;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,9 +68,14 @@ public class Leaderboard extends ListActivity{
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 
+		Display display = getWindowManager().getDefaultDisplay(); 
+		int width = display.getWidth()/2;
+//		int height = display.getHeight();
+		
 		LayoutInflater inflater = (LayoutInflater) 
 				this.getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
-		popupWindow = new PopupWindow(inflater.inflate(R.layout.dialog,null, false),300,140,true);
+		popupWindow = new PopupWindow(inflater.inflate(R.layout.dialog,null, false),width,140,true);
+		
 
 		String userName = data[position].toString();
 		

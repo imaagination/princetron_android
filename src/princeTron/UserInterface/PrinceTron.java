@@ -110,31 +110,30 @@ public class PrinceTron extends Activity {
 		}
 	}
 
-	public boolean onCreateOptionsMenu(Menu menu) {
-		Log.i("PrinceTron", "onCreateOptionsMenu");
-		mItemAbout = menu.add("About");
-		return true;
-	}
 	
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		boolean soundOn = settings.getBoolean("soundOn", true);
 		Log.i("PrinceTron", ""+soundOn);
-		try {
-			menu.removeItem(mItemSilent.getItemId());
-		}
-		catch (Exception e) {}
+		
+		menu.clear();
+		
+		
 		if (soundOn) mItemSilent = menu.add("Turn Sound Off");
 		else mItemSilent = menu.add("Turn Sound On");
 		
 		boolean vibrate = settings.getBoolean("vibrateOn", true);
 		Log.i("PrinceTron", ""+vibrate);
-		try {
-			menu.removeItem(mItemVibrate.getItemId());
-		}
-		catch (Exception e) {}
+		
+		
+		
 		if (vibrate) mItemVibrate = menu.add("Turn Vibrate Off");
 		else mItemVibrate = menu.add("Turn Vibrate On");
+		
+		mItemAbout = menu.add("About");
+		
+		
+		
 		
 		return true;
 	}
