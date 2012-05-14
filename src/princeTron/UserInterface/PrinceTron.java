@@ -19,14 +19,18 @@ package princeTron.UserInterface;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +44,8 @@ public class PrinceTron extends Activity {
 	private MenuItem mItemVibrate;
 	
 	public static final String PREFS_NAME = "MyPrefsFile";
+	private String tutorialMessage = "Welcome to PrinceTron!\nThe game is simple: " +
+			"touch the left half of the screen to turn left, and the right to turn right.";
 
 
 	/**
@@ -66,7 +72,7 @@ public class PrinceTron extends Activity {
 			userName = "_____androidEmulator_____";
 
 		tv.setText("\"Hello, " + userName + "\"");
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		if (!settings.contains("silent")) {
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("silent", true);
@@ -76,6 +82,31 @@ public class PrinceTron extends Activity {
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("vibrate", true);
 			editor.commit();
+		}
+	}
+	
+	public void onStart() {
+		super.onStart();
+		final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		boolean isFirstTime = settings.getBoolean("firstTime", true);
+		if (isFirstTime) {
+			AlertDialog.Builder tutorialBuilder = new AlertDialog.Builder(this);
+            LayoutInflater inflater = LayoutInflater.from(this);
+            View tutorialLayout = inflater.inflate(R.layout.tutorial_screen, null);
+            tutorialBuilder.setView(tutorialLayout);
+            final CheckBox dontShowAgain = (CheckBox)tutorialLayout.findViewById(R.id.dontShowAgain);
+            tutorialBuilder.setNeutralButton("OK, thanks", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface d, int m) {
+                    boolean checked = dontShowAgain.isChecked();
+                    if (checked) {
+                    	SharedPreferences.Editor editor = settings.edit();
+                    	editor.putBoolean("firstTime", false);
+                    	editor.commit();
+                    }
+                }
+            });
+            tutorialBuilder.setMessage(tutorialMessage);
+            tutorialBuilder.show();
 		}
 	}
 

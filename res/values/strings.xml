@@ -11,5 +11,6 @@
     <string name="add_invitee">Add Invitee</string>
     <string name="mode_ready">PrinceTron\nPress Up To Play</string>
     <string name="invitee_header">Invite List:</string>
+    <string name="dont_show_again">Don\'t Show Again</string>
 
 </resources>
