@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.util.Log;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.view.View.OnTouchListener;
@@ -198,16 +199,24 @@ public class ArenaView extends TileView implements OnTouchListener {
 		if (newMode == LOSE || newMode == WIN) {
 			// sound effect on crash!
 			if (toPlay && soundOn) {
-				toPlay = false;
-				MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
-				mp.start();
-				mp.setOnCompletionListener(new OnCompletionListener() {
+				try {
+					toPlay = false;
+					MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);
+					AudioManager audio = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+					int currentVolume = audio.getStreamVolume(AudioManager.STREAM_RING);
+					int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_RING);
+					float volume = ((float)currentVolume)/((float)maxVolume);
+					mp.setVolume(volume, volume);
+					mp.start();
+					mp.setOnCompletionListener(new OnCompletionListener() {
 
-					public void onCompletion(MediaPlayer mp) {
-						mp.release();
-					}
+						public void onCompletion(MediaPlayer mp) {
+							mp.release();
+						}
 
-				});
+					});
+				}
+				catch (Exception e) {}
 			}
 			mRedrawHandler.cancel();
 		}

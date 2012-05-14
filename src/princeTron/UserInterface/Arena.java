@@ -80,17 +80,6 @@ public class Arena extends Activity {
 			network.setGameEngine(engine);
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 			// so that when the user changes the volume, it affects the sound fx
-			MediaPlayer mp = MediaPlayer.create(this, R.raw.metalcrash);
-			mp.setLooping(true);
-			mp.setVolume(0.0f, 0.0f);
-			mp.start();
-			mp.setOnCompletionListener(new OnCompletionListener() {
-
-				public void onCompletion(MediaPlayer mp) {
-					mp.release();
-				}
-
-			});
 		}
 		catch (Exception e) {
 			e.printStackTrace();
