@@ -20,6 +20,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -35,6 +36,10 @@ import android.widget.Toast;
 public class PrinceTron extends Activity {
 	private String userName;
 	private MenuItem mItemAbout;
+	private MenuItem mItemSilent;
+	private MenuItem mItemVibrate;
+	
+	public static final String PREFS_NAME = "MyPrefsFile";
 
 
 	/**
@@ -45,7 +50,6 @@ public class PrinceTron extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-
 		//get the google account associated with this phone
 		AccountManager am = AccountManager.get(this);
 		Account[] accounts = am.getAccountsByType("com.google");
@@ -62,11 +66,45 @@ public class PrinceTron extends Activity {
 			userName = "_____androidEmulator_____";
 
 		tv.setText("\"Hello, " + userName + "\"");
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		if (!settings.contains("silent")) {
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putBoolean("silent", true);
+			editor.commit();
+		}
+		if (!settings.contains("vibrate")) {
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putBoolean("vibrate", true);
+			editor.commit();
+		}
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i("PrinceTron", "onCreateOptionsMenu");
 		mItemAbout = menu.add("About");
+		return true;
+	}
+	
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		boolean soundOn = settings.getBoolean("soundOn", true);
+		Log.i("PrinceTron", ""+soundOn);
+		try {
+			menu.removeItem(mItemSilent.getItemId());
+		}
+		catch (Exception e) {}
+		if (soundOn) mItemSilent = menu.add("Turn Sound Off");
+		else mItemSilent = menu.add("Turn Sound On");
+		
+		boolean vibrate = settings.getBoolean("vibrateOn", true);
+		Log.i("PrinceTron", ""+vibrate);
+		try {
+			menu.removeItem(mItemVibrate.getItemId());
+		}
+		catch (Exception e) {}
+		if (vibrate) mItemVibrate = menu.add("Turn Vibrate Off");
+		else mItemVibrate = menu.add("Turn Vibrate On");
+		
 		return true;
 	}
 
@@ -105,6 +143,28 @@ public class PrinceTron extends Activity {
 
 			
 			Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+		}
+		else if (item == mItemSilent) {
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			boolean soundOn = settings.getBoolean("soundOn", true);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putBoolean("soundOn", !soundOn);
+			editor.commit();
+			String text;
+			if (soundOn) text = "Sound turned off";
+			else text = "Sound turned on";
+			Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+		}
+		else if (item == mItemVibrate) {
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			boolean vibrateOn = settings.getBoolean("vibrateOn", true);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putBoolean("vibrateOn", !vibrateOn);
+			editor.commit();
+			String text;
+			if (vibrateOn) text = "Vibrate turned off";
+			else text = "Vibrate turned on";
+			Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
 		}
 		
 

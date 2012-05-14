@@ -23,6 +23,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import princeTron.Engine.*;
 import princeTron.Network.NetworkIP;
 import android.util.Log;
@@ -351,19 +352,23 @@ public class Arena extends Activity {
 				}
 				break;
 			case PLAYER_CRASH:
-				try {
-					MediaPlayer mp = MediaPlayer.create(Arena.this, R.raw.metalcrash);
-					mp.setVolume(0.1f, 0.1f);
-					mp.start();
-					mp.setOnCompletionListener(new OnCompletionListener() {
+				SharedPreferences settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
+				boolean soundOn = settings.getBoolean("soundOn", true);
+				if (soundOn) {
+					try {
+						MediaPlayer mp = MediaPlayer.create(Arena.this, R.raw.metalcrash);
+						mp.setVolume(0.1f, 0.1f);
+						mp.start();
+						mp.setOnCompletionListener(new OnCompletionListener() {
 
-						public void onCompletion(MediaPlayer mp) {
-							mp.release();
-						}
+							public void onCompletion(MediaPlayer mp) {
+								mp.release();
+							}
 
-					});
+						});
+					}
+					catch (Exception e) {}
 				}
-				catch (Exception e) {}
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package princeTron.UserInterface;
 import princeTron.Engine.*;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
@@ -58,6 +59,8 @@ public class ArenaView extends TileView implements OnTouchListener {
 	private RefreshHandler mRedrawHandler;
 	private Vibrator vibe;
 
+	private boolean soundOn;
+	private boolean vibrateOn;
 	// handles timing
 	class RefreshHandler extends Handler {
 		
@@ -113,7 +116,7 @@ public class ArenaView extends TileView implements OnTouchListener {
 		{
 		case MotionEvent.ACTION_DOWN:
 		{
-			vibe.vibrate(50);
+			if (vibrateOn) vibe.vibrate(50);
 			x = event.getX();    
 			if (x >= width/2.0) { //right side of screen (favored bc has = sign)
 				Log.i("turn direction", "right");
@@ -134,6 +137,9 @@ public class ArenaView extends TileView implements OnTouchListener {
 
 	public ArenaView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		SharedPreferences settings = context.getSharedPreferences(PrinceTron.PREFS_NAME, 0);
+		soundOn = settings.getBoolean("soundOn", true);
+		vibrateOn = settings.getBoolean("vibrateOn", true);
 		myId = 0;
 		vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		Log.i("ArenaView", "IN CONSTRUCTOR!");
@@ -191,7 +197,7 @@ public class ArenaView extends TileView implements OnTouchListener {
 		}
 		if (newMode == LOSE || newMode == WIN) {
 			// sound effect on crash!
-			if (toPlay) {
+			if (toPlay && soundOn) {
 				toPlay = false;
 				MediaPlayer mp = MediaPlayer.create(mContext, R.raw.metalcrash);  
 				mp.start();
