@@ -93,7 +93,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public void update(boolean toReturn) {
 		for (Integer i : players.keySet()) {
 			Player player = players.get(i);
-			if (!player.hasStopped()) {
+			if (!player.hasStopped() && !player.hasLost) {
 				player.stepForward();
 				Coordinate current = player.currentPoint();
 				if (toReturn && visited.contains(current)) {
