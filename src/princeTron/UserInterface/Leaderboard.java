@@ -40,13 +40,14 @@ public class Leaderboard extends ListActivity{
 	private static String[] data;
 	private String leaderLink = "http://www.princetron.com/leaderboard/";
 	private PopupWindow popupWindow;
+	boolean soundOn;
 
 
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		
 		SharedPreferences settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
-		boolean soundOn = settings.getBoolean("soundOn", true);
+		soundOn = settings.getBoolean("soundOn", true);
 		if(soundOn){
 			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
 			Log.i("Arena", "Started Sound");
@@ -73,6 +74,16 @@ public class Leaderboard extends ListActivity{
 	protected void onPause() {
 		super.onPause();
 		MusicManager.pause();
+	}
+	
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if(soundOn){
+			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+			Log.i("Leaderboard", "Started Sound");
+		}
 	}
 
 	/**

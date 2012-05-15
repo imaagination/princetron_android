@@ -60,6 +60,7 @@ public class Arena extends Activity {
 
 	private boolean continueMusic;
 	private boolean inArena;
+	private boolean soundOn;
 
 	private SharedPreferences settings;
 
@@ -70,7 +71,7 @@ public class Arena extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
-		boolean soundOn = settings.getBoolean("soundOn", true);
+		soundOn = settings.getBoolean("soundOn", true);
 		if(soundOn){
 			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
 			Log.i("Arena", "Started Sound");
@@ -118,6 +119,14 @@ public class Arena extends Activity {
 			Toast toast = Toast.makeText(Arena.this, "Log in failed. Relaunch to try again.", Toast.LENGTH_SHORT);
 			toast.show();
 		}
+		
+		super.onResume();
+
+		if(soundOn){
+			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+			Log.i("Arena", "Started Sound");
+		}
+		
 	}
 
 	@Override
@@ -162,8 +171,8 @@ public class Arena extends Activity {
 		toIgnore = true;
 		inArena = true;
 
-		SharedPreferences settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
-		boolean soundOn = settings.getBoolean("soundOn", true);
+		settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
+		soundOn = settings.getBoolean("soundOn", true);
 		if(soundOn){
 			MusicManager.pause();
 			MusicManager.start(this, MusicManager.MUSIC_GAMEPLAY);
@@ -410,8 +419,8 @@ public class Arena extends Activity {
 				}
 				break;
 			case PLAYER_CRASH:
-				SharedPreferences settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
-				boolean soundOn = settings.getBoolean("soundOn", true);
+				settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
+				soundOn = settings.getBoolean("soundOn", true);
 				if (soundOn) {
 					try {
 						MediaPlayer mp = MediaPlayer.create(Arena.this, R.raw.metalcrash);

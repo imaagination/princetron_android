@@ -34,6 +34,7 @@ import android.widget.TextView;
 public class Profile extends Activity{
 
 	private String userName;
+	private boolean soundOn;
 	
 	/** Called when the activity is first created. */	
 	public void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class Profile extends Activity{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		SharedPreferences settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
-		boolean soundOn = settings.getBoolean("soundOn", true);
+		soundOn = settings.getBoolean("soundOn", true);
 		if(soundOn){
 			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
 			Log.i("Arena", "Started Sound");
@@ -92,6 +93,15 @@ public class Profile extends Activity{
 	protected void onPause() {
 		super.onPause();
 		MusicManager.pause();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if(soundOn){
+			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+			Log.i("Profile", "Started Sound");
+		}
 	}
 	
 	/**
@@ -222,6 +232,8 @@ public class Profile extends Activity{
 		}
 		return values;
 	}
+	
+
 
 
 }
