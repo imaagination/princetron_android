@@ -240,13 +240,14 @@ public class PrinceTron extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		MusicManager.pause();
+		boolean soundOn = settings.getBoolean("soundOn", true);
+		if(soundOn){
 			MusicManager.pause();
-			boolean soundOn = settings.getBoolean("soundOn", true);
-			if(soundOn){
-				MusicManager.pause();
-				Log.i(TAG, "Started Sound");
-			}
+			Log.i(TAG, "Started Sound");
+		}
 	}
+	
 	@Override
 	protected void onResume() {
 		super.onResume();

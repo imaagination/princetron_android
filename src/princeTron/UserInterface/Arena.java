@@ -194,7 +194,10 @@ public class Arena extends Activity {
 		}
 		else{
 			inArena = false;
-			mArenaView = (ArenaView) findViewById(R.id.arena);
+			Intent intent = getIntent();
+			finish();
+			startActivity(intent);
+			/*mArenaView = (ArenaView) findViewById(R.id.arena);
 			if (engine == null) engine = new GameEngine(handler, network);
 			Log.i("Arena", "engine instantiated");
 			if (!network.logIn(accountName)) {
@@ -207,7 +210,7 @@ public class Arena extends Activity {
 				MusicManager.pause();
 				MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
 				Log.i("Arena", "Started Sound");
-			}
+			}*/
 			
 		}
 		return;
@@ -300,6 +303,7 @@ public class Arena extends Activity {
 					.setCancelable(false)
 					.setNeutralButton("Go Back To Lobby", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
+							inArena = false;
 							Intent intent = getIntent();
 							finish();
 							startActivity(intent);
@@ -331,7 +335,6 @@ public class Arena extends Activity {
 					}
 				});
 				builder.show();
-				//Arena.this.engine.acceptInvitation();
 				break;
 			case Arena.INVITATION_ACCEPTED:
 				// tbd
@@ -342,8 +345,9 @@ public class Arena extends Activity {
 					Log.i("Arena", "engineThread is null4");
 				}
 				mArenaView.myId = msg.arg1;
-				Toast toast = Toast.makeText(Arena.this, "About to play...", (int) Math.floor(Toast.LENGTH_SHORT/8));
-				toast.show();
+				// this message was a bit annoying
+				/*Toast toast = Toast.makeText(Arena.this, "About to play...", (int) Math.floor(Toast.LENGTH_SHORT/8));
+				toast.show();*/
 				break;
 			case Arena.INVITATIONS_PENDING:
 				break;

@@ -69,6 +69,11 @@ public class Leaderboard extends ListActivity{
 		data));
 	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MusicManager.pause();
+	}
 
 	/**
 	 * This method allows the user to click and get more information

@@ -88,6 +88,12 @@ public class Profile extends Activity{
 
 	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MusicManager.pause();
+	}
+	
 	/**
 	 * Method converts an array of ints to human-readable information
 	 * @param profile

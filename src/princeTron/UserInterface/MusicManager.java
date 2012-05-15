@@ -74,16 +74,11 @@ public class MusicManager {
 			players.put(music, mp);
 			float volume = getMusicVolume(context);
 			Log.d(TAG, "Setting music volume to " + volume);
-			mp.setVolume(volume, volume);
-			if (mp == null) {
-				Log.e(TAG, "player was not created successfully");
-			} else {
-				try {
-					mp.setLooping(true);
-					mp.start();
-				} catch (Exception e) {
-					Log.e(TAG, e.getMessage(), e);
-				}
+			try {
+				mp.setLooping(true);
+				mp.start();
+			} catch (Exception e) {
+				Log.e(TAG, e.getMessage(), e);
 			}
 		}
 	}
