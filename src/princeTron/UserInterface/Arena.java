@@ -78,7 +78,12 @@ public class Arena extends Activity {
 			network.connect();
 			engine = new GameEngine(handler, network);
 			network.setGameEngine(engine);
-			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			try {
+				requestWindowFeature(Window.FEATURE_NO_TITLE);
+			}
+			catch (Exception e) {
+				
+			}
 			// so that when the user changes the volume, it affects the sound fx
 		}
 		catch (Exception e) {
