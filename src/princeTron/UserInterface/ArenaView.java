@@ -257,13 +257,13 @@ public class ArenaView extends TileView implements OnTouchListener {
 	
 	// draw the walls. 100 is the board size
 	private void updateWalls() {
-		for (int x = 0; x < 100; x++) {
+		for (int x = 0; x < princeTron.Engine.GameEngine.X_SCALE + 2; x++) {
 			setTile(myId + 1, x, 0);
-			setTile(myId + 1, x, 99);
+			setTile(myId + 1, x, princeTron.Engine.GameEngine.Y_SCALE + 1);
 		}
-		for (int y = 1; y < 100; y++) {
+		for (int y = 1; y < princeTron.Engine.GameEngine.Y_SCALE + 2; y++) {
 			setTile(myId + 1, 0, y);
-			setTile(myId + 1, 99, y);
+			setTile(myId + 1, princeTron.Engine.GameEngine.X_SCALE + 1, y);
 		}
 	}
 

@@ -104,8 +104,8 @@ public class TileView extends View {
         mXTileCount = Math.min(mXTileCount, mYTileCount);
         mYTileCount = mXTileCount;*/
     	
-    	mXTileCount = 100;
-    	mYTileCount = 100;
+    	mXTileCount = princeTron.Engine.GameEngine.X_SCALE;
+    	mYTileCount = princeTron.Engine.GameEngine.Y_SCALE;
     	
     	int min = Math.min(w, h);
     	mTileSize = (int) Math.floor(min/100);
@@ -113,7 +113,7 @@ public class TileView extends View {
         mXOffset = ((w - (mTileSize * mXTileCount)) / 2);
         mYOffset = ((h - (mTileSize * mYTileCount)) / 2);
 
-        mTileGrid = new int[mXTileCount][mYTileCount];
+        mTileGrid = new int[mXTileCount+2][mYTileCount+2];
         Log.i("TileView", "xTileCount: "+ mXTileCount);
         Log.i("TileView", "yTileCount: " + mYTileCount);
         clearTiles();
@@ -140,8 +140,8 @@ public class TileView extends View {
      * 
      */
     public void clearTiles() {
-        for (int x = 0; x < 100; x++) {
-            for (int y = 0; y < 100; y++) {
+        for (int x = 0; x < mTileGrid.length; x++) {
+            for (int y = 0; y < mTileGrid.length; y++) {
                 setTile(0, x, y);
             }
         }
@@ -158,7 +158,6 @@ public class TileView extends View {
      */
     public void setTile(int tileindex, int x, int y) {
     	tileindex = tileindex % (mTileArray.length);
-    	// maps [0,200] -> [min x/y on screen, max x/y on screen]
     	try {
     		x = mapX(x);
     		y = mapY(y);
@@ -170,13 +169,15 @@ public class TileView extends View {
     }
 
     private int mapX(int x) {
-    	double proportion = x/100.0;
-    	return (int) Math.round(proportion*mXTileCount);
+    	//double proportion = x/100.0;
+    	//return (int) Math.round(proportion*mXTileCount);
+    	return x;
     }
     
     private int mapY(int y) {
-    	double proportion = y/100.0;
-    	return (mYTileCount - (int) Math.round(proportion*mYTileCount) - 1);
+    	//double proportion = y/100.0;
+    	//return (mYTileCount - (int) Math.round(proportion*mYTileCount) - 1);
+    	return mTileGrid.length - y - 1;
     }
 
     @Override
@@ -188,8 +189,8 @@ public class TileView extends View {
     	super.onDraw(canvas);
     	int x = 0, y = 0;
     	try {
-    		for (x = 0; x < mXTileCount; x += 1) {
-    			for (y = 0; y < mYTileCount; y += 1) {
+    		for (x = 0; x < mTileGrid.length; x += 1) {
+    			for (y = 0; y < mTileGrid.length; y += 1) {
     				if (mTileGrid[x][y] > 0) {
     					int z = mTileGrid[x][y];
     					//System.out.println("z: " + z);
