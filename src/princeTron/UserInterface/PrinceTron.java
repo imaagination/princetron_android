@@ -60,6 +60,8 @@ public class PrinceTron extends Activity {
 
 	private SharedPreferences settings;
 	private SharedPreferences.Editor editor;
+	
+	boolean continueMusic;
 
 	/**
 	 * Called when Activity is first created. Turns off the title bar and sets up
@@ -73,6 +75,8 @@ public class PrinceTron extends Activity {
 		setContentView(R.layout.princetron_layout);
 		TextView tv = (TextView) findViewById(R.id.hello);
 
+		continueMusic = true;
+		
 		//get the google account associated with this phone
 		AccountManager am = AccountManager.get(this);
 		Account[] accounts = am.getAccountsByType("com.google");
@@ -212,7 +216,7 @@ public class PrinceTron extends Activity {
 			}
 
 			Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-			
+
 		} else if (item == mItemAbout) {
 			String text = "Program created by:\nMichael Franklin,\n" +
 					"Andrew Kaier,\nPeter Maag, and\nKashif Smith"; 
@@ -236,13 +240,30 @@ public class PrinceTron extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
+			MusicManager.pause();
+			boolean soundOn = settings.getBoolean("soundOn", true);
+			if(soundOn){
+				MusicManager.pause();
+				Log.i(TAG, "Started Sound");
+			}
+	}
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+	}
+
+	/*
+	@Override
+	protected void onPause() {
+		super.onPause();
 		boolean soundOn = settings.getBoolean("soundOn", true);
 		if(soundOn){
 			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
 			Log.i(TAG, "Started Sound");
 		}
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -252,7 +273,7 @@ public class PrinceTron extends Activity {
 			Log.i(TAG, "Started Sound");
 		}
 	}
-
+	 */
 	@Override 
 	public void onDestroy(){
 		super.onDestroy();

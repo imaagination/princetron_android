@@ -9,28 +9,31 @@ package princeTron.UserInterface;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import princeTron.Engine.Coordinate;
+import princeTron.Engine.GameEngine;
+import princeTron.Network.NetworkIP;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.widget.ListView;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.os.Bundle;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import java.util.Arrays;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import princeTron.Engine.*;
-import princeTron.Network.NetworkIP;
-import android.util.Log;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class Arena extends Activity {
 
@@ -57,10 +60,17 @@ public class Arena extends Activity {
 	private boolean toIgnore;
 	private String accountName = "";
 	private ArenaView mArenaView;
+	private boolean continueMusic;
+	private boolean inArena;
 
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		continueMusic = true;
+		inArena = false;
+
+		//		MusicManager.start(this, MusicManager.MUSIC_GAMEPLAY);
+
 		try {
 			super.onCreate(savedInstanceState);
 			try {
@@ -98,6 +108,9 @@ public class Arena extends Activity {
 			Toast toast = Toast.makeText(Arena.this, "Log in failed. Relaunch to try again.", Toast.LENGTH_SHORT);
 			toast.show();
 		}
+
+
+
 	}
 
 	@Override
@@ -108,8 +121,8 @@ public class Arena extends Activity {
 			network.disconnect();
 		}
 		catch (Exception e) {
-
 		}
+		MusicManager.pause();
 	}
 
 	@Override
@@ -129,6 +142,10 @@ public class Arena extends Activity {
 
 	public void goToArena(){
 		toIgnore = true;
+		inArena = true;
+		
+		MusicManager.start(this, MusicManager.MUSIC_GAMEPLAY);
+
 		Log.i("Arena", "going to arena");
 		setContentView(R.layout.arena_layout);
 		if (mArenaView != null && mArenaView.engine == null) {
@@ -141,9 +158,32 @@ public class Arena extends Activity {
 			engine = new GameEngine(handler, network);
 		}
 		mArenaView.setGameEngine(engine);
+
+
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if(!inArena){
+				finish();
+				MusicManager.pause();
+		}
+		else{
+			inArena = false;
+			mArenaView = (ArenaView) findViewById(R.id.arena);
+			if (engine == null) engine = new GameEngine(handler, network);
+			Log.i("Arena", "engine instantiated");
+			if (!network.logIn(accountName)) {
+				String loginFail = "Log in failed. Relaunch to try again.";
+				Toast.makeText(Arena.this, loginFail, Toast.LENGTH_SHORT).show();
+			}
+		}
+	return;
 	}
 
+
 	public void startGame() {
+		MusicManager.start(this, MusicManager.MUSIC_GAMEPLAY);
 		mArenaView.setMode(ArenaView.READY);
 		mArenaView = (ArenaView) findViewById(R.id.arena);
 		// tells Arena to listen for left/right touches
@@ -361,4 +401,7 @@ public class Arena extends Activity {
 			}
 		}
 	}
+
+
+
 }

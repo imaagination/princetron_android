@@ -20,6 +20,7 @@ public class MusicManager {
 	private static final String TAG = "MusicManager";
 	public static final int MUSIC_PREVIOUS = -1;
 	public static final int MUSIC_BACKGROUND = 0;
+	public static final int MUSIC_GAMEPLAY = 1;
 
 
 	private static HashMap<Integer, MediaPlayer> players = new HashMap<Integer, MediaPlayer>();
@@ -45,14 +46,14 @@ public class MusicManager {
 			Log.d(TAG, "Using previous music [" + previousMusic + "]");
 			music = previousMusic;
 		}
-		
+
 		if (currentMusic != -1) {
 			previousMusic = currentMusic;
 			Log.d(TAG, "Previous music was [" + previousMusic + "]");
 			// playing some other music, pause it and change
 			pause();
 		}
-		
+
 		currentMusic = music;
 		Log.d(TAG, "Current music is now [" + currentMusic + "]");
 		MediaPlayer mp = players.get(music);
@@ -63,11 +64,13 @@ public class MusicManager {
 		} else {
 			if (music == MUSIC_BACKGROUND) {
 				mp = MediaPlayer.create(context, R.raw.bkground);
-			} else {
+			} else if(music == MUSIC_GAMEPLAY){
+				mp = MediaPlayer.create(context, R.raw.gameplay);
+			}else {
 				Log.e(TAG, "unsupported music number - " + music);
 				return;
 			}
-			
+
 			players.put(music, mp);
 			float volume = getMusicVolume(context);
 			Log.d(TAG, "Setting music volume to " + volume);
