@@ -124,8 +124,8 @@ public class Arena extends Activity {
 	public void onPause() {
 		super.onPause();
 		try {
-			mArenaView.setMode(ArenaView.LOSE);
 			network.disconnect();
+			mArenaView.setMode(ArenaView.LOSE);
 		}
 		catch (Exception e) {
 		}
@@ -135,12 +135,23 @@ public class Arena extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
+		try {
+			network.disconnect();
+		}
+		catch (Exception e) {
+			
+		}
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		network.disconnect();
+		try {
+			network.disconnect();
+		}
+		catch (Exception e) {
+			
+		}
 	}
 
 	public void readyToPlay(View view) {
@@ -285,18 +296,13 @@ public class Arena extends Activity {
 					}
 					builder = new AlertDialog.Builder(Arena.this);
 					String report = (String) msg.obj;
-					builder.setMessage(report + "Do you want to go back to the lobby?")
+					builder.setMessage(report)
 					.setCancelable(false)
-					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					.setNeutralButton("Go Back To Lobby", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							Intent intent = getIntent();
 							finish();
 							startActivity(intent);
-						}
-					})
-					.setNegativeButton("No", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-
 						}
 					});
 					builder.show();
