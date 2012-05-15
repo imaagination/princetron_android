@@ -89,7 +89,11 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		Thread.yield();
 	}
 
-	// check that the new branch worked
+	// used to send a crash message when the user leaves in middle of a  game
+	// doesn't seem fair that cutting off the connection guarantees victory...
+	public Coordinate getMyLocation() {
+		return players.get(myId).currentPoint();
+	}
 	
 	// steps all the snakes forwards, returns true if there was a collision
 	// on the local snake

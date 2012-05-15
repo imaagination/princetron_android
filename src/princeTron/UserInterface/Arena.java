@@ -133,6 +133,8 @@ public class Arena extends Activity {
 	public void onPause() {
 		super.onPause();
 		try {
+			// if you're not actively playing, you're losing.
+			network.userCrash(engine.getMyLocation(), engine.numTics);
 			network.disconnect();
 			mArenaView.setMode(ArenaView.LOSE);
 		}
@@ -145,6 +147,8 @@ public class Arena extends Activity {
 	public void onStop() {
 		super.onStop();
 		try {
+			// if you're not actively playing, you're losing.
+			network.userCrash(engine.getMyLocation(), engine.numTics);
 			network.disconnect();
 		}
 		catch (Exception e) {
