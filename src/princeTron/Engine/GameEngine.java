@@ -110,7 +110,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 						player.stop();
 					}
 				}
-				else if (current.x >= 100 || current.x < 0 || current.y >= 100 || current.y < 0) {
+				else if (current.x >= 100 || current.x <= 0 || current.y >= 100 || current.y <= 0) {
 					if (player.getId() == myId) {
 						Log.i("GameEngine", "crash!");
 						network.userCrash(current, player.numTics);
