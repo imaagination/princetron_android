@@ -37,6 +37,8 @@ public class Profile extends Activity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
 
 		setContentView(R.layout.profile_layout);
 		TextView tv = (TextView) findViewById(R.id.profileText);

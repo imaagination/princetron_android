@@ -42,6 +42,9 @@ public class Leaderboard extends ListActivity{
 
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
+		
+		MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+		
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.leaderboard_layout);

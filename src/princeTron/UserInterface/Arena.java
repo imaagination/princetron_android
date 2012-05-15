@@ -67,6 +67,8 @@ public class Arena extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+		MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+		
 		continueMusic = true;
 		inArena = false;
 
@@ -139,7 +141,7 @@ public class Arena extends Activity {
 	public void goToArena(){
 		toIgnore = true;
 		inArena = true;
-
+		MusicManager.pause();
 		MusicManager.start(this, MusicManager.MUSIC_GAMEPLAY);
 
 
