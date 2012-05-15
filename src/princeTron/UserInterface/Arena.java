@@ -346,7 +346,7 @@ public class Arena extends Activity {
 				if (soundOn) {
 					try {
 						MediaPlayer mp = MediaPlayer.create(Arena.this, R.raw.metalcrash);
-						mp.setVolume(0.1f, 0.1f);
+						mp.setVolume(1.0f, 1.0f);
 						mp.start();
 						mp.setOnCompletionListener(new OnCompletionListener() {
 
