@@ -61,14 +61,23 @@ public class Arena extends Activity {
 	private boolean continueMusic;
 	private boolean inArena;
 
+	private SharedPreferences settings;
+
+
 
 
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
+		boolean soundOn = settings.getBoolean("soundOn", true);
+		if(soundOn){
+			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+			Log.i("Arena", "Started Sound");
+		}
 
-		MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
-		
+
+
 		continueMusic = true;
 		inArena = false;
 
@@ -141,8 +150,15 @@ public class Arena extends Activity {
 	public void goToArena(){
 		toIgnore = true;
 		inArena = true;
-		MusicManager.pause();
-		MusicManager.start(this, MusicManager.MUSIC_GAMEPLAY);
+
+		SharedPreferences settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
+		boolean soundOn = settings.getBoolean("soundOn", true);
+		if(soundOn){
+			MusicManager.pause();
+			MusicManager.start(this, MusicManager.MUSIC_GAMEPLAY);
+			Log.i("Arena", "Started Sound");
+		}
+
 
 
 		Log.i("Arena", "going to arena");
@@ -164,7 +180,6 @@ public class Arena extends Activity {
 	public void onBackPressed() {
 		if(!inArena){
 			finish();
-			MusicManager.pause();
 		}
 		else{
 			inArena = false;
@@ -175,6 +190,14 @@ public class Arena extends Activity {
 				String loginFail = "Log in failed. Relaunch to try again.";
 				Toast.makeText(Arena.this, loginFail, Toast.LENGTH_SHORT).show();
 			}
+			
+			boolean soundOn = settings.getBoolean("soundOn", true);
+			if(soundOn){
+				MusicManager.pause();
+				MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+				Log.i("Arena", "Started Sound");
+			}
+			
 		}
 		return;
 	}

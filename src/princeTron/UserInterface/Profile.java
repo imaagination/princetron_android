@@ -18,7 +18,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.widget.TextView;
 
@@ -38,7 +40,13 @@ public class Profile extends Activity{
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
-		MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+		SharedPreferences settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
+		boolean soundOn = settings.getBoolean("soundOn", true);
+		if(soundOn){
+			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+			Log.i("Arena", "Started Sound");
+		}
+
 
 		setContentView(R.layout.profile_layout);
 		TextView tv = (TextView) findViewById(R.id.profileText);

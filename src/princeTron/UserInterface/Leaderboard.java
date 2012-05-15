@@ -16,9 +16,11 @@ import org.apache.http.client.ClientProtocolException;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -43,7 +45,12 @@ public class Leaderboard extends ListActivity{
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		
-		MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+		SharedPreferences settings = getSharedPreferences(PrinceTron.PREFS_NAME, 0);
+		boolean soundOn = settings.getBoolean("soundOn", true);
+		if(soundOn){
+			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+			Log.i("Arena", "Started Sound");
+		}
 		
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);

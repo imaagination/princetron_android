@@ -250,7 +250,11 @@ public class PrinceTron extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+		boolean soundOn = settings.getBoolean("soundOn", true);
+		if(soundOn){
+			MusicManager.start(this, MusicManager.MUSIC_BACKGROUND);
+			Log.i(TAG, "Started Sound");
+		}
 	}
 
 	/*
