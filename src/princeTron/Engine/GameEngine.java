@@ -22,8 +22,10 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public Integer numTics = 0;
 	private boolean isReady = false;
 	private int myId = -1;
-	// for collision detection - the proper way is mysteriously not working
+	// for collision detection
 	private HashSet<Coordinate> visited;
+	// to handle backing up on turns
+	private HashSet<Coordinate> doubleVisited;
 	private NetworkIP network;
 	private Handler handler;
 
@@ -72,6 +74,7 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	// and then Y values to break a tie
 	public void passEnterArena(Coordinate[] starts, int[] dirs, String[] names, int myId) {
 		visited = new HashSet<Coordinate>();
+		doubleVisited = new HashSet<Coordinate>();
 		players = new HashMap<Integer, Player>();
 		Log.i("GameEngine", ""+starts.length);
 		for (int i = 0; i < starts.length; i++) {
@@ -93,10 +96,11 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 	public void update(boolean toReturn) {
 		for (Integer i : players.keySet()) {
 			Player player = players.get(i);
-			if (!player.hasStopped() && !player.hasLost) {
+			if (!player.hasStopped() && !player.hasLost && !player.hasWon) {
 				player.stepForward();
 				Coordinate current = player.currentPoint();
 				if (toReturn && visited.contains(current)) {
+					doubleVisited.add(current);
 					if (player.getId() == myId) {
 						Log.i("GameEngine", "crash!");
 						network.userCrash(current, player.numTics);
@@ -145,8 +149,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 		}
 		for (Integer i : players.keySet()) {
 			Player p = players.get(i);
+			if (p.hasLost || p.hasWon) continue; 
 			p.start();
-			while (p.numTics > time) {
+			while (p.numTics >= time) {
 				ArrayList<Coordinate> removed = p.stepBackward(1);
 				for (Coordinate c : removed) {
 					visited.remove(c);
@@ -154,6 +159,10 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			}
 			players.put(i, p);
 		}
+		for (Coordinate c : doubleVisited) {
+			visited.add(c);
+		}
+		doubleVisited = new HashSet<Coordinate>();
 		Player player = players.get(playerId);
 		player.turn(isLeft, time);
 		players.put(playerId, player);
@@ -198,6 +207,9 @@ public class GameEngine extends princeTron.Network.NetworkGame {
 			if (player.getId() == playerId) {
 				if (!isWin) {
 					player.hasLost = true;
+				}
+				else {
+					player.hasWon = true;
 				}
 				player.stop();
 				Message msg = handler.obtainMessage(Arena.PLAYER_CRASH);

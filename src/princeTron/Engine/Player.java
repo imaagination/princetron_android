@@ -16,6 +16,7 @@ public class Player {
 	public static int static_id = 0;
 	private boolean hasStopped = false;
 	public boolean hasLost = false;
+	public boolean hasWon = false;
 	public String name;
 	private HashMap<Integer, Boolean> turns = new HashMap<Integer, Boolean>();
 
@@ -26,6 +27,8 @@ public class Player {
 		this.direction = direction;
 		this.id = id;
 		this.name = name;
+		hasLost = false;
+		hasWon = false;
 		//this.nextDirection = direction;
 	}
 
