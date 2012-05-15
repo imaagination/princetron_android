@@ -60,6 +60,7 @@ public class Arena extends Activity {
 
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		try {
 			super.onCreate(savedInstanceState);
 			try {
@@ -78,7 +79,6 @@ public class Arena extends Activity {
 			network.connect();
 			engine = new GameEngine(handler, network);
 			network.setGameEngine(engine);
-			requestWindowFeature(Window.FEATURE_NO_TITLE);
 			// so that when the user changes the volume, it affects the sound fx
 		}
 		catch (Exception e) {
